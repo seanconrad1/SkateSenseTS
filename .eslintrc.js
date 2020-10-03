@@ -1,12 +1,13 @@
 module.exports = {
   root: true,
-  extends: '@react-native-community',
-  plugins: ['react', 'react-native'],
+  extends: ['airbnb', 'prettier', 'prettier/react'],
+  plugins: ['prettier', 'react', 'react-native'],
   parserOptions: {
     ecmaFeatures: {
       jsx: true,
     },
   },
+
   env: {
     'react-native/react-native': true,
   },
@@ -17,9 +18,13 @@ module.exports = {
     'react-native/no-color-literals': 2,
     'react-native/no-raw-text': 2,
     'react-native/no-single-element-style-arrays': 2,
-    'react-native/no-color-literals': 0,
-    'react-native/no-raw-text': 0,
     'object-curly-spacing': [2, 'always'],
-    'react-native/no-inline-styles': 0,
+    'prettier/prettier': [
+      'error',
+      {
+        trailingComma: 'es5',
+        singleQuote: true,
+      },
+    ],
   },
 };

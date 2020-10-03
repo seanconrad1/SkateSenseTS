@@ -10,6 +10,8 @@
   "dependencies": {
     "@apollo/react-hooks": "^4.0.0",
     "@react-native-community/async-storage": "^1.12.0",
+    "@react-native-community/eslint-config": "^2.0.0",
+    "@react-native-community/geolocation": "^2.0.2",
     "@react-native-community/masked-view": "^0.1.10",
     "@react-navigation/drawer": "^5.9.2",
     "@react-navigation/native": "^5.7.5",
@@ -27,6 +29,7 @@
     "react-native": "https://github.com/expo/react-native/archive/sdk-39.0.2.tar.gz",
     "react-native-elements": "^2.3.2",
     "react-native-gesture-handler": "^1.8.0",
+    "react-native-maps": "^0.27.1",
     "react-native-reanimated": "^1.13.1",
     "react-native-responsive-screen": "^1.4.1",
     "react-native-safe-area-context": "3.1.4",
@@ -35,10 +38,18 @@
     "unfetch": "^4.2.0"
   },
   "devDependencies": {
-    "react-native-web": "~0.13.7",
     "@types/react": "~16.9.35",
     "@types/react-dom": "~16.9.8",
     "@types/react-native": "~0.63.2",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.10.0",
+    "eslint-config-airbnb": "^18.2.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jsx-a11y": "^6.3.1",
+    "eslint-plugin-react": "^7.21.3",
+    "eslint-plugin-react-hooks": "^4.1.2",
+    "eslint-plugin-react-native": "^3.10.0",
+    "react-native-web": "~0.13.7",
     "typescript": "~3.9.5"
   },
   "private": true

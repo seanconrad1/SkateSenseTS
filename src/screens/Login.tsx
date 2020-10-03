@@ -30,44 +30,76 @@ interface Iresponse {
 }
 
 const Login = ({ navigation }) => {
-  const [email, setEmail] = useState(__DEV__ ? "seanconrad123@gmail.com" : "");
+  const [emailAddress, setEmailAddress] = useState(
+    __DEV__ ? "seanconrad123@gmail.com" : ""
+  );
   const [password, setPassword] = useState(__DEV__ ? "123" : "");
   const [disableButton, setDisableButton] = useState(false);
   const [errors, setErrors] = useState("");
   const { state, dispatch } = useContext(store);
-
   const [login] = useMutation(LOGIN_MUTATION);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   const onSubmit = useCallback(async () => {
     let response: Iresponse;
+    console.log("what is emailAddress: ", emailAddress);
     setDisableButton(true);
     try {
-      response = await login({ variables: { email, password } });
+      response = await login({ variables: { email: emailAddress, password } });
       setDisableButton(false);
+      setErrors("");
     } catch (e) {
       setErrors(e.networkError.result.errors[0].message);
       setDisableButton(false);
     }
 
-    // if (response!.data.login.token) {
-    //   try {
-    //     await AsyncStorage.setItem("AUTH_TOKEN", response!.data.login.token);
-    //     await AsyncStorage.setItem("EMAIL", response!.data.login.email);
-    //     await AsyncStorage.setItem("USER_ID", response!.data.login.user_id);
-    //     await AsyncStorage.setItem("NAME", response!.data.login.name);
-    //     dispatch({
-    //       type: "SET_USER",
-    //       payload: response!.data.login.token,
-    //     });
-    //     setDisableButton(false);
-    //   } catch (e) {
-    //     setDisableButton(false);
-    //   }
-    // }
+    const { token, email, user_id, name } = response!.data.login;
+
+    if (token) {
+      try {
+        await AsyncStorage.setItem("AUTH_TOKEN", token);
+        await AsyncStorage.setItem("EMAIL", email);
+        await AsyncStorage.setItem("USER_ID", user_id);
+        await AsyncStorage.setItem("NAME", name);
+        dispatch({
+          type: "SET_USER",
+          payload: token,
+        });
+        setDisableButton(false);
+      } catch (e) {
+        setDisableButton(false);
+      }
+    }
 
     setDisableButton(false);
-  }, [dispatch, email, login, password]);
-
-  console.log(errors);
+  }, [dispatch, emailAddress, login, password]);
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
@@ -91,11 +123,11 @@ const Login = ({ navigation }) => {
         autoCapitalize="none"
         autoCorrect={false}
         autoFocus
-        value={email}
+        value={emailAddress}
         autoCompleteType="email"
         textContentType="emailAddress"
         keyboardType="email-address"
-        onChangeText={(uname: string) => setEmail(uname)}
+        onChangeText={(e: string) => setEmailAddress(e)}
         containerStyle={styles.inputContainerStyle}
       />
 

@@ -1,17 +1,17 @@
-import React, { useContext, useEffect } from "react";
-import { createDrawerNavigator } from "@react-navigation/drawer";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { NavigationContainer, StackRouter } from "@react-navigation/native";
-import AsyncStorage from "@react-native-community/async-storage";
-import SignUp from "./screens/SignUp";
-import Login from "./screens/Login";
-// import Map from "./screens/Map/Map";
-import SideDrawer from "./components/SideDrawer";
+import React, { useContext, useEffect } from 'react';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { NavigationContainer, StackRouter } from '@react-navigation/native';
+import AsyncStorage from '@react-native-community/async-storage';
+import SignUp from './screens/SignUp';
+import Login from './screens/Login';
+import Map from './screens/Map';
+import SideDrawer from './components/SideDrawer';
 // import SpotBook from "./screens/SpotBook/SpotBook";
 // import NewSpotPage from "./screens/NewSpotPage/NewSpotPage";
 // import LocationSelectorMap from "./screens/NewSpotPage/LocationSelectorMap";
 // import Approvals from "./screens/Approvals";
-import { store, SET_TOKEN } from "./store";
+import { store, SET_TOKEN } from './store';
 
 const RootStack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator();
@@ -51,7 +51,6 @@ const AuthStackScreen = () => (
 const RootStackScreen = ({ getAuthToken }) => {
   const { state, dispatch } = useContext(store);
 
-  console.log(state.token);
   let jwt;
   (async () => {
     jwt = await getAuthToken();
@@ -59,12 +58,10 @@ const RootStackScreen = ({ getAuthToken }) => {
     console.error(err);
   });
 
-  console.log(state);
-
   useEffect(() => {
     const bootstrapAsync = async () => {
       try {
-        const token = await AsyncStorage.getItem("AUTH_TOKEN");
+        const token = await AsyncStorage.getItem('AUTH_TOKEN');
 
         if (token != null) {
           dispatch({ type: SET_TOKEN, payload: token });
@@ -88,8 +85,8 @@ const RootStackScreen = ({ getAuthToken }) => {
         {state.token ? (
           <RootStack.Screen name="App" component={NavDrawer} />
         ) : (
-          <RootStack.Screen name="Auth" component={AuthStackScreen} />
-        )}
+            <RootStack.Screen name="Auth" component={AuthStackScreen} />
+          )}
       </RootStack.Navigator>
     </NavigationContainer>
   );
