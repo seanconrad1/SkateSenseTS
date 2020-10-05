@@ -39,34 +39,6 @@ const Login = ({ navigation }) => {
   const { state, dispatch } = useContext(store);
   const [login] = useMutation(LOGIN_MUTATION);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   const onSubmit = useCallback(async () => {
     let response: Iresponse;
     console.log("what is emailAddress: ", emailAddress);
@@ -90,7 +62,7 @@ const Login = ({ navigation }) => {
         await AsyncStorage.setItem("NAME", name);
         dispatch({
           type: "SET_USER",
-          payload: token,
+          payload: { token, user_id },
         });
         setDisableButton(false);
       } catch (e) {

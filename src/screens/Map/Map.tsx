@@ -17,12 +17,17 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-import Geolocation from "@react-native-community/geolocation";
+// import Geolocation from "@react-native-community/geolocation";
 import markerIcon from "../../../assets/markerIcon.png";
-import { animateToUserLocation, addAnEventListener } from "./utils";
+import { animateToUserLocation } from "./utils";
 import { reducer, mapState } from "./reducer";
 import MapSpotCard from "../../components/MapSpotCard";
 import AsyncStorage from "@react-native-community/async-storage";
+import * as Location from 'expo-location';
+
+const LOCATION_TASK_NAME = 'background-location-task';
+
+
 
 const CARD_WIDTH = wp("95%");
 
@@ -32,22 +37,30 @@ const Map = (props) => {
   const mapRef = useRef();
   const flatListRef = useRef();
 
+  const { filteredSpots } = state
+  const { navigation } = props
+
+  useEffect(() => {
+    test()
+  }, [])
+
   useEffect(() => {
     if (data) {
-      Geolocation.getCurrentPosition((position) => {
-        const initReg = {
-          initialRegion: {
-            latitude: position.coords.latitude - 0.02,
-            longitude: position.coords.longitude,
-            latitudeDelta: 0.115,
-            longitudeDelta: 0.1121,
-          },
-          geoLocationSwitch: true,
-        };
+      console.log(data);
+      // Geolocation.getCurrentPosition((position) => {
+      //   const initReg = {
+      //     initialRegion: {
+      //       latitude: position.coords.latitude - 0.02,
+      //       longitude: position.coords.longitude,
+      //       latitudeDelta: 0.115,
+      //       longitudeDelta: 0.1121,
+      //     },
+      //     geoLocationSwitch: true,
+      //   };
 
-        dispatch({ type: "SET_SPOTS", payload: data.getSpots });
-        dispatch({ type: "SET_INIT_LOCATION", payload: initReg });
-      });
+      dispatch({ type: "SET_SPOTS", payload: data.getSpots });
+      //   dispatch({ type: "SET_INIT_LOCATION", payload: initReg });
+      // });
     }
 
     setAnimatorListener();
@@ -59,14 +72,27 @@ const Map = (props) => {
     state.currentRegion,
   ]);
 
-  useEffect(() => {
-    async function checkAuth() {
-      const user_id = await AsyncStorage.getItem("AUTH_TOKEN");
-      props.navigation.navigate("Login");
-    }
+  console.log(filteredSpots)
 
-    checkAuth();
-  });
+  // useEffect(() => {
+  //   async function checkAuth() {
+  //     const user_id = await AsyncStorage.getItem("AUTH_TOKEN");
+  //     navigation.navigate("Login");
+  //   }
+
+  //   checkAuth();
+  // });
+
+  const test = async () => {
+    const { status } = await Location.requestPermissionsAsync();
+    if (status === 'granted') {
+      let a = await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
+        accuracy: Location.Accuracy.Balanced,
+      });
+
+      console.log(a)
+    }
+  }
 
   // This is the function to scroll
   // to the end of the spots when a new spot is created
@@ -99,7 +125,7 @@ const Map = (props) => {
   };
 
   const goToSpotPage = (marker) => {
-    props.navigation.navigate("SpotPage", { skatespot: marker });
+    navigation.navigate("SpotPage", { skatespot: marker });
   };
 
   const onMarkerPressHandler = (marker, index) => {
@@ -134,8 +160,8 @@ const Map = (props) => {
 
     state.animation.addListener(({ value }) => {
       let animationIndex = Math.floor(value / CARD_WIDTH + 0.3); // animate 30% away from landing on the next item
-      if (animationIndex >= state.filteredSpots.length) {
-        animationIndex = state.filteredSpots.length - 1;
+      if (animationIndex >= filteredSpots.length) {
+        animationIndex = filteredSpots.length - 1;
       }
       if (animationIndex <= 0) {
         animationIndex = 0;
@@ -148,8 +174,8 @@ const Map = (props) => {
           mapRef.current.animateToRegion(
             {
               latitude:
-                state.filteredSpots[animationIndex].location.latitude - 0.02,
-              longitude: state.filteredSpots[animationIndex].location.longitude,
+                filteredSpots[animationIndex].location.latitude - 0.02,
+              longitude: filteredSpots[animationIndex].location.longitude,
               latitudeDelta: state.region.latitudeDelta,
               longitudeDelta: state.region.longitudeDelta,
             },
@@ -160,14 +186,14 @@ const Map = (props) => {
     });
   }, [
     state.animation,
-    state.filteredSpots,
+    filteredSpots,
     state.index,
     state.region.latitudeDelta,
     state.region.longitudeDelta,
   ]);
 
-  const interpolations = state.filteredSpots
-    ? state.filteredSpots.map((marker, index) => {
+  const interpolations = filteredSpots
+    ? filteredSpots.map((marker, index) => {
       const inputRange = [
         (index - 1) * CARD_WIDTH,
         index * CARD_WIDTH,
@@ -210,8 +236,8 @@ const Map = (props) => {
         showsMyLocationButton
         onRegionChange={onRegionChange}
       >
-        {state.filteredSpots.length > 0
-          ? state.filteredSpots.map((marker, index) => {
+        {filteredSpots.length > 0
+          ? filteredSpots.map((marker, index) => {
             const scaleStyle = {
               transform: [
                 {
@@ -251,7 +277,7 @@ const Map = (props) => {
       <Callout>
         <View>
           <View>
-            <TouchableOpacity onPress={() => props.navigation.openDrawer()}>
+            <TouchableOpacity onPress={() => navigation.openDrawer()}>
               <Icon
                 raised
                 name="bars"
@@ -263,7 +289,7 @@ const Map = (props) => {
             </TouchableOpacity>
 
             <TouchableOpacity
-              onPress={() => props.navigation.navigate("New Spot")}
+              onPress={() => navigation.navigate("New Spot Page")}
             >
               <Icon
                 raised
@@ -324,7 +350,7 @@ const Map = (props) => {
           ],
           { useNativeDriver: true }
         )}
-        data={state.filteredSpots}
+        data={filteredSpots}
         renderItem={({ item }) => (
           <MapSpotCard spot={item} CARD_WIDTH={CARD_WIDTH} />
         )}

@@ -1,16 +1,17 @@
 import { Animated } from 'react-native';
-import Geolocation from '@react-native-community/geolocation';
+// import Geolocation from '@react-native-community/geolocation';
+import spotImage from '../../../assets/brooklyn_banks.jpg'
 
 const getLocation = () => {
   let initReg;
-  Geolocation.getCurrentPosition(position => {
-    let initReg = {
-      latitude: position.coords.latitude,
-      longitude: position.coords.longitude,
-      latitudeDelta: 0.115,
-      longitudeDelta: 0.1121,
-    };
-  });
+  // Geolocation.getCurrentPosition(position => {
+  //   let initReg = {
+  //     latitude: position.coords.latitude,
+  //     longitude: position.coords.longitude,
+  //     latitudeDelta: 0.115,
+  //     longitudeDelta: 0.1121,
+  //   };
+  // });
   return initReg;
 };
 // geoLocationSwitch: true,

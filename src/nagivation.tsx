@@ -5,13 +5,13 @@ import { NavigationContainer, StackRouter } from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
 import SignUp from './screens/SignUp';
 import Login from './screens/Login';
-import Map from './screens/Map';
+import Map from './screens/Map/Map';
 import SideDrawer from './components/SideDrawer';
-// import SpotBook from "./screens/SpotBook/SpotBook";
-// import NewSpotPage from "./screens/NewSpotPage/NewSpotPage";
+import SpotBook from "./screens/SpotBook/SpotBook";
+import NewSpotPage from "./screens/NewSpotPage/NewSpotPage";
 // import LocationSelectorMap from "./screens/NewSpotPage/LocationSelectorMap";
-// import Approvals from "./screens/Approvals";
-import { store, SET_TOKEN } from './store';
+import Approvals from "./screens/Approvals";
+import { store, SET_USER } from './store';
 
 const RootStack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator();
@@ -30,9 +30,11 @@ const NavDrawer = () => {
       initialRouteName="Map"
       drawerContent={(drawerProps) => CustomDrawerContent(drawerProps)}
     >
-      {/* <Drawer.Screen name="Map" component={Map} />
+
+      <Drawer.Screen name="Map" component={Map} />
+      <Drawer.Screen name="New Spot Page" component={NewSpotPage} />
       <Drawer.Screen name="My Spots" component={SpotBook} />
-      <Drawer.Screen name="Approvals" component={Approvals} /> */}
+      <Drawer.Screen name="Approvals" component={Approvals} />
     </Drawer.Navigator>
   );
 };
@@ -62,9 +64,11 @@ const RootStackScreen = ({ getAuthToken }) => {
     const bootstrapAsync = async () => {
       try {
         const token = await AsyncStorage.getItem('AUTH_TOKEN');
+        const user_id = await AsyncStorage.getItem('USER_ID');
+
 
         if (token != null) {
-          dispatch({ type: SET_TOKEN, payload: token });
+          dispatch({ type: SET_USER, payload: { token, user_id } });
         }
       } catch (e) {
         console.error(`userTokenFetchErr: ${e}`);
@@ -74,6 +78,8 @@ const RootStackScreen = ({ getAuthToken }) => {
     bootstrapAsync();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  console.log('WHAT IS STATE', state)
 
   return (
     <NavigationContainer>

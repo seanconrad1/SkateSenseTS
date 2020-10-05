@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
 import { StyleSheet, Text, View, AsyncStorage } from "react-native";
 import { Divider, ListItem } from "react-native-elements";
 import { DrawerContentScrollView } from "@react-navigation/drawer";
+//Context
+import { store } from "../store";
 
 const list = [
   {
@@ -34,7 +36,7 @@ const styles = StyleSheet.create({
   },
   divider: { backgroundColor: "grey", marginTop: 0 },
   title: {
-    fontFamily: "Lobster",
+    // fontFamily: "Lobster",
     justifyContent: "space-around",
     color: "black",
     fontSize: 40,
@@ -43,21 +45,24 @@ const styles = StyleSheet.create({
   },
 });
 
-interface Iprops {}
+interface Iprops { }
 
 const SideMenu = (props: Iprops) => {
+  const { state, dispatch } = useContext(store);
+
+  const { navigation } = props
+
   const logOut = async () => {
     await AsyncStorage.setItem("AUTH_TOKEN", "");
-    props.navigation.navigate("Login");
+    await AsyncStorage.setItem("NAME", "");
+    await AsyncStorage.setItem("EMAIL", "");
+    await AsyncStorage.setItem("USER_ID", "");
+    dispatch({
+      type: "SET_USER",
+      payload: false,
+    });
   };
 
-  // logOut = () => {
-  //   // debugger
-  //   deviceStorage
-  //     .removeJWT('jwt')
-  //     .then(() => this.props.logoutUser())
-  //     .then(() => this.props.navigation.navigate('Login'));
-  // };
 
   // administration = () => {
   //   if (this.props.user.user.username === 'seanrad') {
@@ -79,27 +84,21 @@ const SideMenu = (props: Iprops) => {
         <Divider style={styles.divider} />
         <View>
           {list.map((item, i) => (
-            <ListItem
-              key={i}
-              leftIcon={{ name: item.icon, type: item.type }}
-              title={item.name}
-              onPress={() =>
-                props.navigation.navigate("NavDrawer", { screen: item.name })
-              }
-            />
+            <ListItem key={i} onPress={() => navigation.navigate(item.name)} >
+              <ListItem.Title> {item.name}</ListItem.Title>
+            </ListItem>
           ))}
-          <ListItem
-            title="Logout"
-            leftIcon={{ name: "sign-out", type: "font-awesome" }}
-            onPress={logOut}
-          />
+
+          <ListItem onPress={logOut}>
+            <ListItem.Title>Logout</ListItem.Title>
+          </ListItem>
 
           {/* {this.props.user.user !== null ? this.approvals() : null}
 
             {this.props.user.user !== null ? this.administration() : null} */}
         </View>
       </DrawerContentScrollView>
-    </View>
+    </View >
   );
 };
 
