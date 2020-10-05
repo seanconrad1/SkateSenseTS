@@ -6,20 +6,9 @@ import {
   Alert,
   StyleSheet
 } from 'react-native';
-import {
-  Header,
-  Icon,
-  ButtonGroup,
-  Button
-} from 'react-native-elements';
+import { Icon, Button } from 'react-native-elements';
 import { useMutation } from '@apollo/react-hooks';
 import * as ImagePicker from 'expo-image-picker';
-import RNFetchBlob from 'rn-fetch-blob';
-import {
-  widthPercentageToDP as wp,
-  heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
-// import { fetchKeyForSkateSpots } from '../action.js';
 import { reducer, newSpotState } from './reducer';
 import NEW_SPOT_MUTATION from '../../graphql/mutations/newSpotMutation';
 import GET_SPOTS from '../../graphql/queries/getSpots';
@@ -34,19 +23,18 @@ import { streetSpotTypebuttons, streetSpotContains } from './typesAndSelections'
 import TopHeader from '../../components/Header'
 import { validate } from 'graphql';
 import Modal from 'react-native-modalbox';
-import Slider from 'react-native-slider';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-
+import { store } from "../../store";
+import * as Permissions from 'expo-permissions';
 
 const NewSpotPage = props => {
   const [disableButton, setDisableButton] = useState(false);
-  const [user_id, setUserID] = useState();
   const [state, dispatch] = useReducer(reducer, newSpotState);
   const [createSpot, { data }] = useMutation(NEW_SPOT_MUTATION);
+  const { state: myStore } = useContext(store);
   const { navigation } = props
   const modalRef = useRef(null)
   const [selectedPhotoIndex, setSeletctedPhotoIndex] = useState(0)
-
 
 
   useEffect(() => {
@@ -68,16 +56,32 @@ const NewSpotPage = props => {
   // longitude = props.route.params.selectedLocation.longitude;
   // }
 
-  useEffect(() => {
-    if (props.route.params) {
-      const latitude = props.route.params.selectedLocation.latitude;
-      const longitude = props.route.params.selectedLocation.longitude;
-      dispatch({ type: 'SET_LOCATION', payload: { latitude, longitude } });
+  // useEffect(() => {
+  //   if (props.route.params) {
+  //     const latitude = props.route.params.selectedLocation.latitude;
+  //     const longitude = props.route.params.selectedLocation.longitude;
+  //     dispatch({ type: 'SET_LOCATION', payload: { latitude, longitude } });
+  //   }
+  // }, [props.route.params]);
+
+  const launchCamera = async () => {
+    const { status } = await Permissions.askAsync(Permissions.CAMERA);
+    if (status !== 'granted') {
+      alert('Sorry, we need camera roll permissions to make this work!');
+    } else {
+      let result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      })
+
+      if (!result.cancelled) {
+        dispatch({ type: 'SET_PHOTO', payload: result.uri });
+        onClose()
+      }
     }
-  }, [props.route.params]);
-
-
-
+  }
 
   const getPhotoFromCameraRoll = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -86,8 +90,6 @@ const NewSpotPage = props => {
       aspect: [4, 3],
       quality: 1,
     });
-
-
     if (!result.cancelled) {
       dispatch({ type: 'SET_PHOTO', payload: result.uri });
       onClose()
@@ -102,7 +104,7 @@ const NewSpotPage = props => {
         {
           text: 'OK',
           onPress: () =>
-            navigation.navigate('NavDrawer', { screen: 'Map' }),
+            navigation.navigate('Map'),
         },
       ],
       { cancelable: false },
@@ -145,50 +147,45 @@ const NewSpotPage = props => {
     return true
   }
 
+
   const onSubmit = async () => {
     // dispatch({ type: 'SPOT_SUBMITED', payload: true });
-    dispatch({
-      type: 'SET_CURRENT_LOCATION',
-      payload: {
-        latitude: '40.7128',
-        longitude: '-74.0060',
-      },
-    });
 
     if (validate()) {
-      alert("VALIDATED")
+      const images = state.photo.map(img => {
+        return { base64: btoa(img) };
+      });
+
+      setDisableButton(true);
+      try {
+        await createSpot({
+          variables: {
+            spotInput: {
+              name: state.name,
+              description: state.description,
+              kickout_level: state.kickout_level,
+              location: {
+                latitude: 40.7128,
+                longitude: -74.0060,
+              },
+              owner: myStore.user_id,
+              images,
+            },
+          },
+          refetchQueries: ['getSpots'],
+        });
+
+        dispatch({ type: 'CLEAR_STATE' })
+        setDisableButton(false);
+        approvalAlert();
+
+      } catch (e) {
+        console.log(e.networkError.result.errors[0].message)
+        alert('Unable to create spot at this time.');
+        setDisableButton(false);
+      }
     }
 
-    // const images = state.photo.map(img => {
-    //   return { base64: img.data };
-    // });
-
-
-    // setDisableButton(true);
-    // try {
-    //   await createSpot({
-    //     variables: {
-    //       spotInput: {
-    //         name: state.name,
-    //         description: state.description,
-    //         kickout_level: state.kickout_level,
-    //         location: {
-    //           latitude: state.selectedLat,
-    //           longitude: state.selectedLng,
-    //         },
-    //         owner: user_id,
-    //         images,
-    //       },
-    //     },
-    //     refetchQueries: ['getSpots'],
-    //   });
-
-    // } catch (e) {
-    //   Alert('Unable to create spot at this time.');
-    //   setDisableButton(false);
-    // }
-
-    // approvalAlert();
   };
 
 
@@ -196,17 +193,15 @@ const NewSpotPage = props => {
     modalRef!.current.close()
   }
 
-  const onOpen = (index) => {
+  const onOpen = (index: number) => {
     modalRef!.current.open()
     setSeletctedPhotoIndex(index)
   }
 
-  const removePhoto = (index) => {
+  const removePhoto = (index: number) => {
     dispatch({ type: 'REMOVE_PHOTO', payload: index })
     onClose()
   }
-
-  console.log('WHAT IS ', state)
 
   return (
 
@@ -217,7 +212,7 @@ const NewSpotPage = props => {
         <TouchableOpacity onPress={getPhotoFromCameraRoll} style={styles.textContainer} >
           <Text style={styles.modelText}>Camera Roll</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.textContainer}>
+        <TouchableOpacity onPress={launchCamera} style={styles.textContainer}>
           <Text style={styles.modelText}>Take Photo</Text>
         </TouchableOpacity>
         {state.photo && state.photo[selectedPhotoIndex]
@@ -245,7 +240,7 @@ const NewSpotPage = props => {
             state={state}
           />
 
-          {state.photo ? (
+          {state.photo.length > 0 ? (
             <View
               style={{
                 display: 'flex',
@@ -270,7 +265,7 @@ const NewSpotPage = props => {
           ) : null}
 
 
-          <InputsContainer dispatch={dispatch} />
+          <InputsContainer state={state} dispatch={dispatch} />
 
           <Text
             style={styles.text}>
@@ -294,8 +289,8 @@ const NewSpotPage = props => {
           </Text>
 
           <View style={styles.containsContainer}>
-            {streetSpotTypebuttons.map(button => (
-              <CustomButtonGroup type state={state} dispatch={dispatch} button={button} />
+            {streetSpotTypebuttons.map((button, key) => (
+              <CustomButtonGroup key={key} contains={false} type state={state} dispatch={dispatch} button={button} />
             ))}
           </View>
 
@@ -304,8 +299,8 @@ const NewSpotPage = props => {
             Spot Contains
           </Text>
           <View style={styles.containsContainer}>
-            {streetSpotContains.map(button => (
-              <CustomButtonGroup contains state={state} dispatch={dispatch} button={button} />
+            {streetSpotContains.map((button, key) => (
+              <CustomButtonGroup key={key} type={false} contains state={state} dispatch={dispatch} button={button} />
             ))}
           </View>
           <View>

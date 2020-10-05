@@ -79,7 +79,6 @@ const RootStackScreen = ({ getAuthToken }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  console.log('WHAT IS STATE', state)
 
   return (
     <NavigationContainer>

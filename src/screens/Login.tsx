@@ -41,7 +41,6 @@ const Login = ({ navigation }) => {
 
   const onSubmit = useCallback(async () => {
     let response: Iresponse;
-    console.log("what is emailAddress: ", emailAddress);
     setDisableButton(true);
     try {
       response = await login({ variables: { email: emailAddress, password } });

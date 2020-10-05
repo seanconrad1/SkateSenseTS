@@ -65,6 +65,21 @@ export function reducer(state, action) {
         locationSelected: true,
         currentLocationSelected: false,
       };
+    case 'CLEAR_STATE':
+      return {
+        ...state, name: "",
+        description: "",
+        kickout_level: 0,
+        photo: [],
+        validation: false,
+        spotType: "",
+        spotContains: [],
+        selectedLat: null,
+        selectedLng: null,
+        spotSubmitted: false,
+        currentLocationSelected: false,
+        locationSelected: false,
+      }
     default:
       throw new Error();
   }

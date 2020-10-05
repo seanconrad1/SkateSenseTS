@@ -8,7 +8,10 @@ export const streetSpotContains = [
   'Drop Gap',
   'Flat Gap',
   'Ledge',
+  'Benches',
   'Polejam',
   'Manual Pad',
-  'QP',
+  'Quarter Pipe',
+  'Euro Gap',
+  'Slappy Curb',
 ];

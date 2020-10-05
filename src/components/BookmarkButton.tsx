@@ -17,7 +17,6 @@ const BookmarkButton = ({ spot }) => {
   const [bookmarked, setBookmark] = useState(false);
   const { state, dispatch } = useContext(store);
 
-  console.log('what is state', state)
 
   const { user_id } = state
 

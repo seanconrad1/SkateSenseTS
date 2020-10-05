@@ -9,7 +9,7 @@ const PhotoHolders = ({ state, onOpen }) => {
       <TouchableOpacity
         style={styles.photoBox}
         onPress={() => onOpen(0)}>
-        {state.photo ? (
+        {state.photo && state.photo[0] ? (
           <Image
             style={[styles.photoBox, { marginTop: -5 }]}
             source={{ uri: state.photo[0] }}

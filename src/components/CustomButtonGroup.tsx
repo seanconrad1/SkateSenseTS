@@ -11,6 +11,7 @@ interface iProps {
   state: {};
   type: boolean;
   contains: boolean;
+  key: number;
 }
 
 const CustomButtonGroup: FunctionComponent<iProps> = ({ type, contains, button, state, dispatch }) => {
