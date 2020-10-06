@@ -4,6 +4,6 @@ Mobile app for skateboarders to be able to find, post, and bookmark skates spots
 
 
 
-Login                        |             Map            |            Bookmarks  
-:---------------------------:|:--------------------------:|:-----------------------------:
-![](./app-photos/login.png)  |  ![](./app-photos/map.png) | ![](./app-photos/bookmarks.png)
+Login                        |            Bookmarks  
+:---------------------------:|:-----------------------------:
+![](./app-photos/login.png)  | ![](./app-photos/bookmarks.png)
