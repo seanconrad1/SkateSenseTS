@@ -117,7 +117,7 @@ const BookmarkButton = ({ spot }) => {
             name="bookmark"
             size={15}
             type="font-awesome"
-            color="rgb(244, 2, 87)"
+            color="red"
             onPress={unBookmarkSpot}
           />
         )}

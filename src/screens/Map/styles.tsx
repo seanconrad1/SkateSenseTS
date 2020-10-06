@@ -32,17 +32,30 @@ const styles = StyleSheet.create({
   },
   locationButtonContainer: {
     position: "absolute",
-    marginLeft: wp("80%"),
+    marginLeft: wp("84%"),
+    marginTop: hp("50%"),
+  },
+  addSpotButton: {
+    display: 'flex'
+  },
+  addSpotIcon: {
+    textAlign: 'center'
+  },
+  addSpotButtonContainer: {
+    position: "absolute",
+    alignItems: 'center',
+    paddingTop: 0,
+    marginLeft: wp("5%"),
     marginTop: hp("50%"),
   },
   refreshContainer: {
     position: "absolute",
     paddingTop: 0,
     marginLeft: wp("53%"),
-    marginTop: hp("6%"),
+    marginTop: hp("5%"),
   },
   refreshButtonStyle: {
-    backgroundColor: "white",
+    backgroundColor: 'white',
     borderColor: "transparent",
     borderWidth: 0,
     borderRadius: wp("20%"),
@@ -52,17 +65,14 @@ const styles = StyleSheet.create({
     marginRight: 10,
     fontSize: wp("4"),
   },
-  addSpotButtonContainer: {
-    position: "absolute",
-    paddingTop: 0,
-    marginLeft: wp("3%"),
-    marginTop: hp("50%"),
-  },
+
   drawerButtonContainer: {
     position: "absolute",
-    marginLeft: wp("3%"),
+    marginLeft: wp("5%"),
     marginTop: hp("5%"),
   },
+
+
 });
 
 export default styles
