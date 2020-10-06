@@ -43,6 +43,8 @@ const SpotCard = ({
     }
   };
 
+
+
   return (
     <TouchableWithoutFeedback
       onPress={() => {

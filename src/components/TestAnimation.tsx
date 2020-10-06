@@ -22,7 +22,6 @@ const TestAnimation = () => {
       useNativeDriver: true
     }).start();
     setOpened(false)
-
   };
 
   return (

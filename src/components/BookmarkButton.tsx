@@ -91,14 +91,14 @@ const BookmarkButton = ({ spot }) => {
 
 
   return (
-    <TouchableOpacity style={{ position: 'absolute', zIndex: 1 }}>
+    <TouchableOpacity style={{ zIndex: 1 }}>
       {!bookmarked ? (
         <Icon
           raised
           containerStyle={{
-            position: 'absolute',
-            marginLeft: wp('80%'),
-            marginTop: hp('1%'),
+            // position: 'absolute',
+            // marginLeft: wp('80%'),
+            // marginTop: hp('1%'),
           }}
           name="bookmark"
           size={15}
@@ -110,9 +110,9 @@ const BookmarkButton = ({ spot }) => {
           <Icon
             raised
             containerStyle={{
-              position: 'absolute',
-              marginLeft: wp('80%'),
-              marginTop: hp('1%'),
+              // position: 'absolute',
+              // marginLeft: wp('80%'),
+              // marginTop: hp('1%'),
             }}
             name="bookmark"
             size={15}

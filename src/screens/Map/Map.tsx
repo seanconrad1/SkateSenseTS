@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useRef, useCallback } from "react";
+import React, { useEffect, useReducer, useRef, useCallback, useState } from "react";
 import {
   Text,
   View,
@@ -34,6 +34,8 @@ const Map = (props) => {
   const [state, dispatch] = useReducer(reducer, mapState);
   const mapRef = useRef();
   const flatListRef = useRef();
+  const [slideUpValue, setSideUpValie] = useState(new Animated.Value(0))
+  const [raiseOrLower, setRaiseOrLower] = useState(true)
 
   const { filteredSpots } = state
   const { navigation } = props
@@ -56,7 +58,6 @@ const Map = (props) => {
       //     },
       //     geoLocationSwitch: true,
       //   };
-      console.log('I GOT HIT', data)
 
       dispatch({ type: "SET_SPOTS", payload: data.getSpots });
       //   dispatch({ type: "SET_INIT_LOCATION", payload: initReg });
@@ -223,6 +224,24 @@ const Map = (props) => {
     return <Text>Error! {error.message}</Text>;
   }
 
+  const raise = () => {
+    Animated.timing(slideUpValue, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true
+    }).start();
+    setRaiseOrLower(true)
+  };
+
+  const lower = () => {
+    Animated.timing(slideUpValue, {
+      toValue: 0,
+      duration: 500,
+      useNativeDriver: true
+    }).start();
+    setRaiseOrLower(false)
+  };
+
   return (
     <View style={styles.container}>
       <MapView
@@ -287,18 +306,31 @@ const Map = (props) => {
               />
             </TouchableOpacity>
 
-            <TouchableOpacity
-              onPress={() => navigation.navigate("New Spot Page")}
+            <Animated.View
+              style={{
+                transform: [
+                  {
+                    translateY: slideUpValue.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [200, 0]
+                    })
+                  }
+                ],
+              }}
             >
-              <Icon
-                raised
-                name="plus"
-                size={20}
-                type="font-awesome"
-                containerStyle={styles.addSpotButtonContainer}
-                color="rgb(244, 2, 87)"
-              />
-            </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("New Spot Page")}
+              >
+                <Icon
+                  raised
+                  name="plus"
+                  size={20}
+                  type="font-awesome"
+                  containerStyle={styles.addSpotButtonContainer}
+                  color="rgb(244, 2, 87)"
+                />
+              </TouchableOpacity>
+            </Animated.View>
           </View>
 
           <Button
@@ -317,16 +349,29 @@ const Map = (props) => {
             onPress={refreshMarkers}
           />
 
-          <TouchableOpacity onPress={() => animateToUserLocation(mapRef)}>
-            <Icon
-              raised
-              name="location-arrow"
-              size={20}
-              type="font-awesome"
-              containerStyle={styles.locationButtonContainer}
-              color="rgb(244, 2, 87)"
-            />
-          </TouchableOpacity>
+          <Animated.View
+            style={{
+              transform: [
+                {
+                  translateY: slideUpValue.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [200, 0]
+                  })
+                }
+              ],
+            }}
+          >
+            <TouchableOpacity onPress={() => animateToUserLocation(mapRef)}>
+              <Icon
+                raised
+                name="location-arrow"
+                size={20}
+                type="font-awesome"
+                containerStyle={styles.locationButtonContainer}
+                color="rgb(244, 2, 87)"
+              />
+            </TouchableOpacity>
+          </Animated.View>
         </View>
       </Callout>
 
@@ -351,7 +396,7 @@ const Map = (props) => {
         )}
         data={filteredSpots}
         renderItem={({ item }) => (
-          <MapSpotCard spot={item} CARD_WIDTH={CARD_WIDTH} />
+          <MapSpotCard spot={item} raise={raise} lower={lower} CARD_WIDTH={CARD_WIDTH} />
         )}
         keyExtractor={(item, index) => index.toString()}
       />

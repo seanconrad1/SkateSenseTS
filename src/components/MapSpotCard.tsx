@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import {
   TouchableWithoutFeedback,
   View,
@@ -7,6 +7,7 @@ import {
   Text,
   StyleSheet,
   Image,
+  Animated
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -22,36 +23,82 @@ interface iSpot {
 
 }
 
-const MapSpotCard = ({ spot }) => {
+
+
+const MapSpotCard = ({ spot, raise, lower }) => {
+  const [slideUpValue, setSideUpValie] = useState(new Animated.Value(0))
+  const [opened, setOpened] = useState(true)
   const modalRef = useRef(null)
+
+  const _start = () => {
+    Animated.timing(slideUpValue, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true
+    }).start();
+    raise()
+
+    setOpened(true)
+  };
+
+  const _close = () => {
+    Animated.timing(slideUpValue, {
+      toValue: 0,
+      duration: 500,
+      useNativeDriver: true
+    }).start();
+    lower()
+
+    setOpened(false)
+  };
 
   const goToSpotPage = () => { };
   return (
-    <TouchableWithoutFeedback onPress={goToSpotPage}>
-      <View style={styles.card}>
-        {/* <Arrow /> */}
-        <BookmarkButton spot={spot} />
-        <TouchableOpacity
-          onPress={() =>
-            Linking.openURL(
-              `http://maps.apple.com/?daddr=${spot.location.latitude},${spot.location.longitude}`,
-            )
+    <Animated.View
+      style={{
+        transform: [
+          {
+            translateY: slideUpValue.interpolate({
+              inputRange: [0, 1],
+              outputRange: [200, 0]
+            })
           }
-          style={{ position: 'absolute', zIndex: 1 }}>
-          <Icon
-            raised
-            containerStyle={{
-              position: 'relative',
-              zIndex: 1,
-              marginLeft: 10,
-              marginTop: 10,
-            }}
-            name="directions"
-            size={15}
-            type="material-community"
-            color="black"
-          />
-        </TouchableOpacity>
+        ],
+      }}
+    >
+      <View style={styles.card}>
+        {/* <Arrow />  */}
+
+        <View style={styles.topButtons}>
+
+          <TouchableOpacity
+            onPress={() =>
+              Linking.openURL(
+                `http://maps.apple.com/?daddr=${spot.location.latitude},${spot.location.longitude}`,
+              )
+            }
+            style={{ zIndex: 1 }}
+          >
+            <Icon
+              raised
+              containerStyle={{
+                // position: 'relative',
+                zIndex: 1,
+                // marginLeft: 10,
+                // marginTop: 10,
+              }}
+              name="directions"
+              size={15}
+              type="material-community"
+              color="black"
+            />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.btn} onPress={() => opened ? _close() : _start()}>
+            <Text style={styles.textBtn}>{opened ? "Lower" : "Raise"}</Text>
+          </TouchableOpacity>
+          <BookmarkButton spot={spot} />
+        </View>
+
         <TouchableOpacity onPress={goToSpotPage}>
           <View>
             <Image
@@ -71,7 +118,10 @@ const MapSpotCard = ({ spot }) => {
           </Text>
         </View>
       </View>
-    </TouchableWithoutFeedback>
+
+    </Animated.View>
+
+
   );
 };
 
@@ -88,7 +138,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     marginHorizontal: 10,
     borderRadius: 20,
-
   },
   cardImage: {
     position: 'absolute',
@@ -112,6 +161,48 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#444',
   },
+
+  topButtons: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+
+
+
+
+
+  container: {
+    backgroundColor: "#FFF",
+    alignItems: "center"
+  },
+  item: {},
+  btn: {
+    backgroundColor: "#480032",
+    height: 40,
+    padding: 3,
+    justifyContent: "center",
+    borderRadius: 6,
+    width: '30%'
+  },
+  text: {
+    fontSize: 20,
+    color: "#fff",
+    fontWeight: "bold",
+    textAlign: "center"
+  },
+  item1: {
+    backgroundColor: "red",
+    padding: 20,
+    width: 100,
+    margin: 10
+  },
+
+  textBtn: {
+    color: "#f4f4f4",
+    fontWeight: "bold",
+    textAlign: "center"
+  }
 
 });
 
