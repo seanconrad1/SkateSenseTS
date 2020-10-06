@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useRef, useCallback, useState } from "react";
+import React, { useEffect, useReducer, useRef, useCallback, useState, useContext } from "react";
 import {
   Text,
   View,
@@ -25,11 +25,14 @@ import MapSpotCard from "../../components/MapSpotCard";
 import AsyncStorage from "@react-native-community/async-storage";
 import * as Location from 'expo-location';
 import styles from './styles'
+import { store } from '../../store'
+
 
 const LOCATION_TASK_NAME = 'background-location-task';
 const CARD_WIDTH = wp("95%");
 
 const Map = (props) => {
+  const { state: myStore, dispatch: storeDispatch } = useContext(store)
   const { loading, error, data, refetch } = useQuery(GET_SPOTS);
   const [state, dispatch] = useReducer(reducer, mapState);
   const mapRef = useRef();
@@ -39,6 +42,8 @@ const Map = (props) => {
 
   const { filteredSpots } = state
   const { navigation } = props
+
+  console.log(myStore)
 
   useEffect(() => {
     test()
@@ -242,6 +247,14 @@ const Map = (props) => {
     setRaiseOrLower(false)
   };
 
+  // Map types
+  // "standard"
+  //  "satellite"
+  //  "hybrid"
+  //  "terrain"
+  //  "none"
+  //  "mutedStandard";
+
   return (
     <View style={styles.container}>
       <MapView
@@ -251,6 +264,7 @@ const Map = (props) => {
         initialRegion={state.initialRegion}
         style={{ flex: 1 }}
         // region={this.state.region}
+        // mapType={"satellite"}
         showsMyLocationButton
         onRegionChange={onRegionChange}
       >
@@ -306,21 +320,24 @@ const Map = (props) => {
               />
             </TouchableOpacity>
 
-            <Animated.View
-              style={{
-                transform: [
-                  {
-                    translateY: slideUpValue.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [200, 0]
-                    })
-                  }
-                ],
-              }}
+
+            <TouchableOpacity
+              onPress={() => navigation.navigate("New Spot Page")}
+              style={styles.addSpotButton}
             >
-              <TouchableOpacity
-                onPress={() => navigation.navigate("New Spot Page")}
+              <Animated.View
+                style={{
+                  transform: [
+                    {
+                      translateY: slideUpValue.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [200, 0]
+                      })
+                    }
+                  ],
+                }}
               >
+
                 <Icon
                   raised
                   name="plus"
@@ -328,9 +345,10 @@ const Map = (props) => {
                   type="font-awesome"
                   containerStyle={styles.addSpotButtonContainer}
                   color="rgb(244, 2, 87)"
+                  iconStyle={styles.addSpotIcon}
                 />
-              </TouchableOpacity>
-            </Animated.View>
+              </Animated.View>
+            </TouchableOpacity>
           </View>
 
           <Button
@@ -349,19 +367,20 @@ const Map = (props) => {
             onPress={refreshMarkers}
           />
 
-          <Animated.View
-            style={{
-              transform: [
-                {
-                  translateY: slideUpValue.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [200, 0]
-                  })
-                }
-              ],
-            }}
-          >
-            <TouchableOpacity onPress={() => animateToUserLocation(mapRef)}>
+          <TouchableOpacity onPress={() => animateToUserLocation(mapRef)}>
+            <Animated.View
+              style={{
+                transform: [
+                  {
+                    translateY: slideUpValue.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [200, 0]
+                    })
+                  }
+                ],
+              }}
+            >
+
               <Icon
                 raised
                 name="location-arrow"
@@ -370,8 +389,8 @@ const Map = (props) => {
                 containerStyle={styles.locationButtonContainer}
                 color="rgb(244, 2, 87)"
               />
-            </TouchableOpacity>
-          </Animated.View>
+            </Animated.View>
+          </TouchableOpacity>
         </View>
       </Callout>
 
@@ -416,5 +435,9 @@ const Map = (props) => {
     </View>
   );
 };
+
+
+
+
 
 export default Map;

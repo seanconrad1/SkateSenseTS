@@ -1,7 +1,8 @@
 // store.js
 import React, { createContext, useReducer } from "react";
 
-const initialState = { loading: true };
+const initialState = { loading: true, darkMode: true, primary: 'white', secondary: 'rgb(40, 44, 52)' }
+
 const store = createContext(initialState);
 const { Provider } = store;
 
