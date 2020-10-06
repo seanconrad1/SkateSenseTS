@@ -36,7 +36,7 @@ const styles = StyleSheet.create({
   },
   divider: { backgroundColor: "grey", marginTop: 0 },
   title: {
-    // fontFamily: "Lobster",
+    fontFamily: "Lobster",
     justifyContent: "space-around",
     color: "black",
     fontSize: 40,
@@ -85,7 +85,7 @@ const SideMenu = (props: Iprops) => {
         <View>
           {list.map((item, i) => (
             <ListItem key={i} onPress={() => navigation.navigate(item.name)} >
-              <ListItem.Title> {item.name}</ListItem.Title>
+              <ListItem.Title>{item.name}</ListItem.Title>
             </ListItem>
           ))}
 

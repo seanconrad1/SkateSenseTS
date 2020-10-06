@@ -13,7 +13,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   header: {
-    // fontFamily: "Lobster-Regular",
+    fontFamily: "Lobster",
     fontWeight: "bold",
     marginBottom: hp("5%"),
     fontSize: hp("6"),

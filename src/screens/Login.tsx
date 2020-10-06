@@ -13,6 +13,7 @@ import {
 import { useMutation } from "@apollo/react-hooks";
 import LOGIN_MUTATION from "../graphql/mutations/loginMutation";
 import styles from "../styles";
+import TestAnimation from '../components/TestAnimation'
 // import { TEST_USERNAME, TEST_PASSWORD } from "react-native-dotenv";
 
 const FONT_SIZE_BIG = hp("8");
@@ -74,6 +75,7 @@ const Login = ({ navigation }) => {
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
+      <TestAnimation />
       <View>
         {/*eslint-disable-next-line react-native/no-raw-text*/}
         <Text style={styles.header}>SkateSense</Text>

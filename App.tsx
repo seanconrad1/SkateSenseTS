@@ -11,6 +11,7 @@ import RootStackScreen from "./src/nagivation";
 import { StateProvider } from "./src/store";
 import { enableScreens } from "react-native-screens";
 import * as TaskManager from 'expo-task-manager'
+import { useFonts } from 'expo-font';
 
 
 enableScreens();
@@ -81,6 +82,9 @@ const client = new ApolloClient({
 });
 
 const App = () => {
+  const [loaded] = useFonts({
+    Lobster: require('./assets/fonts/Lobster-Regular.ttf'),
+  });
   return (
     <ApolloProvider client={client}>
       <StateProvider>

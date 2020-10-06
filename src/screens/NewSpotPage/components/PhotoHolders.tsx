@@ -12,7 +12,7 @@ const PhotoHolders = ({ state, onOpen }) => {
         {state.photo && state.photo[0] ? (
           <Image
             style={[styles.photoBox, { marginTop: -5 }]}
-            source={{ uri: state.photo[0] }}
+            source={{ uri: state.photo[0].uri }}
           />
         ) : <Text> + </Text>}
 
@@ -24,7 +24,7 @@ const PhotoHolders = ({ state, onOpen }) => {
         {state.photo && state.photo[1] ? (
           <Image
             style={[styles.photoBox, { marginTop: -5 }]}
-            source={{ uri: state.photo[1] }}
+            source={{ uri: state.photo[1].uri }}
           />
         ) : <Text> + </Text>}
 
@@ -36,7 +36,7 @@ const PhotoHolders = ({ state, onOpen }) => {
         {state.photo && state.photo[2] ? (
           <Image
             style={[styles.photoBox, { marginTop: -5 }]}
-            source={{ uri: state.photo[2] }}
+            source={{ uri: state.photo[2].uri }}
           />
         ) : <Text> + </Text>}
 
@@ -48,7 +48,7 @@ const PhotoHolders = ({ state, onOpen }) => {
         {state.photo && state.photo[3] ? (
           <Image
             style={[styles.photoBox, { marginTop: -5 }]}
-            source={{ uri: state.photo[3] }}
+            source={{ uri: state.photo[3].uri }}
           />
         ) : <Text> + </Text>}
 

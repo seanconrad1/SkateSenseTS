@@ -8,7 +8,7 @@ import {
   Share,
   Alert,
 } from 'react-native';
-import { Icon, Card, Divider } from 'react-native-elements';
+import { Icon, Card } from 'react-native-elements';
 import { findDistance } from '../utils/helpers';
 
 const SpotCard = ({
@@ -52,9 +52,9 @@ const SpotCard = ({
       }}>
       <Card
         key={spot.id}
-        title={spot.name}
-        image={{ uri: `data:image/gif;base64,${spot.images[0].base64}` }}
         containerStyle={styles.spot}>
+        <Card.Title>{spot.name}</Card.Title>
+        <Card.Image source={{ uri: `data:image/gif;base64,${spot.images[0].base64}` }} />
         <Text style={styles.aboutContainer}>
           <Text style={styles.aboutContainerItem}>About: </Text>
           <Text>{spot.description}</Text>
@@ -71,7 +71,7 @@ const SpotCard = ({
           <Text>{spot.kickout_level}</Text>
         </Text>
 
-        <Divider style={styles.divider} />
+        <Card.Divider />
 
         <View style={styles.iconContainer}>
           <Icon
@@ -96,15 +96,15 @@ const SpotCard = ({
               onPress={() => unBookmarkAlertMsg(spot._id)}
             />
           ) : (
-            <Icon
-              raised
-              name="trash"
-              type="font-awesome"
-              size={17}
-              color="rgb(244, 2, 87)"
-              onPress={() => deleteAlertMsg(spot._id)}
-            />
-          )}
+              <Icon
+                raised
+                name="trash"
+                type="font-awesome"
+                size={17}
+                color="rgb(244, 2, 87)"
+                onPress={() => deleteAlertMsg(spot._id)}
+              />
+            )}
 
           <Icon
             raised
@@ -143,8 +143,10 @@ const styles = StyleSheet.create({
   },
   aboutContainerItem: {
     fontWeight: 'bold',
-    marginTop: 10,
-    marginBottom: 10,
+    // marginTop: 10,
+    // marginBottom: 10,
+    // marginRight:
+    margin: 10,
   },
 
   // lastSpot: {

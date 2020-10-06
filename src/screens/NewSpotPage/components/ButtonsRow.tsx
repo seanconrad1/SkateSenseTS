@@ -1,5 +1,6 @@
 import React from 'react'
-import { View, Button, Text } from 'react-native'
+import { View, Text } from 'react-native'
+import { Button } from 'react-native-elements'
 import styles from '../styles'
 
 const ButtonsRow = ({ state, navigation, getCurrentLocation }) => {
@@ -7,7 +8,9 @@ const ButtonsRow = ({ state, navigation, getCurrentLocation }) => {
     <View style={styles.buttonContainer}>
       <Button
         buttonStyle={
-          { backgroundColor: 'rgb(244, 2, 87)' }
+          state.spotLocationSelected
+            ? styles.spotLocationSelected
+            : styles.spotLocationButton
         }
         title="Set Spot Location"
         onPress={() => navigation.navigate('LocationSelectorMap')}

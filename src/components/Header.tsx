@@ -12,7 +12,7 @@ const TopHeader = ({ navigation, name }) => {
       }}
       centerComponent={{
         text: name,
-        // style: { color: 'black', fontSize: 25, fontFamily: 'Lobster' },
+        style: { color: 'black', fontSize: 25, fontFamily: 'Lobster' },
       }}
       backgroundColor="white"
       containerStyle={{

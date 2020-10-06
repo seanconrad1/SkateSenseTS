@@ -24,11 +24,9 @@ import { reducer, mapState } from "./reducer";
 import MapSpotCard from "../../components/MapSpotCard";
 import AsyncStorage from "@react-native-community/async-storage";
 import * as Location from 'expo-location';
+import styles from './styles'
 
 const LOCATION_TASK_NAME = 'background-location-task';
-
-
-
 const CARD_WIDTH = wp("95%");
 
 const Map = (props) => {
@@ -42,11 +40,12 @@ const Map = (props) => {
 
   useEffect(() => {
     test()
+    animateToUserLocation(mapRef)
   }, [])
+
 
   useEffect(() => {
     if (data) {
-      console.log(data);
       // Geolocation.getCurrentPosition((position) => {
       //   const initReg = {
       //     initialRegion: {
@@ -57,6 +56,7 @@ const Map = (props) => {
       //     },
       //     geoLocationSwitch: true,
       //   };
+      console.log('I GOT HIT', data)
 
       dispatch({ type: "SET_SPOTS", payload: data.getSpots });
       //   dispatch({ type: "SET_INIT_LOCATION", payload: initReg });
@@ -72,7 +72,6 @@ const Map = (props) => {
     state.currentRegion,
   ]);
 
-  console.log(filteredSpots)
 
   // useEffect(() => {
   //   async function checkAuth() {
@@ -359,64 +358,5 @@ const Map = (props) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    zIndex: 0,
-  },
-  scrollView: {
-    position: "absolute",
-    backgroundColor: "transparent",
-    bottom: -5,
-    left: 0,
-    right: 0,
-    paddingVertical: 10,
-  },
-
-  markerWrap: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  marker: {
-    width: 20,
-    height: 20,
-    // borderRadius: 4,
-    // backgroundColor: "rgba(244, 2, 87, .9)",
-  },
-  locationButtonContainer: {
-    position: "absolute",
-    marginLeft: wp("80%"),
-    marginTop: hp("50%"),
-  },
-  refreshContainer: {
-    position: "absolute",
-    paddingTop: 0,
-    marginLeft: wp("53%"),
-    marginTop: hp("6%"),
-  },
-  refreshButtonStyle: {
-    backgroundColor: "white",
-    borderColor: "transparent",
-    borderWidth: 0,
-    borderRadius: wp("20%"),
-  },
-  refreshButtonTitle: {
-    color: "rgb(244, 2, 87)",
-    marginRight: 10,
-    fontSize: wp("4"),
-  },
-  addSpotButtonContainer: {
-    position: "absolute",
-    paddingTop: 0,
-    marginLeft: wp("3%"),
-    marginTop: hp("50%"),
-  },
-  drawerButtonContainer: {
-    position: "absolute",
-    marginLeft: wp("3%"),
-    marginTop: hp("5%"),
-  },
-});
 
 export default Map;

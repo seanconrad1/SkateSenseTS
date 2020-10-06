@@ -23,6 +23,8 @@ import { useQuery, useMutation } from '@apollo/react-hooks';
 import { reducer, spotBookState } from './reducer';
 import SpotCard from '../../components/SpotCard';
 import SpotsButtonGroup from '../../components/SpotsButtonGroup';
+import { store } from "../../store";
+import TopHeader from "../../components/Header"
 
 console.disableYellowBox = true;
 
@@ -30,21 +32,15 @@ const SpotBook = props => {
   const [state, dispatch] = useReducer(reducer, spotBookState);
   const [deleteSpot] = useMutation(DELETE_SPOT_MUTATION);
   const [deleteBookmark] = useMutation(DELETE_BOOKMARK_MUTATION);
+  const { state: myStore } = useContext(store)
 
-  const [user_id, setUserID] = useState();
+  const { navigation } = props
 
-  useEffect(() => {
-    const getID = async () => {
-      const id = await AsyncStorage.getItem('USER_ID');
-      setUserID(id);
-    };
-    getID();
-  }, []);
 
   const { data: createdSpots, loading, error, refetch } = useQuery(
     GET_MY_SPOTS,
     {
-      variables: { user_id },
+      variables: { user_id: myStore.user_id },
     },
   );
   const {
@@ -53,7 +49,7 @@ const SpotBook = props => {
     error: error2,
     refetch: refetch2,
   } = useQuery(GET_BOOKMARKS, {
-    variables: { user_id },
+    variables: { user_id: myStore.user_id },
   });
   const [tab, setTab] = useState(0);
   const [term, setTerm] = useState('');
@@ -91,7 +87,7 @@ const SpotBook = props => {
         variables: {
           bookmarkInput: {
             spot_id: _id,
-            user_id,
+            user_id: myStore.user_id,
           },
         },
         onCompleted: refetch2,
@@ -101,7 +97,7 @@ const SpotBook = props => {
         payload: _id,
       });
     } catch (e) {
-      Alert('Unable to delete spot at this time.');
+      alert('Unable to delete spot at this time.');
     }
   };
 
@@ -134,7 +130,7 @@ const SpotBook = props => {
         payload: _id,
       });
     } catch (e) {
-      Alert('Unable to create spot at this time.');
+      alert('Unable to delete spot at this time.');
     }
   };
 
@@ -167,18 +163,7 @@ const SpotBook = props => {
 
   return (
     <View>
-      <Header
-        leftComponent={{
-          icon: 'menu',
-          color: 'black',
-          onPress: () => props.navigation.openDrawer(),
-        }}
-        centerComponent={{
-          text: 'My Spots',
-          // style: { color: 'black', fontSize: 25, fontFamily: 'Lobster' },
-        }}
-        backgroundColor="white"
-      />
+      <TopHeader name="My Spots" navigation={navigation} />
 
       <TextInput
         style={styles.search}
@@ -199,7 +184,7 @@ const SpotBook = props => {
             <SpotCard
               key={i}
               spot={spot}
-              navigation={props.navigation}
+              navigation={navigation}
               deleteAlertMsg={deleteAlertMsg}
             />
           ))
@@ -210,7 +195,7 @@ const SpotBook = props => {
             <SpotCard
               key={i}
               spot={spot}
-              navigation={props.navigation}
+              navigation={navigation}
               bookmark
               unBookmarkAlertMsg={unBookmarkAlertMsg}
             />

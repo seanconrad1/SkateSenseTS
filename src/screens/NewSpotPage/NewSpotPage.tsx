@@ -11,6 +11,7 @@ import { useMutation } from '@apollo/react-hooks';
 import * as ImagePicker from 'expo-image-picker';
 import { reducer, newSpotState } from './reducer';
 import NEW_SPOT_MUTATION from '../../graphql/mutations/newSpotMutation';
+// import RNFS from 'react-native-fs';
 import GET_SPOTS from '../../graphql/queries/getSpots';
 // import Geolocation from '@react-native-community/geolocation';
 import ImageResizer from 'react-native-image-resizer';
@@ -26,6 +27,7 @@ import Modal from 'react-native-modalbox';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { store } from "../../store";
 import * as Permissions from 'expo-permissions';
+import * as Location from 'expo-location'
 
 const NewSpotPage = props => {
   const [disableButton, setDisableButton] = useState(false);
@@ -64,6 +66,8 @@ const NewSpotPage = props => {
   //   }
   // }, [props.route.params]);
 
+
+
   const launchCamera = async () => {
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
     if (status !== 'granted') {
@@ -72,12 +76,14 @@ const NewSpotPage = props => {
       let result = await ImagePicker.launchCameraAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
+        base64: true,
         aspect: [4, 3],
         quality: 1,
       })
 
+
       if (!result.cancelled) {
-        dispatch({ type: 'SET_PHOTO', payload: result.uri });
+        dispatch({ type: 'SET_PHOTO', payload: { uri: result.uri, base64: result.base64 } });
         onClose()
       }
     }
@@ -87,11 +93,13 @@ const NewSpotPage = props => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
+      base64: true,
       aspect: [4, 3],
       quality: 1,
     });
+
     if (!result.cancelled) {
-      dispatch({ type: 'SET_PHOTO', payload: result.uri });
+      dispatch({ type: 'SET_PHOTO', payload: { uri: result.uri, base64: result.base64 } });
       onClose()
     }
   };
@@ -111,17 +119,16 @@ const NewSpotPage = props => {
     );
   };
 
-  const getCurrentLocation = () => {
+  const getCurrentLocation = async () => {
     if (!state.currentLocationSelected) {
-      // Geolocation.getCurrentPosition(position => {
-      // dispatch({
-      //   type: 'SET_CURRENT_LOCATION',
-      //   payload: {
-      //     latitude: position.coords.latitude,
-      //     longitude: position.coords.longitude,
-      //   },
-      // });
-      // });
+      let location = await Location.getCurrentPositionAsync({});
+      dispatch({
+        type: 'SET_CURRENT_LOCATION',
+        payload: {
+          latitude: location.coords.latitude,
+          longitude: location.coords.longitude,
+        },
+      });
     } else {
       dispatch({
         type: 'REMOVE_LOCATION',
@@ -131,7 +138,6 @@ const NewSpotPage = props => {
   };
 
   const validate = () => {
-    console.log(state.photo)
     if (!state.name) {
       alert("Spot name is required")
       return false
@@ -153,7 +159,7 @@ const NewSpotPage = props => {
 
     if (validate()) {
       const images = state.photo.map(img => {
-        return { base64: btoa(img) };
+        return { base64: img.base64 };
       });
 
       setDisableButton(true);

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import {
   TouchableWithoutFeedback,
   View,
@@ -14,10 +14,17 @@ import {
 } from 'react-native-responsive-screen';
 import { Icon, Button } from 'react-native-elements';
 import BookmarkButton from './BookmarkButton';
+import Modal from 'react-native-modalbox';
 
 const CARD_WIDTH = wp('95%');
 
+interface iSpot {
+
+}
+
 const MapSpotCard = ({ spot }) => {
+  const modalRef = useRef(null)
+
   const goToSpotPage = () => { };
   return (
     <TouchableWithoutFeedback onPress={goToSpotPage}>
@@ -81,6 +88,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     marginHorizontal: 10,
     borderRadius: 20,
+
   },
   cardImage: {
     position: 'absolute',
@@ -104,6 +112,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#444',
   },
+
 });
 
 export default MapSpotCard;

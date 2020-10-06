@@ -26,13 +26,13 @@ const Approvals = props => {
         }}
         centerComponent={{
           text: 'Approvals',
-          // style: { color: 'black', fontSize: 25, fontFamily: 'Lobster' },
+          style: { color: 'black', fontSize: 25, fontFamily: 'Lobster' },
         }}
         backgroundColor="white"
-      // containerStyle={{
-      //   fontFamily: 'Lobster',
-      //   justifyContent: 'space-around',
-      // }}
+        containerStyle={{
+          fontFamily: 'Lobster',
+          justifyContent: 'space-around',
+        }}
       />
 
       <ScrollView
