@@ -26,102 +26,73 @@ interface iSpot {
 
 
 const MapSpotCard = ({ spot, raise, lower }) => {
-  const [slideUpValue, setSideUpValie] = useState(new Animated.Value(0))
   const [opened, setOpened] = useState(true)
   const modalRef = useRef(null)
 
   const _start = () => {
-    Animated.timing(slideUpValue, {
-      toValue: 1,
-      duration: 500,
-      useNativeDriver: true
-    }).start();
     raise()
-
     setOpened(true)
   };
 
   const _close = () => {
-    Animated.timing(slideUpValue, {
-      toValue: 0,
-      duration: 500,
-      useNativeDriver: true
-    }).start();
     lower()
-
     setOpened(false)
   };
 
   const goToSpotPage = () => { };
   return (
-    <Animated.View
-      style={{
-        transform: [
-          {
-            translateY: slideUpValue.interpolate({
-              inputRange: [0, 1],
-              outputRange: [200, 0]
-            })
+    <View style={styles.card}>
+      {/* <Arrow />  */}
+
+      <View style={styles.topButtons}>
+
+        <TouchableOpacity
+          onPress={() =>
+            Linking.openURL(
+              `http://maps.apple.com/?daddr=${spot.location.latitude},${spot.location.longitude}`,
+            )
           }
-        ],
-      }}
-    >
-      <View style={styles.card}>
-        {/* <Arrow />  */}
-
-        <View style={styles.topButtons}>
-
-          <TouchableOpacity
-            onPress={() =>
-              Linking.openURL(
-                `http://maps.apple.com/?daddr=${spot.location.latitude},${spot.location.longitude}`,
-              )
-            }
-            style={{ zIndex: 1 }}
-          >
-            <Icon
-              raised
-              containerStyle={{
-                // position: 'relative',
-                zIndex: 1,
-                // marginLeft: 10,
-                // marginTop: 10,
-              }}
-              name="directions"
-              size={15}
-              type="material-community"
-              color="black"
-            />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.btn} onPress={() => opened ? _close() : _start()}>
-            <Text style={styles.textBtn}>{opened ? "Lower" : "Raise"}</Text>
-          </TouchableOpacity>
-          <BookmarkButton spot={spot} />
-        </View>
-
-        <TouchableOpacity onPress={goToSpotPage}>
-          <View>
-            <Image
-              style={styles.cardImage}
-              resizeMode="cover"
-              source={{ uri: `data:image/gif;base64,${spot.images[0].base64}` }}
-              onPress={() => goToSpotPage(spot)}
-            />
-          </View>
+          style={{ zIndex: 1 }}
+        >
+          <Icon
+            raised
+            containerStyle={{
+              // position: 'relative',
+              zIndex: 1,
+              // marginLeft: 10,
+              // marginTop: 10,
+            }}
+            name="directions"
+            size={15}
+            type="material-community"
+            color="black"
+          />
         </TouchableOpacity>
-        <View style={styles.textContent}>
-          <Text numberOfLines={1} style={styles.cardtitle}>
-            {spot.name}
-          </Text>
-          <Text numberOfLines={1} style={styles.cardDescription}>
-            {spot.description}
-          </Text>
-        </View>
+        <TouchableOpacity style={styles.btn} onPress={() => opened ? _close() : _start()}>
+          <Text style={styles.textBtn}>{opened ? "Lower" : "Raise"}</Text>
+        </TouchableOpacity>
+        <BookmarkButton spot={spot} />
       </View>
 
-    </Animated.View>
-
-
+      <TouchableOpacity onPress={goToSpotPage}>
+        <View>
+          <Image
+            style={styles.cardImage}
+            resizeMode="cover"
+            source={{ uri: `data:image/gif;base64,${spot.images[0].base64}` }}
+            onPress={() => goToSpotPage(spot)}
+          />
+        </View>
+      </TouchableOpacity>
+      <View style={styles.textContent}>
+        <Text numberOfLines={1} style={styles.cardtitle}>
+          {spot.name}
+        </Text>
+        <Text numberOfLines={1} style={styles.cardDescription}>
+          {spot.description}
+        </Text>
+      </View>
+    </View>
   );
 };
 

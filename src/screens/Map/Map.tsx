@@ -375,31 +375,44 @@ const Map = (props) => {
         </View>
       </Callout>
 
-      <Animated.FlatList
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        style={styles.scrollView}
-        ref={flatListRef}
-        scrollEventThrottle={1}
-        snapToInterval={CARD_WIDTH + 20}
-        onScroll={Animated.event(
-          [
+      <Animated.View
+        style={{
+          transform: [
             {
-              nativeEvent: {
-                contentOffset: {
-                  x: state.animation,
+              translateY: slideUpValue.interpolate({
+                inputRange: [0, 1],
+                outputRange: [200, 0]
+              })
+            }
+          ],
+        }}
+      >
+        <Animated.FlatList
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          style={styles.scrollView}
+          ref={flatListRef}
+          scrollEventThrottle={1}
+          snapToInterval={CARD_WIDTH + 20}
+          onScroll={Animated.event(
+            [
+              {
+                nativeEvent: {
+                  contentOffset: {
+                    x: state.animation,
+                  },
                 },
               },
-            },
-          ],
-          { useNativeDriver: true }
-        )}
-        data={filteredSpots}
-        renderItem={({ item }) => (
-          <MapSpotCard spot={item} raise={raise} lower={lower} CARD_WIDTH={CARD_WIDTH} />
-        )}
-        keyExtractor={(item, index) => index.toString()}
-      />
+            ],
+            { useNativeDriver: true }
+          )}
+          data={filteredSpots}
+          renderItem={({ item }) => (
+            <MapSpotCard spot={item} raise={raise} lower={lower} CARD_WIDTH={CARD_WIDTH} />
+          )}
+          keyExtractor={(item, index) => index.toString()}
+        />
+      </Animated.View>
     </View>
   );
 };
