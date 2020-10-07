@@ -7,7 +7,7 @@ import {
   Text,
   StyleSheet,
   Image,
-  Animated
+  Animated,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
@@ -18,7 +18,7 @@ import NEW_BOOKMARK_MUTATION from '../graphql/mutations/newBookmarkMutation';
 import DELETE_BOOKMARK_MUTATION from '../graphql/mutations/deleteBookmarkMutation';
 import GET_BOOKMARKS from '../graphql/queries/getBookmarks';
 import GestureRecognizer, { swipeDirections } from 'react-native-swipe-gestures';
-
+import * as Haptics from 'expo-haptics';
 
 import { Icon, Button } from 'react-native-elements';
 import BookmarkButton from './BookmarkButton';
@@ -70,6 +70,7 @@ const MapSpotCard = ({ spot, raise, lower }) => {
 
   let bookmarked = bookmarks.getBookmarks.map(i => i._id).some(r => r === spot._id)
 
+
   const _start = () => {
     raise()
     setOpened(true)
@@ -84,6 +85,7 @@ const MapSpotCard = ({ spot, raise, lower }) => {
 
   const bookmarkSpot = async () => {
     let response;
+    Haptics.impact(Haptics.ImpactFeedbackStyle.Heavy)
     try {
       response = await createBookmark();
     } catch (e) {

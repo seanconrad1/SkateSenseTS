@@ -45,7 +45,8 @@
     "react-native-swipe-gestures": "^1.0.5",
     "react-native-swipe-up-down": "^1.0.7",
     "react-native-web": "~0.13.12",
-    "unfetch": "^4.2.0"
+    "unfetch": "^4.2.0",
+    "expo-haptics": "~8.3.0"
   },
   "devDependencies": {
     "@types/react": "~16.9.35",

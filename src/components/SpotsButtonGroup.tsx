@@ -4,7 +4,8 @@ import { ButtonGroup } from 'react-native-elements';
 
 const styles = StyleSheet.create({
   buttonGroupContainer: {
-    height: 30,
+    height: 35,
+    borderRadius: 50,
   },
   selectedButtonStyle: {
     backgroundColor: 'rgb(244, 2, 87)',

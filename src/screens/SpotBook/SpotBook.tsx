@@ -16,7 +16,7 @@ import {
 } from 'react-native-responsive-screen';
 // import MySpotsButtonGroup from '../childComponents/MySpotsButtonGroup.js';
 import GET_MY_SPOTS from '../../graphql/queries/getMySpots';
-import GET_BOOKMARKS from '../../graphql/queries/getBookmarks';
+// import GET_BOOKMARKS from '../../graphql/queries/getBookmarks';
 import DELETE_SPOT_MUTATION from '../../graphql/mutations/deleteSpotMutation';
 import DELETE_BOOKMARK_MUTATION from '../../graphql/mutations/deleteBookmarkMutation';
 import { useQuery, useMutation } from '@apollo/react-hooks';
@@ -43,32 +43,27 @@ const SpotBook = props => {
       variables: { user_id: myStore.user_id },
     },
   );
-  const {
-    data: bookmarks,
-    loading: loading2,
-    error: error2,
-    refetch: refetch2,
-  } = useQuery(GET_BOOKMARKS, {
-    variables: { user_id: myStore.user_id },
-  });
+
+  console.log('WHAT ARE MY SPOTS', createdSpots)
+  // const {
+  //   data: bookmarks,
+  //   loading: loading2,
+  //   error: error2,
+  // } = useQuery(GET_BOOKMARKS, {
+  //   variables: { user_id: myStore.user_id },
+  // });
   const [tab, setTab] = useState(0);
   const [term, setTerm] = useState('');
   const [refreshing] = useState(false);
 
   useEffect(() => {
     if (!loading && !error) {
-      dispatch({
-        type: 'SET_SPOTS',
-        payload: createdSpots.getUserCreatedSpots,
-      });
+      // dispatch({
+      //   type: 'SET_SPOTS',
+      //   payload: createdSpots.getUserCreatedSpots,
+      // });
     }
-    if (!loading2 && !error2) {
-      dispatch({
-        type: 'SET_BOOKMARKS',
-        payload: bookmarks.getUser.bookmarks,
-      });
-    }
-  }, [bookmarks, createdSpots, error, error2, loading, loading2]);
+  }, []);
 
   if (loading) {
     return <Text>Loading...</Text>;
@@ -90,7 +85,6 @@ const SpotBook = props => {
             user_id: myStore.user_id,
           },
         },
-        onCompleted: refetch2,
       });
       dispatch({
         type: 'DELETE_BOOKMARK',
@@ -125,10 +119,7 @@ const SpotBook = props => {
         },
         refetchQueries: ['getUserCreatedSpots', 'getUser', 'getSpots'],
       });
-      // dispatch({
-      //   type: 'DELETE_SPOT',
-      //   payload: _id,
-      // });
+
     } catch (e) {
       alert('Unable to delete spot at this time.');
     }
@@ -153,11 +144,9 @@ const SpotBook = props => {
   const launchRefetch = () => {
     if (tab === 0) {
       console.log('REFETCH 1');
-      refetch();
     }
     if (tab === 1) {
       console.log('REFETCH 2');
-      refetch2();
     }
   };
 
@@ -174,41 +163,66 @@ const SpotBook = props => {
 
       <SpotsButtonGroup onChangeTab={onChangeTab} />
 
-      <ScrollView
-        contentContainerStyle={{ paddingBottom: 200 }}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={launchRefetch} />
-        }>
-        {tab === 0
-          ? state.mySpots.map((spot, i) => (
-            <SpotCard
-              key={i}
-              spot={spot}
-              navigation={navigation}
-              deleteAlertMsg={deleteAlertMsg}
-            />
-          ))
-          : null}
+      {tab === 0 &&
+        <ScrollView
+          contentContainerStyle={styles.containerStyle}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={launchRefetch} />
+          }>
 
-        {tab === 1 && state.bookmarkedSpots.length > 0
-          ? state.bookmarkedSpots.map((spot, i) => (
-            <SpotCard
-              key={i}
-              spot={spot}
-              navigation={navigation}
-              bookmark
-              unBookmarkAlertMsg={unBookmarkAlertMsg}
-            />
-          ))
-          : null}
-      </ScrollView>
+          {state.mySpots.length > 0
+            ? state.mySpots.map((spot, i) => (
+              <SpotCard
+                key={i}
+                spot={spot}
+                navigation={navigation}
+                deleteAlertMsg={deleteAlertMsg}
+              />
+            ))
+            : <Text style={styles.noneText}>You haven't created any spots yet</Text>}
+
+        </ScrollView>
+      }
+
+      {tab === 1 &&
+        <ScrollView
+          contentContainerStyle={styles.containerStyle}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={launchRefetch} />
+          }>
+          {state.bookmarkedSpots > 0
+            ? state.bookmarkedSpots.map((spot, i) => (
+              <SpotCard
+                key={i}
+                spot={spot}
+                navigation={navigation}
+                bookmark
+                unBookmarkAlertMsg={unBookmarkAlertMsg}
+              />
+            ))
+            : <Text style={styles.noneText}>You haven't bookmarked any spots yet</Text>}
+
+        </ScrollView>
+
+      }
+
+
+
+
+
     </View>
   );
 };
 
+
 export default SpotBook;
 
 const styles = StyleSheet.create({
+
+  containerStyle: {
+    paddingBottom: 200
+  },
+
   search: {
     marginLeft: wp('10%'),
     borderColor: 'black',
@@ -218,4 +232,9 @@ const styles = StyleSheet.create({
     marginBottom: '1%',
     fontSize: 20,
   },
+
+  noneText: {
+    textAlign: 'center',
+    color: 'grey'
+  }
 });

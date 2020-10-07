@@ -3,10 +3,8 @@ import {
   Text,
   View,
   Animated,
-  StyleSheet,
   Image,
   TouchableOpacity,
-  Alert,
 } from "react-native";
 // import { TouchableOpacity } from 'react-native-gesture-handler';
 import MapView, { Callout } from "react-native-maps";
@@ -22,11 +20,9 @@ import markerIcon from "../../../assets/markerIcon.png";
 import { animateToUserLocation } from "./utils";
 import { reducer, mapState } from "./reducer";
 import MapSpotCard from "../../components/MapSpotCard";
-import AsyncStorage from "@react-native-community/async-storage";
 import * as Location from 'expo-location';
 import styles from './styles'
 import { store } from '../../store'
-import GestureRecognizer, { swipeDirections } from 'react-native-swipe-gestures';
 
 
 
@@ -427,6 +423,7 @@ const Map = (props) => {
           )}
           data={filteredSpots}
           renderItem={({ item }) => (
+
             <MapSpotCard spot={item} raise={raise} lower={lower} CARD_WIDTH={CARD_WIDTH} />
           )}
           keyExtractor={(item, index) => index.toString()}
