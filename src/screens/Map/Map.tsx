@@ -43,8 +43,6 @@ const Map = (props) => {
   const { filteredSpots } = state
   const { navigation } = props
 
-  console.log(myStore)
-
   useEffect(() => {
     test()
     animateToUserLocation(mapRef)

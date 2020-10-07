@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useContext, useEffect } from 'react';
 import {
   TouchableWithoutFeedback,
   View,
@@ -13,21 +13,60 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import { useMutation, useQuery, useLazyQuery } from '@apollo/react-hooks';
+import NEW_BOOKMARK_MUTATION from '../graphql/mutations/newBookmarkMutation';
+import DELETE_BOOKMARK_MUTATION from '../graphql/mutations/deleteBookmarkMutation';
+import GET_BOOKMARKS from '../graphql/queries/getBookmarks';
+
 import { Icon, Button } from 'react-native-elements';
 import BookmarkButton from './BookmarkButton';
-import Modal from 'react-native-modalbox';
-
+import { store } from "../store";
 const CARD_WIDTH = wp('95%');
 
 interface iSpot {
 
 }
 
-
-
 const MapSpotCard = ({ spot, raise, lower }) => {
   const [opened, setOpened] = useState(true)
   const modalRef = useRef(null)
+  const { state, dispatch } = useContext(store);
+  const { user_id } = state
+  // const [bookmarked, setBookmarked] = useState(false);
+  const { loading, error, data: bookmarks } = useQuery(GET_BOOKMARKS, {
+    variables: { user_id }
+  })
+  const [createBookmark] = useMutation(NEW_BOOKMARK_MUTATION, {
+    variables: {
+      bookmarkInput: {
+        user_id,
+        spot_id: spot._id,
+      },
+    },
+    refetchQueries: [{ query: GET_BOOKMARKS, variables: { user_id } }],
+    // notifyOnNetworkStatusChange: true,
+    awaitRefetchQueries: true,
+  });
+  const [deleteBookmark] = useMutation(DELETE_BOOKMARK_MUTATION, {
+    variables: {
+      bookmarkInput: {
+        user_id: user_id,
+        spot_id: spot._id,
+      },
+    },
+    refetchQueries: [{ query: GET_BOOKMARKS, variables: { user_id } }],
+    awaitRefetchQueries: true,
+  });
+
+
+  if (loading) {
+    return <Text>Loading</Text>
+  }
+  if (error) {
+    return <Text>Error{error}</Text>
+  }
+
+  let bookmarked = bookmarks.getBookmarks.map(i => i._id).some(r => r === spot._id)
 
   const _start = () => {
     raise()
@@ -37,6 +76,24 @@ const MapSpotCard = ({ spot, raise, lower }) => {
   const _close = () => {
     lower()
     setOpened(false)
+  };
+
+  console.log(bookmarked)
+
+
+  const bookmarkSpot = async () => {
+    let response;
+    try {
+      response = await createBookmark();
+    } catch (e) {
+      console.log(e);
+      console.log(response);
+    }
+
+  }
+
+  const unBookmarkSpot = async () => {
+    await deleteBookmark();
   };
 
   const goToSpotPage = () => { };
@@ -71,7 +128,13 @@ const MapSpotCard = ({ spot, raise, lower }) => {
         <TouchableOpacity style={styles.btn} onPress={() => opened ? _close() : _start()}>
           <Text style={styles.textBtn}>{opened ? "Lower" : "Raise"}</Text>
         </TouchableOpacity>
-        <BookmarkButton spot={spot} />
+        <BookmarkButton
+          spot={spot}
+          bookmarked={bookmarked}
+          bookmarkSpot={bookmarkSpot}
+          unBookmarkSpot={unBookmarkSpot}
+
+        />
       </View>
 
       <TouchableOpacity onPress={goToSpotPage}>

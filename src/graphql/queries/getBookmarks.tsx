@@ -1,10 +1,8 @@
 import gql from 'graphql-tag';
 
 const GET_BOOKMARKS = gql`
-  query getUser($user_id: ID!) {
-    getUser(user_id: $user_id) {
-      name
-      bookmarks {
+  query getBookmarks($user_id: ID!) {
+    getBookmarks(user_id: $user_id) {
         _id
         name
         location {
@@ -16,7 +14,6 @@ const GET_BOOKMARKS = gql`
           base64
         }
         kickout_level
-      }
     }
   }
 `;

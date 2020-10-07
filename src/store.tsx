@@ -13,6 +13,8 @@ const StateProvider = ({ children }) => {
     switch (action.type) {
       case SET_USER:
         return { ...initialState, token: action.payload.token, user_id: action.payload.user_id };
+      case SET_BOOKMARKS:
+        return { ...initialState, bookmarks: action.payload }
       default:
         throw new Error();
     }

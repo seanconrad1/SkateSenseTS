@@ -125,10 +125,10 @@ const SpotBook = props => {
         },
         refetchQueries: ['getUserCreatedSpots', 'getUser', 'getSpots'],
       });
-      dispatch({
-        type: 'DELETE_SPOT',
-        payload: _id,
-      });
+      // dispatch({
+      //   type: 'DELETE_SPOT',
+      //   payload: _id,
+      // });
     } catch (e) {
       alert('Unable to delete spot at this time.');
     }
