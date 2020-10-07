@@ -103,24 +103,33 @@ const MapSpotCard = ({ spot, raise, lower }) => {
 
       <View style={styles.topButtons}>
 
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={() =>
             Linking.openURL(
               `http://maps.apple.com/?daddr=${spot.location.latitude},${spot.location.longitude}`,
             )
           }
-          style={{ zIndex: 1 }}
+          style={{
+            zIndex: 1,
+            borderRadius: 40,
+            justifyContent: 'center',
+            backgroundColor: 'rgb(250,255,255)',
+            elevation: 1,
+            shadowOpacity: 0.3,
+            shadowRadius: .5,
+            shadowOffset: { height: 1, width: .5 },
+          }}
         >
           <Icon
-            raised
+            // raised
             containerStyle={{
-              // position: 'relative',
               zIndex: 1,
-              // marginLeft: 10,
-              // marginTop: 10,
+              width: 50,
+              height: 50,
+              justifyContent: 'center',
             }}
             name="directions"
-            size={15}
+            size={20}
             type="material-community"
             color="black"
           />
@@ -133,8 +142,7 @@ const MapSpotCard = ({ spot, raise, lower }) => {
           bookmarked={bookmarked}
           bookmarkSpot={bookmarkSpot}
           unBookmarkSpot={unBookmarkSpot}
-
-        />
+        /> */}
       </View>
 
       <TouchableOpacity onPress={goToSpotPage}>
@@ -204,14 +212,13 @@ const styles = StyleSheet.create({
 
 
 
-
-
   container: {
     backgroundColor: "#FFF",
     alignItems: "center"
   },
   item: {},
   btn: {
+    zIndex: 1,
     backgroundColor: "#480032",
     height: 40,
     padding: 3,
