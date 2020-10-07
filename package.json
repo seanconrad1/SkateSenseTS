@@ -22,6 +22,7 @@
     "apollo-link-error": "^1.1.13",
     "apollo-link-http": "^1.5.17",
     "expo": "~39.0.2",
+    "expo-font": "~8.3.0",
     "expo-image-picker": "~9.1.0",
     "expo-location": "~9.0.0",
     "expo-permissions": "~9.3.0",
@@ -41,9 +42,10 @@
     "react-native-responsive-screen": "^1.4.1",
     "react-native-safe-area-context": "3.1.4",
     "react-native-screens": "^2.11.0",
+    "react-native-swipe-gestures": "^1.0.5",
+    "react-native-swipe-up-down": "^1.0.7",
     "react-native-web": "~0.13.12",
-    "unfetch": "^4.2.0",
-    "expo-font": "~8.3.0"
+    "unfetch": "^4.2.0"
   },
   "devDependencies": {
     "@types/react": "~16.9.35",

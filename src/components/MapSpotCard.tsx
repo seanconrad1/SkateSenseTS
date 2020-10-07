@@ -17,6 +17,8 @@ import { useMutation, useQuery, useLazyQuery } from '@apollo/react-hooks';
 import NEW_BOOKMARK_MUTATION from '../graphql/mutations/newBookmarkMutation';
 import DELETE_BOOKMARK_MUTATION from '../graphql/mutations/deleteBookmarkMutation';
 import GET_BOOKMARKS from '../graphql/queries/getBookmarks';
+import GestureRecognizer, { swipeDirections } from 'react-native-swipe-gestures';
+
 
 import { Icon, Button } from 'react-native-elements';
 import BookmarkButton from './BookmarkButton';
@@ -78,7 +80,6 @@ const MapSpotCard = ({ spot, raise, lower }) => {
     setOpened(false)
   };
 
-  console.log(bookmarked)
 
 
   const bookmarkSpot = async () => {
@@ -96,75 +97,82 @@ const MapSpotCard = ({ spot, raise, lower }) => {
     await deleteBookmark();
   };
 
+  const config = {
+    velocityThreshold: .8,
+    directionalOffsetThreshold: 500
+  };
+
+  // <TouchableOpacity style={styles.btn} onPress={() => opened ? _close() : }>
+  //           <Text style={styles.textBtn}>{opened ? "Lower" : "Raise"}</Text>
+  //         </TouchableOpacity>
+
   const goToSpotPage = () => { };
   return (
-    <View style={styles.card}>
-      {/* <Arrow />  */}
+    <GestureRecognizer
+      onSwipeUp={(state) => _start()}
+      onSwipeDown={(state) => _close()}
+      config={config}
+      style={{
+        flex: 1,
+        backgroundColor: 'transparent'
+      }}
+    >
 
-      <View style={styles.topButtons}>
 
-        {/* <TouchableOpacity
-          onPress={() =>
-            Linking.openURL(
-              `http://maps.apple.com/?daddr=${spot.location.latitude},${spot.location.longitude}`,
-            )
-          }
-          style={{
-            zIndex: 1,
-            borderRadius: 40,
-            justifyContent: 'center',
-            backgroundColor: 'rgb(250,255,255)',
-            elevation: 1,
-            shadowOpacity: 0.3,
-            shadowRadius: .5,
-            shadowOffset: { height: 1, width: .5 },
-          }}
-        >
-          <Icon
-            // raised
-            containerStyle={{
-              zIndex: 1,
-              width: 50,
-              height: 50,
-              justifyContent: 'center',
-            }}
-            name="directions"
-            size={20}
-            type="material-community"
-            color="black"
-          />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.btn} onPress={() => opened ? _close() : _start()}>
-          <Text style={styles.textBtn}>{opened ? "Lower" : "Raise"}</Text>
-        </TouchableOpacity>
-        <BookmarkButton
-          spot={spot}
-          bookmarked={bookmarked}
-          bookmarkSpot={bookmarkSpot}
-          unBookmarkSpot={unBookmarkSpot}
-        /> */}
-      </View>
+      <View style={styles.card}>
+        <View style={styles.tab} />
 
-      <TouchableOpacity onPress={goToSpotPage}>
-        <View>
-          <Image
-            style={styles.cardImage}
-            resizeMode="cover"
-            source={{ uri: `data:image/gif;base64,${spot.images[0].base64}` }}
-            onPress={() => goToSpotPage(spot)}
+        <View style={styles.topButtons}>
+          <TouchableOpacity
+            onPress={() =>
+              Linking.openURL(
+                `http://maps.apple.com/?daddr=${spot.location.latitude},${spot.location.longitude}`,
+              )
+            }
+            style={styles.directionsButton}
+          >
+            <Icon
+              // raised
+              containerStyle={styles.directionsButtonIcon}
+              name="directions"
+              size={20}
+              type="material-community"
+              color="black"
+            />
+          </TouchableOpacity>
+
+          <BookmarkButton
+            spot={spot}
+            bookmarked={bookmarked}
+            bookmarkSpot={bookmarkSpot}
+            unBookmarkSpot={unBookmarkSpot}
           />
         </View>
-      </TouchableOpacity>
-      <View style={styles.textContent}>
-        <Text numberOfLines={1} style={styles.cardtitle}>
-          {spot.name}
-        </Text>
-        <Text numberOfLines={1} style={styles.cardDescription}>
-          {spot.description}
-        </Text>
+
+
+        <TouchableOpacity onPress={goToSpotPage}>
+          <View>
+            <Image
+              style={styles.cardImage}
+              resizeMode="cover"
+              source={{ uri: `data:image/gif;base64,${spot.images[0].base64}` }}
+              onPress={() => goToSpotPage(spot)}
+            />
+          </View>
+        </TouchableOpacity>
+
+        <View style={styles.textContent}>
+          <Text numberOfLines={1} style={styles.cardtitle}>
+            {spot.name}
+          </Text>
+          <Text numberOfLines={1} style={styles.cardDescription}>
+            {spot.description}
+          </Text>
+        </View>
       </View>
-    </View>
+    </GestureRecognizer>
   );
+
 };
 
 const styles = StyleSheet.create({
@@ -180,12 +188,22 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     marginHorizontal: 10,
     borderRadius: 20,
+    alignContent: 'center',
+    alignItems: 'center'
+  },
+
+  tab: {
+    height: hp('.8%'),
+    width: hp('5%'),
+    marginBottom: 5,
+    backgroundColor: 'lightgrey',
+    borderRadius: 5,
   },
   cardImage: {
     position: 'absolute',
-    zIndex: 20,
+    zIndex: 2,
     borderRadius: 20,
-    flex: 4,
+    // flex: 4,
     width: wp('90%'),
     height: hp('32%'),
     alignSelf: 'center',
@@ -206,8 +224,30 @@ const styles = StyleSheet.create({
 
   topButtons: {
     display: 'flex',
+    zIndex: 3,
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: CARD_WIDTH - wp('5%'),
+    position: 'absolute',
+    marginTop: hp('2%')
+  },
+
+  directionsButton: {
+    zIndex: 2,
+    borderRadius: 40,
+    justifyContent: 'center',
+    backgroundColor: 'rgb(250,255,255)',
+    elevation: 1,
+    shadowOpacity: 0.3,
+    shadowRadius: .5,
+    shadowOffset: { height: 1, width: .5 },
+  },
+  directionsButtonIcon: {
+    zIndex: 2,
+    width: 50,
+    height: 50,
+    justifyContent: 'center',
   },
 
 
@@ -218,13 +258,13 @@ const styles = StyleSheet.create({
   },
   item: {},
   btn: {
-    zIndex: 1,
+    zIndex: 25,
     backgroundColor: "#480032",
     height: 40,
     padding: 3,
     justifyContent: "center",
     borderRadius: 6,
-    width: '30%'
+    width: '30%',
   },
   text: {
     fontSize: 20,

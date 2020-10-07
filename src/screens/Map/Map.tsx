@@ -26,6 +26,8 @@ import AsyncStorage from "@react-native-community/async-storage";
 import * as Location from 'expo-location';
 import styles from './styles'
 import { store } from '../../store'
+import GestureRecognizer, { swipeDirections } from 'react-native-swipe-gestures';
+
 
 
 const LOCATION_TASK_NAME = 'background-location-task';
