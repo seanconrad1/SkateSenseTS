@@ -28,6 +28,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { store } from "../../store";
 import * as Permissions from 'expo-permissions';
 import * as Location from 'expo-location'
+import GET_MY_SPOTS from '../../graphql/queries/getMySpots';
 
 const NewSpotPage = props => {
   const [disableButton, setDisableButton] = useState(false);
@@ -178,7 +179,11 @@ const NewSpotPage = props => {
               images,
             },
           },
-          refetchQueries: ['getSpots'],
+          refetchQueries: [
+            { query: GET_SPOTS },
+            { query: GET_MY_SPOTS, variables: { user_id: myStore.user_id } }
+          ],
+          awaitRefetchQueries: true,
         });
 
         dispatch({ type: 'CLEAR_STATE' })

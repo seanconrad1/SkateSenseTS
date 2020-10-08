@@ -1,4 +1,5 @@
-import React, { useState, useContext, useReducer, useEffect } from 'react';
+import React, { useState, useContext, useReducer, useEffect, useCallback } from 'react';
+import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 import {
   View,
   Text,
@@ -7,7 +8,9 @@ import {
   TextInput,
   Alert,
   RefreshControl,
+  LogBox
 } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
 import { Header } from 'react-native-elements';
 import {
@@ -16,109 +19,91 @@ import {
 } from 'react-native-responsive-screen';
 // import MySpotsButtonGroup from '../childComponents/MySpotsButtonGroup.js';
 import GET_MY_SPOTS from '../../graphql/queries/getMySpots';
+import GET_SPOTS from "../../graphql/queries/getSpots";
 // import GET_BOOKMARKS from '../../graphql/queries/getBookmarks';
 import DELETE_SPOT_MUTATION from '../../graphql/mutations/deleteSpotMutation';
 import DELETE_BOOKMARK_MUTATION from '../../graphql/mutations/deleteBookmarkMutation';
-import { useQuery, useMutation } from '@apollo/react-hooks';
 import { reducer, spotBookState } from './reducer';
 import SpotCard from '../../components/SpotCard';
 import SpotsButtonGroup from '../../components/SpotsButtonGroup';
 import { store } from "../../store";
 import TopHeader from "../../components/Header"
 
-console.disableYellowBox = true;
-
-const SpotBook = props => {
-  const [state, dispatch] = useReducer(reducer, spotBookState);
-  const [deleteSpot] = useMutation(DELETE_SPOT_MUTATION);
-  const [deleteBookmark] = useMutation(DELETE_BOOKMARK_MUTATION);
+const SpotBook = ({ navigation }) => {
   const { state: myStore } = useContext(store)
-
-  const { navigation } = props
-
-
-  const { data: createdSpots, loading, error, refetch } = useQuery(
-    GET_MY_SPOTS,
-    {
-      variables: { user_id: myStore.user_id },
-    },
-  );
-
-  console.log('WHAT ARE MY SPOTS', createdSpots)
-  // const {
-  //   data: bookmarks,
-  //   loading: loading2,
-  //   error: error2,
-  // } = useQuery(GET_BOOKMARKS, {
-  //   variables: { user_id: myStore.user_id },
-  // });
   const [tab, setTab] = useState(0);
   const [term, setTerm] = useState('');
   const [refreshing] = useState(false);
+  const [deleteSpot] = useMutation(DELETE_SPOT_MUTATION);
 
-  useEffect(() => {
-    if (!loading && !error) {
-      // dispatch({
-      //   type: 'SET_SPOTS',
-      //   payload: createdSpots.getUserCreatedSpots,
-      // });
-    }
-  }, []);
+  const [getMySpots, { loading, data }] = useLazyQuery(GET_MY_SPOTS, {
+    variables: { user_id: myStore.user_id },
+  });
 
-  if (loading) {
-    return <Text>Loading...</Text>;
-  }
-  if (error) {
-    return <Text>An error occured</Text>;
-  }
+  useFocusEffect(
+    useCallback(() => {
+      // Do something when the screen is focused
+      getMySpots();
+      // return () => {
+      //   // Do something when the screen is unfocused
+      //   // Useful for cleanup functions
+      // };
+    }, [])
+  )
 
   const onSearchChange = e => setTerm(e);
 
   const onChangeTab = e => setTab(e);
 
-  const unBookmark = async _id => {
-    try {
-      await deleteBookmark({
-        variables: {
-          bookmarkInput: {
-            spot_id: _id,
-            user_id: myStore.user_id,
-          },
-        },
-      });
-      dispatch({
-        type: 'DELETE_BOOKMARK',
-        payload: _id,
-      });
-    } catch (e) {
-      alert('Unable to delete spot at this time.');
-    }
-  };
+  // const unBookmark = async _id => {
+  //   try {
+  //     await deleteBookmark({
+  //       variables: {
+  //         bookmarkInput: {
+  //           spot_id: _id,
+  //           user_id: myStore.user_id,
+  //         },
+  //       },
+  //     });
+  //     // dispatch({
+  //     //   type: 'DELETE_BOOKMARK',
+  //     //   payload: _id,
+  //     // });
+  //   } catch (e) {
+  //     alert('Unable to delete spot at this time.');
+  //   }
+  // };
 
-  const unBookmarkAlertMsg = _id => {
-    Alert.alert(
-      'Unbookmarking spot',
-      'Are you sure you want to unbookmark this spot?',
-      [
-        { text: 'Yes', onPress: () => unBookmark(_id) },
-        {
-          text: 'Cancel',
-          onPress: () => console.log('Cancel Pressed'),
-          style: 'cancel',
-        },
-      ],
-      { cancelable: false },
-    );
-  };
+  // const unBookmarkAlertMsg = _id => {
+  //   Alert.alert(
+  //     'Unbookmarking spot',
+  //     'Are you sure you want to unbookmark this spot?',
+  //     [
+  //       { text: 'Yes', onPress: () => unBookmark(_id) },
+  //       {
+  //         text: 'Cancel',
+  //         onPress: () => console.log('Cancel Pressed'),
+  //         style: 'cancel',
+  //       },
+  //     ],
+  //     { cancelable: false },
+  //   );
+  // };
 
   const handleDeleteSpot = async _id => {
+
     try {
       await deleteSpot({
         variables: {
           _id,
         },
-        refetchQueries: ['getUserCreatedSpots', 'getUser', 'getSpots'],
+        refetchQueries: [
+          { query: GET_MY_SPOTS, variables: { user_id: myStore.user_id } },
+          { query: GET_SPOTS }
+        ],
       });
+
+      getMySpots();
 
     } catch (e) {
       alert('Unable to delete spot at this time.');
@@ -143,12 +128,18 @@ const SpotBook = props => {
 
   const launchRefetch = () => {
     if (tab === 0) {
-      console.log('REFETCH 1');
+      getMySpots();
     }
     if (tab === 1) {
       console.log('REFETCH 2');
     }
   };
+
+  if (loading || data === undefined) {
+    return <Text>Loading</Text>
+  }
+  console.log('WHAT ARE MY SPOTS', data)
+
 
   return (
     <View>
@@ -170,8 +161,8 @@ const SpotBook = props => {
             <RefreshControl refreshing={refreshing} onRefresh={launchRefetch} />
           }>
 
-          {state.mySpots.length > 0
-            ? state.mySpots.map((spot, i) => (
+          {data.getUserCreatedSpots.length > 0
+            ? data.getUserCreatedSpots.map((spot, i) => (
               <SpotCard
                 key={i}
                 spot={spot}
@@ -184,41 +175,24 @@ const SpotBook = props => {
         </ScrollView>
       }
 
-      {tab === 1 &&
+      {/* {tab === 1 &&
         <ScrollView
           contentContainerStyle={styles.containerStyle}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={launchRefetch} />
           }>
-          {state.bookmarkedSpots > 0
-            ? state.bookmarkedSpots.map((spot, i) => (
-              <SpotCard
-                key={i}
-                spot={spot}
-                navigation={navigation}
-                bookmark
-                unBookmarkAlertMsg={unBookmarkAlertMsg}
-              />
-            ))
-            : <Text style={styles.noneText}>You haven't bookmarked any spots yet</Text>}
+          <Text style={styles.noneText}>You haven't bookmarked any spots yet</Text>
 
         </ScrollView>
 
-      }
-
-
-
-
-
+      } */}
     </View>
   );
 };
 
-
 export default SpotBook;
 
 const styles = StyleSheet.create({
-
   containerStyle: {
     paddingBottom: 200
   },
