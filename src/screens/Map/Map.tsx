@@ -90,8 +90,6 @@ const Map = (props) => {
       let a = await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
         accuracy: Location.Accuracy.Balanced,
       });
-
-      console.log(a)
     }
   }
 

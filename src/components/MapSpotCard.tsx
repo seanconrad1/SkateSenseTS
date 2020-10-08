@@ -17,9 +17,8 @@ import { useMutation, useQuery, useLazyQuery } from '@apollo/react-hooks';
 import NEW_BOOKMARK_MUTATION from '../graphql/mutations/newBookmarkMutation';
 import DELETE_BOOKMARK_MUTATION from '../graphql/mutations/deleteBookmarkMutation';
 import GET_BOOKMARKS from '../graphql/queries/getBookmarks';
-import GestureRecognizer, { swipeDirections } from 'react-native-swipe-gestures';
+import GestureRecognizer from 'react-native-swipe-gestures';
 import * as Haptics from 'expo-haptics';
-
 import { Icon, Button } from 'react-native-elements';
 import BookmarkButton from './BookmarkButton';
 import { store } from "../store";
@@ -85,12 +84,11 @@ const MapSpotCard = ({ spot, raise, lower }) => {
 
   const bookmarkSpot = async () => {
     let response;
-    Haptics.impact(Haptics.ImpactFeedbackStyle.Heavy)
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy)
     try {
       response = await createBookmark();
     } catch (e) {
       console.log(e);
-      console.log(response);
     }
 
   }

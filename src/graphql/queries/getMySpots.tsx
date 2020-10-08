@@ -1,8 +1,8 @@
 import gql from 'graphql-tag';
 
 const GET_MY_SPOTS = gql`
-  query getUserCreatedSpots($user_id: ID!) {
-    getUserCreatedSpots(user_id: $user_id) {
+  query getUserCreatedSpots($locationInput: LocationInput!) {
+    getUserCreatedSpots(locationInput: $locationInput) {
       _id
       name
       location {
