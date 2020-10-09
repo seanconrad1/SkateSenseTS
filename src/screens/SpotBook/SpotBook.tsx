@@ -29,6 +29,7 @@ import SpotCard from '../../components/SpotCard';
 import SpotsButtonGroup from '../../components/SpotsButtonGroup';
 import { store } from "../../store";
 import TopHeader from "../../components/Header"
+import { getCurrentLocation } from '../../utils/helpers'
 
 const SpotBook = ({ navigation }) => {
   const { state: myStore } = useContext(store)
@@ -37,11 +38,10 @@ const SpotBook = ({ navigation }) => {
   const [refreshing] = useState(false);
   const [deleteSpot] = useMutation(DELETE_SPOT_MUTATION);
   const [deleteBookmark] = useMutation(DELETE_BOOKMARK_MUTATION);
+  const [location, setLocation] = useState()
 
 
-  const [getMySpots, { loading, data: mySpots }] = useLazyQuery(GET_MY_SPOTS, {
-    variables: { locationInput: { latitude: 45.00, longitude: -70.222 } },
-  });
+  const [getMySpots, { loading, data: mySpots }] = useLazyQuery(GET_MY_SPOTS);
 
   const [getMyBookmarks, { loading: loading2, data: myBookmarks }] = useLazyQuery(GET_BOOKMARKS, {
     variables: { user_id: myStore.user_id },
@@ -50,10 +50,18 @@ const SpotBook = ({ navigation }) => {
 
   useFocusEffect(
     useCallback(() => {
-      getMySpots();
-      getMyBookmarks();
+      async function fetchMyAPI() {
+        let location = await getCurrentLocation()
+        getMySpots({ variables: { locationInput: { latitude: location.coords.latitude, longitude: location.coords.longitude } } });
+        getMyBookmarks();
+      }
+      fetchMyAPI()
     }, [])
   )
+
+  const getCoords = async () => {
+    return
+  }
 
   const onSearchChange = e => setTerm(e);
   const onChangeTab = e => setTab(e);
@@ -96,19 +104,20 @@ const SpotBook = ({ navigation }) => {
   };
 
   const handleDeleteSpot = async _id => {
+    const location = await getCurrentLocation()
 
     try {
+
       await deleteSpot({
         variables: {
           _id,
         },
         refetchQueries: [
-          { query: GET_MY_SPOTS, variables: { user_id: myStore.user_id } },
+          { query: GET_MY_SPOTS, variables: { variables: { locationInput: { latitude: location.coords.latitude, longitude: location.coords.longitude } } } },
           { query: GET_SPOTS }
         ],
       });
-
-      getMySpots();
+      getMySpots({ variables: { locationInput: { latitude: location.coords.latitude, longitude: location.coords.longitude } } });
 
     } catch (e) {
       alert('Unable to delete spot at this time.');
@@ -131,9 +140,11 @@ const SpotBook = ({ navigation }) => {
     );
   };
 
-  const launchRefetch = () => {
+  const launchRefetch = async () => {
     if (tab === 0) {
-      getMySpots();
+      let location = await getCurrentLocation()
+      getMySpots({ variables: { locationInput: { latitude: location.coords.latitude, longitude: location.coords.longitude } } });
+
     }
     if (tab === 1) {
       getMyBookmarks()

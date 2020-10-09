@@ -61,13 +61,8 @@ const SpotCard = ({
           <Text style={styles.aboutContainerItem}>About: </Text>
           <Text>{spot.description}</Text>
           {'\n'}
-
-          {distanceFrom && (
-            <>
-              <Text style={styles.aboutContainerItem}>Distance: </Text>
-              <Text>{distanceFrom.toFixed(2)}mi</Text>
-            </>
-          )}
+          <Text style={styles.aboutContainerItem}>Distance: </Text>
+          <Text>{(spot.distance * 0.621371).toFixed(2)}mi</Text>
           {'\n'}
           <Text style={styles.aboutContainerItem}>Kickout Level: </Text>
           <Text>{spot.kickout_level}</Text>

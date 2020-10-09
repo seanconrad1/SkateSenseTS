@@ -14,6 +14,7 @@ const GET_MY_SPOTS = gql`
         base64
       }
       kickout_level
+      distance
     }
   }
 `;

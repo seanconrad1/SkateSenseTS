@@ -34,7 +34,7 @@ const NavDrawer = () => {
       <Drawer.Screen name="Map" component={Map} />
       <Drawer.Screen name="New Spot Page" component={NewSpotPage} />
       <Drawer.Screen name="My Spots" component={SpotBook} />
-      <Drawer.Screen name="Approvals" component={Approvals} />
+      {/* <Drawer.Screen name="Approvals" component={Approvals} /> */}
     </Drawer.Navigator>
   );
 };

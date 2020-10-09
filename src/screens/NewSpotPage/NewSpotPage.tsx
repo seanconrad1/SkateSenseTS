@@ -151,12 +151,19 @@ const NewSpotPage = props => {
       alert("Spot must have at least 1 photo")
       return false
     }
+    if (!state.selectedLat && !state.selectedLng) {
+      alert("Must select spot location")
+      return false
+    }
     return true
   }
 
 
   const onSubmit = async () => {
     // dispatch({ type: 'SPOT_SUBMITED', payload: true });
+
+    console.log(state)
+    let location = await Location.getCurrentPositionAsync({});
 
     if (validate()) {
       const images = state.photo.map(img => {
@@ -172,8 +179,8 @@ const NewSpotPage = props => {
               description: state.description,
               kickout_level: state.kickout_level,
               location: {
-                latitude: 40.7128,
-                longitude: -74.0060,
+                latitude: state.selectedLat,
+                longitude: state.selectedLng,
               },
               owner: myStore.user_id,
               images,
@@ -181,7 +188,7 @@ const NewSpotPage = props => {
           },
           refetchQueries: [
             { query: GET_SPOTS },
-            { query: GET_MY_SPOTS, variables: { user_id: myStore.user_id } }
+            { query: GET_MY_SPOTS, variables: { locationInput: { latitude: location.coords.latitude, longitude: location.coords.longitude } } }
           ],
           awaitRefetchQueries: true,
         });
