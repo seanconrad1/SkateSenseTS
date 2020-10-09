@@ -72,6 +72,14 @@ const styles = StyleSheet.create({
     marginTop: hp("5%"),
   },
 
+  error: {
+    marginTop: hp('50%'),
+    justifyContent: 'center',
+    textAlign: 'center',
+    alignItems: 'center',
+    alignContent: 'center'
+  }
+
 
 });
 

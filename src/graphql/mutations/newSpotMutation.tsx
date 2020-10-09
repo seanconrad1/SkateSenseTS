@@ -14,6 +14,8 @@ const NEW_SPOT_MUTATION = gql`
       images {
         base64
       }
+      contains
+      spotType
     }
   }
 `;

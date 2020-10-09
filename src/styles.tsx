@@ -36,6 +36,16 @@ const styles = StyleSheet.create({
     borderWidth: 0,
     borderRadius: wp("20%"),
   },
+
+  signupSubmit: {
+    backgroundColor: "rgb(244, 2, 87)",
+    width: wp("80%"),
+    height: hp("6%"),
+    borderColor: "transparent",
+    borderWidth: 0,
+    borderRadius: wp("20%"),
+  },
+
   errors: {
     color: "red",
   },

@@ -39,8 +39,6 @@ const NewSpotPage = props => {
   const modalRef = useRef(null)
   const [selectedPhotoIndex, setSeletctedPhotoIndex] = useState(0)
 
-  console.log(props.route.params)
-
   useEffect(() => {
     (async () => {
       if (Platform.OS !== 'web') {
@@ -156,36 +154,53 @@ const NewSpotPage = props => {
       alert("Must select spot location")
       return false
     }
+    if (!state.spotType) {
+      alert("Must select spot type")
+      return false
+    }
+    if (state.contains.length < 1) {
+      alert("Must select what the spot contains")
+      return false
+    }
     return true
   }
 
 
   const onSubmit = async () => {
     // dispatch({ type: 'SPOT_SUBMITED', payload: true });
+    console.log('state.spotType', state.spotType)
 
     let location = await Location.getCurrentPositionAsync({});
+
+    const images = state.photo.map(img => {
+      return { base64: img.base64 };
+    });
+
+
 
     if (validate()) {
       const images = state.photo.map(img => {
         return { base64: img.base64 };
       });
 
+      const spotInput = {
+        name: state.name,
+        location: {
+          latitude: state.selectedLat,
+          longitude: state.selectedLng,
+        },
+        images,
+        description: state.description,
+        kickout_level: state.kickout_level,
+        owner: myStore.user_id,
+        spotType: state.spotType,
+        contains: state.spotContains
+      }
+
       setDisableButton(true);
       try {
         await createSpot({
-          variables: {
-            spotInput: {
-              name: state.name,
-              description: state.description,
-              kickout_level: state.kickout_level,
-              location: {
-                latitude: state.selectedLat,
-                longitude: state.selectedLng,
-              },
-              owner: myStore.user_id,
-              images,
-            },
-          },
+          variables: { spotInput },
           refetchQueries: [
             { query: GET_SPOTS },
             { query: GET_MY_SPOTS, variables: { locationInput: { latitude: location.coords.latitude, longitude: location.coords.longitude } } }
@@ -198,12 +213,13 @@ const NewSpotPage = props => {
         approvalAlert();
 
       } catch (e) {
+        console.log(e)
         console.log(e.networkError.result.errors[0].message)
         alert('Unable to create spot at this time.');
         setDisableButton(false);
       }
-    }
 
+    }
   };
 
 
@@ -289,21 +305,12 @@ const NewSpotPage = props => {
 
           <InputsContainer state={state} dispatch={dispatch} />
 
-          <Text
+          {/* <Text
             style={styles.text}>
-            Kickout meter
-          </Text>
-          {/* <Slider
-            thumbTintColor="rgb(244, 2, 87)"
-            style={styles.sliderStyles}
-            step={1}
-            maximumValue={10}
-            animateTransitions={true}
-            value={state.kickout}
-            onValueChange={value =>
-              dispatch({ type: 'SET_KICKOUT_LEVEL', payload: value })
-            }
-          /> */}
+            Best time to skate
+          </Text> */}
+
+
 
           <Text
             style={styles.text}>
@@ -329,8 +336,8 @@ const NewSpotPage = props => {
             <Button
               title="Submit"
               buttonStyle={styles.submitButton}
-              disabled={disableButton}
-              loading={disableButton}
+              // disabled={disableButton}
+              // loading={disableButton}
               onPress={onSubmit}
             />
           </View>

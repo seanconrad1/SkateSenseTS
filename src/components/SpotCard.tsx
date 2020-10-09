@@ -48,9 +48,10 @@ const SpotCard = ({
   return (
     <TouchableWithoutFeedback
       onPress={() => {
-        navigation.navigate('SpotPage', {
-          skatespot: spot,
-        });
+        console.log('spot page')
+        // navigation.navigate('SpotPage', {
+        //   skatespot: spot,
+        // });
       }}>
       <Card
         key={spot.id}

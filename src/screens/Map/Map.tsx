@@ -23,11 +23,15 @@ import MapSpotCard from "../../components/MapSpotCard";
 import * as Location from 'expo-location';
 import styles from './styles'
 import { store } from '../../store'
+import { getCurrentLocation } from '../../utils/helpers'
+import Loading from "../../components/Loading";
 
 
 
 const LOCATION_TASK_NAME = 'background-location-task';
 const CARD_WIDTH = wp("95%");
+
+
 
 const Map = (props) => {
   const { state: myStore, dispatch: storeDispatch } = useContext(store)
@@ -37,15 +41,15 @@ const Map = (props) => {
   const flatListRef = useRef();
   const [slideUpValue, setSideUpValie] = useState(new Animated.Value(0))
   const [raiseOrLower, setRaiseOrLower] = useState(true)
+  const [userLocation, setUserLocation] = useState()
 
   const { filteredSpots } = state
   const { navigation } = props
 
+
   useEffect(() => {
     test()
-    animateToUserLocation(mapRef)
   }, [])
-
 
   useEffect(() => {
     if (data) {
@@ -75,6 +79,8 @@ const Map = (props) => {
   ]);
 
 
+
+
   // useEffect(() => {
   //   async function checkAuth() {
   //     const user_id = await AsyncStorage.getItem("AUTH_TOKEN");
@@ -84,14 +90,7 @@ const Map = (props) => {
   //   checkAuth();
   // });
 
-  const test = async () => {
-    const { status } = await Location.requestPermissionsAsync();
-    if (status === 'granted') {
-      let a = await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-        accuracy: Location.Accuracy.Balanced,
-      });
-    }
-  }
+
 
   // This is the function to scroll
   // to the end of the spots when a new spot is created
@@ -118,6 +117,18 @@ const Map = (props) => {
   //     dispatch({ type: 'UPDATE_COUNTER', payload: 1 });
   //   }
   // }, [state.filteredSpots, state.initialRegion, state.updateCounter]);
+
+  const test = async () => {
+    const { status } = await Location.requestPermissionsAsync();
+    if (status === 'granted') {
+      let a = await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
+        accuracy: Location.Accuracy.Balanced,
+      });
+
+      // const location = await getCurrentLocation()
+      // setUserLocation(location.coords)
+    }
+  }
 
   const onRegionChange = (region) => {
     dispatch({ type: "SET_CURRENT_REGION", payload: region });
@@ -213,14 +224,10 @@ const Map = (props) => {
     : null;
 
   if (loading) {
-    return (
-      <View>
-        <Text> Loading...</Text>
-      </View>
-    );
+    return <Loading />
   }
   if (error) {
-    return <Text>Error! {error.message}</Text>;
+    return <Text style={styles.error}>Error! {error.message}</Text>;
   }
 
   const raise = () => {
@@ -255,8 +262,14 @@ const Map = (props) => {
         showsUserLocation
         onMapReady={() => console.log("ready!")}
         ref={mapRef}
-        initialRegion={state.initialRegion}
+        // initialRegion={{
+        //   latitude: userLocation.latitude,
+        //   longitude: userLocation.longitude,
+        //   latitudeDelta: 0.0922,
+        //   longitudeDelta: 0.0421,
+        // }}
         style={{ flex: 1 }}
+        rotateEnabled={false}
         // region={this.state.region}
         // mapType={"satellite"}
         showsMyLocationButton

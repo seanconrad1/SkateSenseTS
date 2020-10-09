@@ -18,6 +18,8 @@ const GET_NOT_APPROVED_LIST = gql`
       owner {
         name
       }
+      contains
+      spotType
     }
   }
 `;

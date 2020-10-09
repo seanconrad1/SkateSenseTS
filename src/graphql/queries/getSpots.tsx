@@ -14,6 +14,8 @@ const GET_SPOTS = gql`
       images {
         base64
       }
+      contains
+      spotType
     }
   }
 `;

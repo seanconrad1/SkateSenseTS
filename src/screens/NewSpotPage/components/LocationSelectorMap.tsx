@@ -40,8 +40,6 @@ const LocationSelectorMap = ({ navigation }) => {
   };
 
   const selectLocation = () => {
-    // this.navigation.goBack('yo', )
-
     dispatch({
       type: 'SET_LOCATION',
       payload: {

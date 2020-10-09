@@ -14,6 +14,7 @@ const InputsContainer = ({ dispatch, state }) => {
         placeholder="Spot Name"
         clearButtonMode="never"
         autoCorrect={false}
+        maxLength={40}
         value={state.name}
         keyboardType="default"
         onChangeText={name => dispatch({ type: 'SET_NAME', payload: name })}
@@ -24,6 +25,7 @@ const InputsContainer = ({ dispatch, state }) => {
         containerStyle={{ marginTop: -10 }}
         placeholder="Description"
         clearButtonMode="never"
+        maxLength={150}
         autoCorrect={false}
         keyboardType="default"
         value={state.description}

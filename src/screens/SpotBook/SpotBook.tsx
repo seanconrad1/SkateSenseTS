@@ -30,6 +30,7 @@ import SpotsButtonGroup from '../../components/SpotsButtonGroup';
 import { store } from "../../store";
 import TopHeader from "../../components/Header"
 import { getCurrentLocation } from '../../utils/helpers'
+import Loading from '../../components/Loading';
 
 const SpotBook = ({ navigation }) => {
   const { state: myStore } = useContext(store)
@@ -113,7 +114,7 @@ const SpotBook = ({ navigation }) => {
           _id,
         },
         refetchQueries: [
-          { query: GET_MY_SPOTS, variables: { variables: { locationInput: { latitude: location.coords.latitude, longitude: location.coords.longitude } } } },
+          { query: GET_MY_SPOTS, variables: { locationInput: { latitude: location.coords.latitude, longitude: location.coords.longitude } } },
           { query: GET_SPOTS }
         ],
       });
@@ -153,13 +154,11 @@ const SpotBook = ({ navigation }) => {
 
 
   if (loading || mySpots === undefined) {
-    return <Text>Loading</Text>
+    return <Loading />
   }
   if (loading2 || myBookmarks === undefined) {
-    return <Text>Loading</Text>
+    return <Loading />
   }
-
-  console.log('WHAT ARE MY BOOKMARKS', myBookmarks.getBookmarks.length)
 
   return (
     <View>

@@ -149,7 +149,7 @@ const SignUp = (props) => {
       <Button
         icon={<Icon name="arrow-right" size={15} color="white" />}
         title="Submit"
-        buttonStyle={styles.signupButton}
+        buttonStyle={styles.signupSubmit}
         onPress={() => onSubmit()}
         disabled={mutationLoading}
       />

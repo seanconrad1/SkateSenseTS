@@ -15,6 +15,8 @@ const GET_MY_SPOTS = gql`
       }
       kickout_level
       distance
+      contains
+      spotType
     }
   }
 `;
