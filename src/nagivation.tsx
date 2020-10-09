@@ -11,7 +11,7 @@ import SpotBook from "./screens/SpotBook/SpotBook";
 import NewSpotPage from "./screens/NewSpotPage/NewSpotPage";
 import LocationSelectorMap from "./screens/NewSpotPage/components/LocationSelectorMap";
 import Approvals from "./screens/Approvals";
-import ApprovalSpotPage from "./screens/ApprovalSpotPage";
+import ApprovalSpotPage from './screens/ApprovalSpotPage'
 
 import { store, SET_USER } from './store';
 

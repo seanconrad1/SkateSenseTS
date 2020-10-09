@@ -40,7 +40,7 @@ const Approvals = ({ navigation }) => {
           <ListItem
             key={i}
             bottomDivider
-            onPress={() => navigation.navigate('ApprovalSpotPage', { skatespot: spot })}
+            onPress={() => navigation.navigate('ApprovalSpotPage', { spot })}
 
           >
             <Avatar
