@@ -1,5 +1,9 @@
 import React from 'react'
 import { StyleSheet, Text, View, TouchableOpacity, Animated, Image, Linking } from 'react-native'
+import { useMutation } from "@apollo/react-hooks";
+import APPROVE_SPOT_MUTATION from '../graphql/mutations/approveSpotMutation'
+import GET_SPOTS from '../graphql/queries/getSpots'
+import GET_NOT_APPROVED_LIST from '../graphql/queries/getNotApprovedList'
 import { Divider, Icon } from 'react-native-elements'
 import TopHeader from '../components/Header'
 import {
@@ -8,6 +12,7 @@ import {
 } from "react-native-responsive-screen";
 
 const ApprovalSpotPage = ({ route, navigation }) => {
+  const [approveSpotMutation] = useMutation(APPROVE_SPOT_MUTATION)
 
   const spot = route.params.spot
 
@@ -29,8 +34,17 @@ const ApprovalSpotPage = ({ route, navigation }) => {
     console.log('deleting')
   }
 
-  const approveSpot = () => {
-    console.log('approved!')
+  const approveSpot = async () => {
+    await approveSpotMutation({
+      variables: { _id: spot._id },
+      refetchQueries: [
+        { query: GET_SPOTS },
+        { query: GET_NOT_APPROVED_LIST }
+      ]
+    })
+
+    navigation.navigate('Approvals')
+
   }
 
   return (
@@ -62,12 +76,12 @@ const ApprovalSpotPage = ({ route, navigation }) => {
       />
 
       <Text style={{ marginBottom: 10, position: 'relative', marginTop: 10, marginLeft: wp('2%') }}>
-        {spot.url}
-        {spot.description}{"\n"}
-              Posted by {spot.owner
-          ? spot.owner.name
-          : null
-        }{"\n"}
+        Spot name: {spot.name}
+        {"\n"}
+        Spot description: {spot.description}
+        {"\n"}
+        Posted by {spot.owner.name}
+        {"\n"}
         Spot type: {spot.spotType}
         {"\n"}
         Spot contains: {spot.contains.map(i => {

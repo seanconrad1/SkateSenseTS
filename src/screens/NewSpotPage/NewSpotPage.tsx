@@ -158,7 +158,7 @@ const NewSpotPage = props => {
       alert("Must select spot type")
       return false
     }
-    if (state.contains.length < 1) {
+    if (state.contains) {
       alert("Must select what the spot contains")
       return false
     }
@@ -171,12 +171,6 @@ const NewSpotPage = props => {
     console.log('state.spotType', state.spotType)
 
     let location = await Location.getCurrentPositionAsync({});
-
-    const images = state.photo.map(img => {
-      return { base64: img.base64 };
-    });
-
-
 
     if (validate()) {
       const images = state.photo.map(img => {

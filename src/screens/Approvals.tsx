@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -8,33 +8,56 @@ import {
 } from 'react-native';
 import GET_NOT_APPROVED_LIST from '../graphql/queries/getNotApprovedList';
 import { Header, ListItem, Avatar } from 'react-native-elements';
-import { useQuery } from '@apollo/react-hooks';
+import { useLazyQuery, useQuery } from '@apollo/react-hooks';
 import AsyncStorage from '@react-native-community/async-storage';
 import TopHeader from '../components/Header';
 import Loading from '../components/Loading';
 
-const Approvals = ({ navigation }) => {
-  const { loading, error, data } = useQuery(GET_NOT_APPROVED_LIST);
+const wait = (timeout) => {
+  return new Promise(resolve => {
+    setTimeout(resolve, timeout);
+  });
+}
 
-  if (loading) {
+const Approvals = ({ navigation }) => {
+  // const { loading, error, data } = useLazyQuery(GET_NOT_APPROVED_LIST);
+  const [refreshing, setRefreshing] = useState(false)
+
+
+  const [getSpotsNeedingApproval, { called, loading, data }] = useLazyQuery(
+    GET_NOT_APPROVED_LIST)
+
+
+  useEffect(() => {
+    getSpots()
+  }, [])
+
+  const getSpots = () => {
+    getSpotsNeedingApproval()
+
+    setRefreshing(true);
+    wait(2000).then(() => setRefreshing(false));
+  }
+
+
+
+  if (loading || data === undefined) {
     return <Loading />
   }
 
-  if (error) {
-    return <Text>{error}</Text>
-  }
+  console.log(data);
 
   return (
     <View style={styles.container}>
       <TopHeader navigation={navigation} name="Approvals" />
 
       <ScrollView
-      // refreshControl={
-      //   <RefreshControl
-      //   refreshing={this.state.refreshing}
-      //   onRefresh={this._onRefresh}
-      //   />
-      // }
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={getSpotsNeedingApproval}
+          />
+        }
       >
         {data.getNotApprovedList.map((spot, i) => (
           <ListItem
