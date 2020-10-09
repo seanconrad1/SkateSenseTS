@@ -39,6 +39,7 @@ const NewSpotPage = props => {
   const modalRef = useRef(null)
   const [selectedPhotoIndex, setSeletctedPhotoIndex] = useState(0)
 
+  console.log(props.route.params)
 
   useEffect(() => {
     (async () => {
@@ -59,13 +60,13 @@ const NewSpotPage = props => {
   // longitude = props.route.params.selectedLocation.longitude;
   // }
 
-  // useEffect(() => {
-  //   if (props.route.params) {
-  //     const latitude = props.route.params.selectedLocation.latitude;
-  //     const longitude = props.route.params.selectedLocation.longitude;
-  //     dispatch({ type: 'SET_LOCATION', payload: { latitude, longitude } });
-  //   }
-  // }, [props.route.params]);
+  useEffect(() => {
+    if (props.route.params) {
+      const latitude = props.route.params.region.latitude;
+      const longitude = props.route.params.region.longitude;
+      dispatch({ type: 'SET_LOCATION', payload: { latitude, longitude } });
+    }
+  }, [props.route.params]);
 
 
 
@@ -162,7 +163,6 @@ const NewSpotPage = props => {
   const onSubmit = async () => {
     // dispatch({ type: 'SPOT_SUBMITED', payload: true });
 
-    console.log(state)
     let location = await Location.getCurrentPositionAsync({});
 
     if (validate()) {
@@ -221,6 +221,8 @@ const NewSpotPage = props => {
     onClose()
   }
 
+
+
   return (
 
     <View style={styles.topView}>
@@ -254,6 +256,8 @@ const NewSpotPage = props => {
           />
           <ButtonsRow
             navigation={navigation}
+            locationSelected={state.locationSelected}
+            currentLocationSelected={state.currentLocationSelected}
             getCurrentLocation={getCurrentLocation}
             state={state}
           />

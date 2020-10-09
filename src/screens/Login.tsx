@@ -76,7 +76,6 @@ const Login = ({ navigation }) => {
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
-      <TestAnimation />
       <View>
         {/*eslint-disable-next-line react-native/no-raw-text*/}
         <Text style={styles.header}>SkateSense</Text>

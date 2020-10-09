@@ -9,12 +9,13 @@ import Map from './screens/Map/Map';
 import SideDrawer from './components/SideDrawer';
 import SpotBook from "./screens/SpotBook/SpotBook";
 import NewSpotPage from "./screens/NewSpotPage/NewSpotPage";
-// import LocationSelectorMap from "./screens/NewSpotPage/LocationSelectorMap";
+import LocationSelectorMap from "./screens/NewSpotPage/components/LocationSelectorMap";
 import Approvals from "./screens/Approvals";
 import { store, SET_USER } from './store';
 
 const RootStack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator();
+const MapStack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 
 const userToken = false;
@@ -23,21 +24,19 @@ function CustomDrawerContent(props) {
   return <SideDrawer {...props} />;
 }
 
-const NavDrawer = () => {
-  return (
-    <Drawer.Navigator
-      headerMode={null}
-      initialRouteName="Map"
-      drawerContent={(drawerProps) => CustomDrawerContent(drawerProps)}
-    >
 
-      <Drawer.Screen name="Map" component={Map} />
-      <Drawer.Screen name="New Spot Page" component={NewSpotPage} />
-      <Drawer.Screen name="My Spots" component={SpotBook} />
-      {/* <Drawer.Screen name="Approvals" component={Approvals} /> */}
-    </Drawer.Navigator>
-  );
-};
+const MapStackComponent = () => (
+  <MapStack.Navigator
+    screenOptions={{
+      headerShown: false,
+    }}
+  >
+    <MapStack.Screen name="Map" component={Map} />
+    <MapStack.Screen name="New Spot Page" component={NewSpotPage} />
+    <MapStack.Screen name="LocationSelectorMap" component={LocationSelectorMap} />
+  </MapStack.Navigator>
+)
+
 
 const AuthStackScreen = () => (
   <AuthStack.Navigator
@@ -49,6 +48,20 @@ const AuthStackScreen = () => (
     <AuthStack.Screen name="SignUp" component={SignUp} />
   </AuthStack.Navigator>
 );
+
+const NavDrawer = () => {
+  return (
+    <Drawer.Navigator
+      headerMode={null}
+      initialRouteName="Map"
+      drawerContent={(drawerProps) => CustomDrawerContent(drawerProps)}
+    >
+      <Drawer.Screen name="Map" component={MapStackComponent} />
+      <Drawer.Screen name="My Spots" component={SpotBook} />
+    </Drawer.Navigator>
+  );
+};
+
 
 const RootStackScreen = ({ getAuthToken }) => {
   const { state, dispatch } = useContext(store);

@@ -3,12 +3,12 @@ import { View, Text } from 'react-native'
 import { Button } from 'react-native-elements'
 import styles from '../styles'
 
-const ButtonsRow = ({ state, navigation, getCurrentLocation }) => {
+const ButtonsRow = ({ state, navigation, getCurrentLocation, locationSelected, currentLocationSelected }) => {
   return (
     <View style={styles.buttonContainer}>
       <Button
         buttonStyle={
-          state.spotLocationSelected
+          locationSelected
             ? styles.spotLocationSelected
             : styles.spotLocationButton
         }
@@ -18,7 +18,7 @@ const ButtonsRow = ({ state, navigation, getCurrentLocation }) => {
       <Text>OR</Text>
       <Button
         buttonStyle={
-          state.currentLocationSelected
+          currentLocationSelected
             ? styles.spotLocationSelected
             : styles.spotLocationButton
         }

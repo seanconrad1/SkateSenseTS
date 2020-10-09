@@ -47,15 +47,8 @@ export function reducer(state, action) {
         ...state,
         selectedLat: action.payload.latitude,
         selectedLng: action.payload.longitude,
-        currentLocationSelected: true,
         locationSelected: false,
-      };
-    case 'REMOVE_LOCATION':
-      return {
-        ...state,
-        selectedLat: null,
-        selectedLng: null,
-        currentLocationSelected: false,
+        currentLocationSelected: true,
       };
     case 'SET_LOCATION':
       return {
@@ -65,6 +58,14 @@ export function reducer(state, action) {
         locationSelected: true,
         currentLocationSelected: false,
       };
+    case 'REMOVE_LOCATION':
+      return {
+        ...state,
+        selectedLat: null,
+        selectedLng: null,
+        currentLocationSelected: false,
+      };
+
     case 'CLEAR_STATE':
       return {
         ...state, name: "",

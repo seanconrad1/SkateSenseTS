@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useReducer } from 'react';
 import { StyleSheet, View, Image, Dimensions, Text } from 'react-native';
 import MapView from 'react-native-maps';
 import { Button } from 'react-native-elements';
@@ -6,56 +6,69 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import Geolocation from '@react-native-community/geolocation';
+import { getCurrentLocation } from '../../../utils/helpers'
 
-import markerIcon from '../../../assets/markerIcon.png';
+import markerIcon from '../../../../assets/markerIcon.png';
+import { animateToUserLocation } from '../../Map/utils';
+import { reducer, newSpotState } from '../reducer';
 
 console.disableYellowBox = true;
 
 const { height, width } = Dimensions.get('window');
 
-const LocationSelectorMap = props => {
+const LocationSelectorMap = ({ navigation }) => {
   const [region, setRegion] = useState('');
   const [userLocation, setUserLocation] = useState({});
-  const [geoLocationSwitch, setGeolocationSwitch] = useState(false);
+  const [state, dispatch] = useReducer(reducer, newSpotState);
 
   useEffect(() => {
-    getUserLocationHandler();
+    (async () => {
+      const location = await getCurrentLocation()
+      setUserLocation(location.coords)
+    })();
   }, []);
+
+
+  useEffect(() => {
+    if (state.locationSelected) {
+      navigation.navigate("New Spot Page", { region })
+    }
+  }, [state]);
 
   const onRegionChange = region => {
     setRegion(region);
   };
 
   const selectLocation = () => {
-    // this.props.navigation.goBack('yo', )
-    props.navigation.navigate('New Spot', {
-      selectedLocation: region,
+    // this.navigation.goBack('yo', )
+
+    dispatch({
+      type: 'SET_LOCATION',
+      payload: {
+        latitude: region.latitude,
+        longitude: region.longitude,
+      },
     });
   };
 
-  const getUserLocationHandler = () => {
-    Geolocation.getCurrentPosition(position => {
-      setUserLocation({
-        latitude: position.coords.latitude,
-        longitude: position.coords.longitude,
-        latitudeDelta: 0.01,
-        longitudeDelta: 0.01,
-      });
-      setGeolocationSwitch(true);
-    });
-  };
 
-  if (!userLocation.latitude) {
+  if (userLocation.latitude === undefined) {
     return <Text>Loading...</Text>;
   }
+
+
 
   return (
     <View style={{ flex: 1 }}>
       <MapView
         style={styles.map}
         showsUserLocation
-        initialRegion={userLocation}
+        initialRegion={{
+          latitude: userLocation.latitude,
+          longitude: userLocation.longitude,
+          latitudeDelta: 0.0922,
+          longitudeDelta: 0.0421,
+        }}
         onRegionChange={onRegionChange}
       />
 
@@ -90,8 +103,8 @@ const LocationSelectorMap = props => {
         />
       </View>
     </View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
