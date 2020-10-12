@@ -16,6 +16,7 @@ const GET_SPOTS = gql`
       }
       contains
       spotType
+      createdAt
     }
   }
 `;

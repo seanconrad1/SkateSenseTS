@@ -168,7 +168,6 @@ const NewSpotPage = props => {
 
   const onSubmit = async () => {
     // dispatch({ type: 'SPOT_SUBMITED', payload: true });
-    console.log('state.spotType', state.spotType)
 
     let location = await Location.getCurrentPositionAsync({});
 

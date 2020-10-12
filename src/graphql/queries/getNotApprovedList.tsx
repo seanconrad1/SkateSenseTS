@@ -20,6 +20,7 @@ const GET_NOT_APPROVED_LIST = gql`
       }
       contains
       spotType
+      createdAt
     }
   }
 `;

@@ -84,6 +84,8 @@ const client = new ApolloClient({
 const App = () => {
   const [loaded] = useFonts({
     Lobster: require('./assets/fonts/Lobster-Regular.ttf'),
+    ProximaNova: require('./assets/fonts/ProximaNova-Regular.otf'),
+
   });
   return (
     <ApolloProvider client={client}>

@@ -106,7 +106,10 @@ const MapSpotCard = ({ spot, raise, lower }) => {
   //           <Text style={styles.textBtn}>{opened ? "Lower" : "Raise"}</Text>
   //         </TouchableOpacity>
 
-  const goToSpotPage = () => { };
+  const goToSpotPage = () => {
+    console.log('getting here')
+  };
+
   return (
     <GestureRecognizer
       onSwipeUp={(state) => _start()}
@@ -118,10 +121,8 @@ const MapSpotCard = ({ spot, raise, lower }) => {
       }}
     >
 
-
       <View style={styles.card}>
         <View style={styles.tab} />
-
         <View style={styles.topButtons}>
           <TouchableOpacity
             onPress={() =>
@@ -132,7 +133,6 @@ const MapSpotCard = ({ spot, raise, lower }) => {
             style={styles.directionsButton}
           >
             <Icon
-              // raised
               containerStyle={styles.directionsButtonIcon}
               name="directions"
               size={20}
@@ -149,17 +149,13 @@ const MapSpotCard = ({ spot, raise, lower }) => {
           />
         </View>
 
-
-        <TouchableOpacity onPress={goToSpotPage}>
-          <View>
-            <Image
-              style={styles.cardImage}
-              resizeMode="cover"
-              source={{ uri: `data:image/gif;base64,${spot.images[0].base64}` }}
-              onPress={() => goToSpotPage(spot)}
-            />
-          </View>
-        </TouchableOpacity>
+        <TouchableWithoutFeedback onPress={goToSpotPage}>
+          <Image
+            style={styles.cardImage}
+            resizeMode="cover"
+            source={{ uri: `data:image/gif;base64,${spot.images[0].base64}` }}
+          />
+        </TouchableWithoutFeedback>
 
         <View style={styles.textContent}>
           <Text numberOfLines={1} style={styles.cardtitle}>
@@ -189,9 +185,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     borderRadius: 20,
     alignContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
-
   tab: {
     height: hp('.8%'),
     width: hp('5%'),
@@ -200,10 +195,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   cardImage: {
-    position: 'absolute',
     zIndex: 2,
     borderRadius: 20,
-    // flex: 4,
     width: wp('90%'),
     height: hp('32%'),
     alignSelf: 'center',

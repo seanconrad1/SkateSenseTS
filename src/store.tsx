@@ -12,7 +12,12 @@ const StateProvider = ({ children }) => {
   const [state, dispatch] = useReducer((state, action) => {
     switch (action.type) {
       case SET_USER:
-        return { ...initialState, token: action.payload.token, user_id: action.payload.user_id };
+        return {
+          ...initialState,
+          token: action.payload.token,
+          user_id: action.payload.user_id,
+          admin: action.payload.admin
+        };
       case SET_BOOKMARKS:
         return { ...initialState, bookmarks: action.payload }
       default:

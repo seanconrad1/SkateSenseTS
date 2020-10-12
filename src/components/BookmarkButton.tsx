@@ -5,26 +5,14 @@ import { Icon } from 'react-native-elements';
 const BookmarkButton = ({ spot, bookmarkSpot, unBookmarkSpot, bookmarked }) => {
 
   return (
-    <TouchableOpacity style={styles.shadow}>
-      {!bookmarked ? (
-        <Icon
-          containerStyle={styles.containerStyle}
-          name="bookmark"
-          size={20}
-          type="font-awesome"
-          color="black"
-          onPress={bookmarkSpot}
-        />
-      ) : (
-          <Icon
-            containerStyle={styles.containerStyle}
-            name="bookmark"
-            size={20}
-            type="font-awesome"
-            color="rgb(244, 2, 87)"
-            onPress={unBookmarkSpot}
-          />
-        )}
+    <TouchableOpacity onPress={bookmarked ? unBookmarkSpot : bookmarkSpot} style={styles.shadow}>
+      <Icon
+        containerStyle={styles.containerStyle}
+        name="bookmark"
+        size={20}
+        type="font-awesome"
+        color={bookmarked ? "rgb(244, 2, 87)" : "black"}
+      />
     </TouchableOpacity>
   );
 };

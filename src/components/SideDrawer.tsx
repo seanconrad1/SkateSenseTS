@@ -4,29 +4,7 @@ import { Divider, ListItem } from "react-native-elements";
 import { DrawerContentScrollView } from "@react-navigation/drawer";
 //Context
 import { store } from "../store";
-
-const list = [
-  {
-    name: "Map",
-    icon: "globe",
-    type: "font-awesome",
-  },
-  {
-    name: "My Spots",
-    type: "font-awesome",
-    icon: "bookmark",
-  },
-  {
-    name: "Approvals",
-    type: "font-awesome",
-    icon: "globe",
-  },
-  // {
-  //   name: 'Settings',
-  //   type: 'font-awesome',
-  //   icon: 'wrench',
-  // },
-];
+import jwt_decode from "jwt-decode";
 
 const styles = StyleSheet.create({
   container: {
@@ -49,7 +27,7 @@ interface Iprops { }
 
 const SideMenu = (props: Iprops) => {
   const { state, dispatch } = useContext(store);
-
+  const decoded = jwt_decode(state.token);
   const { navigation } = props
 
   const logOut = async () => {
@@ -57,12 +35,41 @@ const SideMenu = (props: Iprops) => {
     await AsyncStorage.setItem("NAME", "");
     await AsyncStorage.setItem("EMAIL", "");
     await AsyncStorage.setItem("USER_ID", "");
+    await AsyncStorage.setItem("ADMIN", "");
+
     dispatch({
       type: "SET_USER",
       payload: false,
     });
   };
 
+  let list = [
+    {
+      name: "Map",
+      icon: "globe",
+      type: "font-awesome",
+    },
+    {
+      name: "My Spots",
+      type: "font-awesome",
+      icon: "bookmark",
+    },
+
+    // {
+    //   name: 'Settings',
+    //   type: 'font-awesome',
+    //   icon: 'wrench',
+    // },
+  ];
+
+
+  if (decoded.admin) {
+    list.push({
+      name: "Approvals",
+      type: "font-awesome",
+      icon: "globe",
+    })
+  }
 
   // administration = () => {
   //   if (this.props.user.user.username === 'seanrad') {
@@ -83,12 +90,13 @@ const SideMenu = (props: Iprops) => {
       <DrawerContentScrollView>
         <Divider style={styles.divider} />
         <View>
-          {list.map((item, i) => (
-            <ListItem key={i} onPress={() => navigation.navigate(item.name)} >
-              <ListItem.Title>{item.name}</ListItem.Title>
-            </ListItem>
-          ))}
-
+          {list.map((item, i) => {
+            return (
+              <ListItem key={i} onPress={() => navigation.navigate(item.name)} >
+                <ListItem.Title>{item.name}</ListItem.Title>
+              </ListItem>
+            )
+          })}
           <ListItem onPress={logOut}>
             <ListItem.Title>Logout</ListItem.Title>
           </ListItem>

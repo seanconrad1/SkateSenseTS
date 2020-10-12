@@ -92,28 +92,8 @@ const ApprovalSpotPage = ({ route, navigation }) => {
 
       <Divider />
 
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity onPress={deletingSpotAlert}>
-          <Icon
-            raised
-            size={hp('7')}
-            name='times'
-            type='font-awesome'
-            iconStyle={{ color: "rgb(244, 2, 87)" }}
-            containerStyle={styles.button}
-          />
-        </TouchableOpacity>
+      <View style={styles.infoContainer}>
 
-        <TouchableOpacity onPress={approveSpot}>
-          <Icon
-            raised
-            size={hp('7')}
-            name='check'
-            type='font-awesome'
-            iconStyle={{ color: "green" }}
-            containerStyle={styles.button}
-          />
-        </TouchableOpacity>
       </View>
     </View>
   )
@@ -129,7 +109,7 @@ const styles = StyleSheet.create({
     marginTop: hp('5%'),
     marginBottom: hp('10%')
   },
-  buttonsContainer: {
+  infoContainer: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-around'

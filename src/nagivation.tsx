@@ -12,6 +12,7 @@ import NewSpotPage from "./screens/NewSpotPage/NewSpotPage";
 import LocationSelectorMap from "./screens/NewSpotPage/components/LocationSelectorMap";
 import Approvals from "./screens/Approvals";
 import ApprovalSpotPage from './screens/ApprovalSpotPage'
+import SpotPage from './screens/SpotPage'
 
 import { store, SET_USER } from './store';
 
@@ -36,6 +37,7 @@ const MapStackComponent = () => (
     <MapStack.Screen name="Map" component={Map} />
     <MapStack.Screen name="New Spot Page" component={NewSpotPage} />
     <MapStack.Screen name="LocationSelectorMap" component={LocationSelectorMap} />
+    <MapStack.Screen name="Spot Page" component={SpotPage} />
   </MapStack.Navigator>
 )
 
@@ -62,10 +64,6 @@ const NavDrawer = () => {
       <Drawer.Screen name="My Spots" component={SpotBook} />
       <Drawer.Screen name="Approvals" component={Approvals} />
       <Drawer.Screen name="ApprovalSpotPage" component={ApprovalSpotPage} />
-
-
-
-
     </Drawer.Navigator>
   );
 };
