@@ -303,8 +303,6 @@ const NewSpotPage = props => {
             Best time to skate
           </Text> */}
 
-
-
           <Text
             style={styles.text}>
             Spot Type

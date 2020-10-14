@@ -1,6 +1,6 @@
 import { Animated } from 'react-native';
 // import Geolocation from '@react-native-community/geolocation';
-import spotImage from '../../../assets/brooklyn_banks.jpg'
+import spotImage from '../../../assets/brooklyn_banks.jpg';
 
 const getLocation = () => {
   let initReg;

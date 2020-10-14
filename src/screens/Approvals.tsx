@@ -5,7 +5,6 @@ import {
   ScrollView,
   RefreshControl,
   StyleSheet,
-
 } from 'react-native';
 import GET_NOT_APPROVED_LIST from '../graphql/queries/getNotApprovedList';
 import { Header, ListItem, Avatar } from 'react-native-elements';
@@ -13,42 +12,35 @@ import { useLazyQuery, useQuery } from '@apollo/react-hooks';
 import AsyncStorage from '@react-native-community/async-storage';
 import TopHeader from '../components/Header';
 import Loading from '../components/Loading';
-import moment from 'moment'
+import moment from 'moment';
 
-const wait = (timeout) => {
-  return new Promise(resolve => {
+const wait = (timeout) =>
+  new Promise((resolve) => {
     setTimeout(resolve, timeout);
   });
-}
 
 const Approvals = ({ navigation }) => {
   // const { loading, error, data } = useLazyQuery(GET_NOT_APPROVED_LIST);
-  const [refreshing, setRefreshing] = useState(false)
-
+  const [refreshing, setRefreshing] = useState(false);
 
   const [getSpotsNeedingApproval, { called, loading, data }] = useLazyQuery(
-    GET_NOT_APPROVED_LIST)
-
+    GET_NOT_APPROVED_LIST
+  );
 
   useEffect(() => {
-    getSpots()
-  }, [])
+    getSpots();
+  }, []);
 
   const getSpots = () => {
-    getSpotsNeedingApproval()
+    getSpotsNeedingApproval();
 
     setRefreshing(true);
     wait(2000).then(() => setRefreshing(false));
-  }
-
-
-
-
+  };
 
   if (loading || data === undefined) {
-    return <Loading />
+    return <Loading />;
   }
-
 
   return (
     <View style={styles.container}>
@@ -72,34 +64,33 @@ const Approvals = ({ navigation }) => {
           />
         }
       >
-        {data.getNotApprovedList.map((spot, i) => {
+        {data.getNotApprovedList.map((spot, i) => (
+          <ListItem
+            key={i}
+            bottomDivider
+            onPress={() => navigation.navigate('ApprovalSpotPage', { spot })}
+          >
+            <Avatar
+              containerStyle={styles.avatarContainer}
+              size="large"
+              rounded
+              source={{
+                uri: `data:image/gif;base64,${spot.images[0].base64}`,
+              }}
+            />
 
-          return (
-            <ListItem
-              key={i}
-              bottomDivider
-              onPress={() => navigation.navigate('ApprovalSpotPage', { spot })}
+            <ListItem.Content>
+              <ListItem.Title style={styles.listItemTitle}>
+                {spot.name}
+              </ListItem.Title>
+              <View style={styles.subtitleView}>
+                <Text>5 months ago</Text>
+              </View>
+            </ListItem.Content>
 
-            >
-              <Avatar
-                containerStyle={styles.avatarContainer}
-                size="large"
-                rounded
-                source={{
-                  uri: `data:image/gif;base64,${spot.images[0].base64}`,
-                }} />
-
-              <ListItem.Content>
-                <ListItem.Title style={styles.listItemTitle}>{spot.name}</ListItem.Title>
-                <View style={styles.subtitleView}>
-                  <Text>5 months ago</Text>
-                </View>
-              </ListItem.Content>
-
-              <ListItem.Chevron color="black" />
-            </ListItem>
-          )
-        })}
+            <ListItem.Chevron color="black" />
+          </ListItem>
+        ))}
       </ScrollView>
     </View>
   );
@@ -114,8 +105,6 @@ export default Approvals;
 //     this.setState({ refreshing: false });
 //   };
 
-
-
 const styles = StyleSheet.create({
   container: {
     textDecorationColor: 'black',
@@ -124,16 +113,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     resizeMode: 'stretch',
   },
-  listItemStyle: {
-
-  },
+  listItemStyle: {},
   avatarContainer: {
     // flex: 2, marginLeft: 20, marginTop: 115
   },
-  listItemTitle: {
-
-  },
+  listItemTitle: {},
   subtitleView: {
-    marginLeft: 2
-  }
+    marginLeft: 2,
+  },
 });

@@ -7,48 +7,46 @@ import {
 
 interface iProps {
   button: string;
-  dispatch: ({ }) => void;
+  dispatch: ({}) => void;
   state: {};
   type: boolean;
   contains: boolean;
   key: number;
 }
 
-const CustomButtonGroup: FunctionComponent<iProps> = ({ type, contains, button, state, dispatch }) => {
+const CustomButtonGroup: FunctionComponent<iProps> = ({
+  type,
+  contains,
+  button,
+  state,
+  dispatch,
+}) => {
   const handleOnClick = () => {
-
     if (contains) {
-      if (!state.spotContains.some(i => i === button)) {
-        dispatch({ type: 'SET_SPOT_CONTAINS', payload: button })
+      if (!state.spotContains.some((i) => i === button)) {
+        dispatch({ type: 'SET_SPOT_CONTAINS', payload: button });
       } else {
-        dispatch({ type: 'REMOVE_SPOT_CONTAINS', payload: button })
+        dispatch({ type: 'REMOVE_SPOT_CONTAINS', payload: button });
       }
     }
     if (type) {
-      dispatch({ type: 'SET_SPOT_TYPE', payload: button })
+      dispatch({ type: 'SET_SPOT_TYPE', payload: button });
     }
   };
 
   const getStyle = () => {
     if (contains && state.spotContains.includes(button)) {
-      return styles.selectedButton
+      return styles.selectedButton;
+    } else if (type && state.spotType === button) {
+      return styles.selectedButton;
+    } else {
+      return styles.button;
     }
-    else if (type && state.spotType === button) {
-      return styles.selectedButton
-    }
-    else {
-      return styles.button
-    }
-  }
+  };
 
   return (
-    <TouchableOpacity
-      onPress={() => handleOnClick()}
-      style={getStyle()}>
-
-      <Text style={styles.buttonText}>
-        {button}
-      </Text>
+    <TouchableOpacity onPress={() => handleOnClick()} style={getStyle()}>
+      <Text style={styles.buttonText}>{button}</Text>
     </TouchableOpacity>
   );
 };
@@ -80,7 +78,7 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     alignItems: 'center',
     justifyContent: 'center',
-  }
+  },
 });
 
 export default CustomButtonGroup;

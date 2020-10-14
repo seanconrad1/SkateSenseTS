@@ -25,7 +25,7 @@ if (typeof Number.prototype.toRad === 'undefined') {
 }
 
 export const getCurrentLocation = async () => {
-  console.log('got here')
+  console.log('got here');
   return Location.getCurrentPositionAsync({});
 };
 

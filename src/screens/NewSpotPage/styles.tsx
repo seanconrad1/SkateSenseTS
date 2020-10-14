@@ -1,11 +1,10 @@
-import React from 'react'
-import { StyleSheet, Dimensions } from 'react-native'
+import React from 'react';
+import { StyleSheet, Dimensions } from 'react-native';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
-} from "react-native-responsive-screen";
-let { width, height } = Dimensions.get("window");
-
+} from 'react-native-responsive-screen';
+const { width, height } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
   topView: {
@@ -20,7 +19,7 @@ const styles = StyleSheet.create({
   insideContainer: {
     // flex: 1,
     // height: '100%',
-    flex: 1
+    flex: 1,
   },
   imageBoxContainer: {
     flexDirection: 'row',
@@ -63,7 +62,7 @@ const styles = StyleSheet.create({
   },
 
   sliderStyles: {
-    width: '100%'
+    width: '100%',
   },
 
   spotTypeButtonsContainer: {
@@ -94,7 +93,7 @@ const styles = StyleSheet.create({
 
   requiredStar: {
     color: 'red',
-    marginBottom: -10
+    marginBottom: -10,
   },
 
   text: {
@@ -118,17 +117,15 @@ const styles = StyleSheet.create({
     padding: 20,
     width: '100%',
     // backgroundColor: 'blue',
-    borderWidth: .5,
+    borderWidth: 0.5,
     borderTopWidth: 0,
     borderLeftWidth: 0,
-    borderRightWidth: 0
-
+    borderRightWidth: 0,
   },
   modelText: {
     alignSelf: 'center',
     fontSize: 22,
-    color: 'rgb(35, 75, 178)'
-  }
-
+    color: 'rgb(35, 75, 178)',
+  },
 });
-export default styles
+export default styles;

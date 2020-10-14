@@ -13,13 +13,13 @@ export function reducer(state, action) {
       return {
         ...state,
         bookmarkedSpots: state.bookmarkedSpots.filter(
-          i => i._id !== action.payload,
+          (i) => i._id !== action.payload
         ),
       };
     case 'DELETE_SPOT':
       return {
         ...state,
-        mySpots: state.mySpots.filter(i => i._id !== action.payload),
+        mySpots: state.mySpots.filter((i) => i._id !== action.payload),
       };
     default:
       throw new Error();

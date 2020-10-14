@@ -15,7 +15,7 @@ const styles = StyleSheet.create({
 const SpotsButtonGroup = ({ onChangeTab }) => {
   const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const updateIndex = index => {
+  const updateIndex = (index) => {
     setSelectedIndex(index);
     onChangeTab(index);
   };

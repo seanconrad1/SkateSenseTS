@@ -1,30 +1,29 @@
-import React from "react";
-import AsyncStorage from "@react-native-community/async-storage";
-import { ApolloClient } from "apollo-client";
-import { ApolloProvider } from "@apollo/react-hooks";
-import { setContext } from "apollo-link-context";
-import { InMemoryCache } from "apollo-cache-inmemory";
-import { onError } from "apollo-link-error";
-import { HttpLink } from "apollo-link-http";
-import unfetch from "unfetch";
-import RootStackScreen from "./src/nagivation";
-import { StateProvider } from "./src/store";
-import { enableScreens } from "react-native-screens";
-import * as TaskManager from 'expo-task-manager'
+import React from 'react';
+import AsyncStorage from '@react-native-community/async-storage';
+import { ApolloClient } from 'apollo-client';
+import { ApolloProvider } from '@apollo/react-hooks';
+import { setContext } from 'apollo-link-context';
+import { InMemoryCache } from 'apollo-cache-inmemory';
+import { onError } from 'apollo-link-error';
+import { HttpLink } from 'apollo-link-http';
+import unfetch from 'unfetch';
+import { enableScreens } from 'react-native-screens';
+import * as TaskManager from 'expo-task-manager';
 import { useFonts } from 'expo-font';
-
+import { StateProvider } from './src/store';
+import RootStackScreen from './src/navigation';
 
 enableScreens();
 
 const cache = new InMemoryCache();
 const httpLink = new HttpLink({
-  uri: "http://localhost:4000/graphql",
+  uri: 'http://localhost:4000/graphql',
   fetch: unfetch,
 });
 
 const getAuthToken = async () => {
   try {
-    const value = await AsyncStorage.getItem("AUTH_TOKEN");
+    const value = await AsyncStorage.getItem('AUTH_TOKEN');
     if (value !== null) {
       return value;
     }
@@ -51,14 +50,14 @@ const errorLink = onError(async ({ graphQLErrors, networkError }) => {
   let shouldLogout = false;
   if (graphQLErrors) {
     graphQLErrors.forEach(({ message, locations, path }) => {
-      if (message === "Unauthorized") {
+      if (message === 'Unauthorized') {
         shouldLogout = true;
       }
     });
 
     if (shouldLogout) {
       try {
-        await AsyncStorage.setItem("AUTH_TOKEN", "");
+        await AsyncStorage.setItem('AUTH_TOKEN', '');
       } catch (e) {
         return e;
       }
@@ -67,7 +66,7 @@ const errorLink = onError(async ({ graphQLErrors, networkError }) => {
   if (networkError) {
     if (networkError.statusCode === 401) {
       try {
-        await AsyncStorage.setItem("AUTH_TOKEN", "");
+        await AsyncStorage.setItem('AUTH_TOKEN', '');
       } catch (e) {
         return e;
       }
@@ -85,7 +84,6 @@ const App = () => {
   const [loaded] = useFonts({
     Lobster: require('./assets/fonts/Lobster-Regular.ttf'),
     ProximaNova: require('./assets/fonts/ProximaNova-Regular.otf'),
-
   });
   return (
     <ApolloProvider client={client}>

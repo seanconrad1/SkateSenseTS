@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { Modal, Text, TouchableHighlight, View, Alert } from 'react-native';
 
 const AlerSlideUp = () => {
-  const [modalVisible, setModalVisible] = useState(false)
-
+  const [modalVisible, setModalVisible] = useState(false);
 
   return (
     <View style={{ marginTop: 22 }}>
@@ -14,7 +13,8 @@ const AlerSlideUp = () => {
         visible={modalVisible}
         onRequestClose={() => {
           Alert.alert('Modal has been closed.');
-        }}>
+        }}
+      >
         <View style={{ marginTop: 22 }}>
           <View>
             <Text>Hello World!</Text>
@@ -22,7 +22,8 @@ const AlerSlideUp = () => {
             <TouchableHighlight
               onPress={() => {
                 setModalVisible(!modalVisible);
-              }}>
+              }}
+            >
               <Text>Hide Modal</Text>
             </TouchableHighlight>
           </View>
@@ -32,11 +33,12 @@ const AlerSlideUp = () => {
       <TouchableHighlight
         onPress={() => {
           setModalVisible(true);
-        }}>
+        }}
+      >
         <Text>Show Modal</Text>
       </TouchableHighlight>
     </View>
   );
-}
+};
 
-export default AlerSlideUp
+export default AlerSlideUp;

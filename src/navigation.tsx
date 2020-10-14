@@ -7,12 +7,13 @@ import SignUp from './screens/SignUp';
 import Login from './screens/Login';
 import Map from './screens/Map/Map';
 import SideDrawer from './components/SideDrawer';
-import SpotBook from "./screens/SpotBook/SpotBook";
-import NewSpotPage from "./screens/NewSpotPage/NewSpotPage";
-import LocationSelectorMap from "./screens/NewSpotPage/components/LocationSelectorMap";
-import Approvals from "./screens/Approvals";
-import ApprovalSpotPage from './screens/ApprovalSpotPage'
-import SpotPage from './screens/SpotPage'
+import SpotBook from './screens/SpotBook/SpotBook';
+import NewSpotPage from './screens/NewSpotPage/NewSpotPage';
+import LocationSelectorMap from './screens/NewSpotPage/components/LocationSelectorMap';
+import Approvals from './screens/Approvals';
+import ApprovalSpotPage from './screens/ApprovalSpotPage';
+import SpotPage from './screens/SpotPage';
+import Administration from './screens/Administration';
 
 import { store, SET_USER } from './store';
 
@@ -27,7 +28,6 @@ function CustomDrawerContent(props) {
   return <SideDrawer {...props} />;
 }
 
-
 const MapStackComponent = () => (
   <MapStack.Navigator
     screenOptions={{
@@ -36,11 +36,13 @@ const MapStackComponent = () => (
   >
     <MapStack.Screen name="Map" component={Map} />
     <MapStack.Screen name="New Spot Page" component={NewSpotPage} />
-    <MapStack.Screen name="LocationSelectorMap" component={LocationSelectorMap} />
+    <MapStack.Screen
+      name="LocationSelectorMap"
+      component={LocationSelectorMap}
+    />
     <MapStack.Screen name="Spot Page" component={SpotPage} />
   </MapStack.Navigator>
-)
-
+);
 
 const AuthStackScreen = () => (
   <AuthStack.Navigator
@@ -53,21 +55,19 @@ const AuthStackScreen = () => (
   </AuthStack.Navigator>
 );
 
-const NavDrawer = () => {
-  return (
-    <Drawer.Navigator
-      headerMode={null}
-      initialRouteName="Map"
-      drawerContent={(drawerProps) => CustomDrawerContent(drawerProps)}
-    >
-      <Drawer.Screen name="Map" component={MapStackComponent} />
-      <Drawer.Screen name="My Spots" component={SpotBook} />
-      <Drawer.Screen name="Approvals" component={Approvals} />
-      <Drawer.Screen name="ApprovalSpotPage" component={ApprovalSpotPage} />
-    </Drawer.Navigator>
-  );
-};
-
+const NavDrawer = () => (
+  <Drawer.Navigator
+    headerMode={null}
+    initialRouteName="Map"
+    drawerContent={(drawerProps) => CustomDrawerContent(drawerProps)}
+  >
+    <Drawer.Screen name="Map" component={MapStackComponent} />
+    <Drawer.Screen name="My Spots" component={SpotBook} />
+    <Drawer.Screen name="Approvals" component={Approvals} />
+    <Drawer.Screen name="ApprovalSpotPage" component={ApprovalSpotPage} />
+    <Drawer.Screen name="Administration" component={Administration} />
+  </Drawer.Navigator>
+);
 
 const RootStackScreen = ({ getAuthToken }) => {
   const { state, dispatch } = useContext(store);
@@ -85,7 +85,6 @@ const RootStackScreen = ({ getAuthToken }) => {
         const token = await AsyncStorage.getItem('AUTH_TOKEN');
         const user_id = await AsyncStorage.getItem('USER_ID');
 
-
         if (token != null) {
           dispatch({ type: SET_USER, payload: { token, user_id } });
         }
@@ -97,7 +96,6 @@ const RootStackScreen = ({ getAuthToken }) => {
     bootstrapAsync();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
 
   return (
     <NavigationContainer>

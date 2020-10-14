@@ -1,68 +1,64 @@
-import React from 'react'
-import { StyleSheet, Text, View, TouchableOpacity, Animated, Image, Linking } from 'react-native'
-import { useMutation } from "@apollo/react-hooks";
-import APPROVE_SPOT_MUTATION from '../graphql/mutations/approveSpotMutation'
-import GET_SPOTS from '../graphql/queries/getSpots'
-import GET_NOT_APPROVED_LIST from '../graphql/queries/getNotApprovedList'
-import { Divider, Icon } from 'react-native-elements'
-import TopHeader from '../components/Header'
+import React from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  TouchableOpacity,
+  Animated,
+  Image,
+  Linking,
+} from 'react-native';
+import { useMutation } from '@apollo/react-hooks';
+import GET_SPOTS from '../graphql/queries/getSpots';
+import { Divider, Icon } from 'react-native-elements';
+import TopHeader from '../components/Header';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
-} from "react-native-responsive-screen";
+} from 'react-native-responsive-screen';
+import ramp from '../../assets/ramp.svg';
 
-const ApprovalSpotPage = ({ route, navigation }) => {
-  const [approveSpotMutation] = useMutation(APPROVE_SPOT_MUTATION)
+const SpotPage = ({ route, navigation }) => {
+  const spot = route.params.spot;
+  console.log(spot);
 
-  const spot = route.params.spot
-
-
-  const _renderItem = ({ item, index }) => {
-    return (
-      <View>
-        <Image
-          style={{ width: wp('100%'), height: hp('50%') }}
-          source={{
-            uri: `data:image/gif;base64,${item.base64}`,
-          }}
-        />
-      </View>
-    );
-  }
-
-  const deletingSpotAlert = () => {
-    console.log('deleting')
-  }
-
-  const approveSpot = async () => {
-    await approveSpotMutation({
-      variables: { _id: spot._id },
-      refetchQueries: [
-        { query: GET_SPOTS },
-        { query: GET_NOT_APPROVED_LIST }
-      ]
-    })
-
-    navigation.navigate('Approvals')
-
-  }
+  const _renderItem = ({ item, key }) => (
+    <View key={key}>
+      <Image
+        style={{ width: wp('100%'), height: hp('50%') }}
+        source={{
+          uri: `data:image/gif;base64,${item.base64}`,
+        }}
+      />
+    </View>
+  );
 
   return (
-    <View
-      style={styles.container}
-      behavior="padding"
-    >
-      <TopHeader name="Spot Approval" navigation={navigation} />
+    <View style={styles.container} behavior="padding">
+      <TopHeader name={spot.name} navigation={navigation} />
 
       <Icon
         raised
         size={hp('2.8')}
-        name='directions'
-        iconStyle={{ color: "rgb(244, 2, 87)" }}
-        containerStyle={{ position: 'absolute', zIndex: 1, marginLeft: wp('85%'), marginTop: ('20%') }}
-        onPress={() => Linking.openURL(`http://maps.apple.com/?daddr=${spot.location.latitude},${spot.location.longitude}&dirflg=d&t=h`)}
+        name="directions"
+        iconStyle={{ color: 'rgb(244, 2, 87)' }}
+        containerStyle={styles.directionButton}
+        onPress={() =>
+          Linking.openURL(
+            `http://maps.apple.com/?daddr=${spot.location.latitude},${spot.location.longitude}&dirflg=d&t=h`
+          )
+        }
       />
 
+      <Icon
+        raised
+        size={hp('2.8')}
+        type="font-awesome"
+        name="exclamation-triangle"
+        iconStyle={{ color: 'orange' }}
+        containerStyle={styles.reportButton}
+        onPress={() => console.log('report!')}
+      />
 
       <Animated.FlatList
         horizontal
@@ -70,49 +66,85 @@ const ApprovalSpotPage = ({ route, navigation }) => {
         renderItem={_renderItem}
         sliderWidth={wp('50%')}
         itemWidth={wp('50%')}
-        scrollEventThrottle={1}
+        scrollEventThrottle={2}
         snapToInterval={wp('100%')}
-        keyExtractor={(item, i) => i}
+        keyExtractor={(item) => item._id}
+        style={styles.flatListContainer}
       />
 
-      <Text style={styles.text}>
-        SPOT NAME: {spot.name}
-        {"\n"}
-        DESCRIPTION: {spot.description}
-        {"\n"}
-        OWNER: {spot.owner.name}
-        {"\n"}
-        TYPE: {spot.spotType}
-        {"\n"}
-        CONTAINS: {spot.contains.map(i => {
-          return <Text>{i}, </Text>
-        })}
-      </Text>
-
-
-      <Divider />
-
       <View style={styles.infoContainer}>
+        <View style={styles.typeContainer}>
+          <Image
+            style={styles.littleIcons}
+            source={require('../../assets/ramp.png')}
+          />
+          <Text style={styles.description}>{spot.spotType}</Text>
+        </View>
 
+        <View style={styles.containsContainer}>
+          {spot.contains.map((contain, i) => (
+            <View style={styles.contains}>
+              <Text style={styles.containsText} key={i}>
+                {contain}
+              </Text>
+            </View>
+          ))}
+        </View>
+
+        <Text style={styles.description}>{spot.description}</Text>
       </View>
     </View>
-  )
-}
-
-export default ApprovalSpotPage
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
+    fontFamily: 'ProximaNova',
+    alignItems: 'center',
   },
-  button: {
-    marginTop: hp('5%'),
-    marginBottom: hp('10%')
+  flatListContainer: {
+    height: '50%',
   },
   infoContainer: {
     display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-around',
+    margin: 10,
+    // backgroundColor: 'lightgrey',
+  },
+
+  description: {
+    fontSize: 17,
+  },
+  typeContainer: {
+    height: hp('10%'),
     flexDirection: 'row',
-    justifyContent: 'space-around'
+    alignContent: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  littleIcons: {
+    width: 50,
+    height: 50,
+  },
+  containsContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignContent: 'space-between',
+    marginBottom: 20,
+  },
+  contains: {
+    height: hp('5%'),
+    backgroundColor: 'rgb(244, 2, 87)',
+    alignContent: 'center',
+    borderRadius: 10,
+    padding: 10,
+    margin: 10,
+  },
+  containsText: {
+    fontSize: 20,
+    color: 'white',
   },
   homeView: {
     // alignItems: 'flex-end',
@@ -121,8 +153,25 @@ const styles = StyleSheet.create({
   text: {
     margin: 20,
     fontFamily: 'ProximaNova',
-    // letterSpacing: 3,
     fontSize: 20,
     position: 'relative',
-  }
-})
+  },
+  directionButton: {
+    position: 'absolute',
+    zIndex: 2,
+    marginRight: wp('30%'),
+    marginTop: hp('10%'),
+    alignSelf: 'flex-end',
+    paddingRight: wp('15%'),
+  },
+  reportButton: {
+    position: 'absolute',
+    zIndex: 2,
+    marginLeft: wp('30%'),
+    paddingRight: wp('15%'),
+    marginTop: hp('90%'),
+    alignSelf: 'flex-end',
+  },
+});
+
+export default SpotPage;

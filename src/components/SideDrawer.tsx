@@ -1,58 +1,41 @@
-import React, { useContext } from "react";
-import { StyleSheet, Text, View, AsyncStorage } from "react-native";
-import { Divider, ListItem } from "react-native-elements";
-import { DrawerContentScrollView } from "@react-navigation/drawer";
+import React, { useContext } from 'react';
+import { StyleSheet, Text, View, AsyncStorage } from 'react-native';
+import { Divider, ListItem, Icon } from 'react-native-elements';
+import { DrawerContentScrollView } from '@react-navigation/drawer';
 //Context
-import { store } from "../store";
-import jwt_decode from "jwt-decode";
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f6f6f6",
-    paddingTop: 40,
-  },
-  divider: { backgroundColor: "grey", marginTop: 0 },
-  title: {
-    fontFamily: "Lobster",
-    justifyContent: "space-around",
-    color: "black",
-    fontSize: 40,
-    alignSelf: "center",
-    marginTop: 20,
-  },
-});
+import { store } from '../store';
+import jwt_decode from 'jwt-decode';
 
 interface Iprops { }
 
 const SideMenu = (props: Iprops) => {
   const { state, dispatch } = useContext(store);
   const decoded = jwt_decode(state.token);
-  const { navigation } = props
+  const { navigation } = props;
 
   const logOut = async () => {
-    await AsyncStorage.setItem("AUTH_TOKEN", "");
-    await AsyncStorage.setItem("NAME", "");
-    await AsyncStorage.setItem("EMAIL", "");
-    await AsyncStorage.setItem("USER_ID", "");
-    await AsyncStorage.setItem("ADMIN", "");
+    await AsyncStorage.setItem('AUTH_TOKEN', '');
+    await AsyncStorage.setItem('NAME', '');
+    await AsyncStorage.setItem('EMAIL', '');
+    await AsyncStorage.setItem('USER_ID', '');
+    await AsyncStorage.setItem('ADMIN', '');
 
     dispatch({
-      type: "SET_USER",
+      type: 'SET_USER',
       payload: false,
     });
   };
 
-  let list = [
+  const list = [
     {
-      name: "Map",
-      icon: "globe",
-      type: "font-awesome",
+      name: 'Map',
+      icon: 'globe',
+      type: 'font-awesome',
     },
     {
-      name: "My Spots",
-      type: "font-awesome",
-      icon: "bookmark",
+      name: 'My Spots',
+      type: 'font-awesome',
+      icon: 'bookmark',
     },
 
     // {
@@ -62,52 +45,89 @@ const SideMenu = (props: Iprops) => {
     // },
   ];
 
-
   if (decoded.admin) {
-    list.push({
-      name: "Approvals",
-      type: "font-awesome",
-      icon: "globe",
-    })
+    list.push(
+      {
+        name: 'Approvals',
+        type: 'font-awesome',
+        icon: 'check',
+      },
+      { name: 'Administration', type: 'font-awesome', icon: 'gear' }
+    );
   }
-
-  // administration = () => {
-  //   if (this.props.user.user.username === 'seanrad') {
-  //     return (
-  //       <ListItem
-  //         title="Administration"
-  //         leftIcon={{ name: 'gear', type: 'font-awesome' }}
-  //         onPress={() => this.props.navigation.navigate('AdminConsole')}
-  //       />
-  //     );
-  //   }
-  // };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>SkateSense</Text>
 
       <DrawerContentScrollView>
-        <Divider style={styles.divider} />
+        <Divider />
         <View>
-          {list.map((item, i) => {
-            return (
-              <ListItem key={i} onPress={() => navigation.navigate(item.name)} >
-                <ListItem.Title>{item.name}</ListItem.Title>
-              </ListItem>
-            )
-          })}
+          {list.map((item, i) => (
+            <ListItem key={i} onPress={() => navigation.navigate(item.name)}>
+              <ListItem.Content style={styles.itemContainer}>
+                <Icon
+                  containerStyle={styles.iconContainer}
+                  type={item.type}
+                  name={item.icon}
+                  iconStyle={styles.iconStyle}
+                />
+                <ListItem.Title style={styles.itemTitle}>
+                  {item.name}
+                </ListItem.Title>
+              </ListItem.Content>
+            </ListItem>
+          ))}
+
           <ListItem onPress={logOut}>
-            <ListItem.Title>Logout</ListItem.Title>
+            <ListItem.Content style={styles.itemContainer}>
+              <Icon
+                containerStyle={styles.iconContainer}
+                type="font-awesome"
+                name="sign-out"
+                iconStyle={styles.iconStyle}
+              />
+              <ListItem.Title style={styles.itemTitle}>Logout</ListItem.Title>
+            </ListItem.Content>
           </ListItem>
 
           {/* {this.props.user.user !== null ? this.approvals() : null}
 
             {this.props.user.user !== null ? this.administration() : null} */}
         </View>
+        <Divider />
       </DrawerContentScrollView>
-    </View >
+    </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f6f6f6',
+    paddingTop: 40,
+  },
+  title: {
+    fontFamily: 'Lobster',
+    justifyContent: 'space-around',
+    color: 'black',
+    fontSize: 40,
+    alignSelf: 'center',
+    marginTop: 20,
+  },
+  itemContainer: {
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+  },
+  itemTitle: {
+    marginLeft: 15,
+  },
+  iconContainer: {
+    width: 20,
+  },
+  iconStyle: {
+    color: 'black',
+  },
+});
 
 export default SideMenu;

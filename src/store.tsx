@@ -1,12 +1,17 @@
 // store.js
-import React, { createContext, useReducer } from "react";
+import React, { createContext, useReducer } from 'react';
 
-const initialState = { loading: true, darkMode: true, primary: 'white', secondary: 'rgb(40, 44, 52)' }
+const initialState = {
+  loading: true,
+  darkMode: true,
+  primary: 'white',
+  secondary: 'rgb(40, 44, 52)',
+};
 
 const store = createContext(initialState);
 const { Provider } = store;
 
-export const SET_USER = "SET_USER";
+export const SET_USER = 'SET_USER';
 
 const StateProvider = ({ children }) => {
   const [state, dispatch] = useReducer((state, action) => {
@@ -16,10 +21,10 @@ const StateProvider = ({ children }) => {
           ...initialState,
           token: action.payload.token,
           user_id: action.payload.user_id,
-          admin: action.payload.admin
+          admin: action.payload.admin,
         };
       case SET_BOOKMARKS:
-        return { ...initialState, bookmarks: action.payload }
+        return { ...initialState, bookmarks: action.payload };
       default:
         throw new Error();
     }

@@ -1,4 +1,10 @@
-import React, { useState, useContext, useReducer, useEffect, useCallback } from 'react';
+import React, {
+  useState,
+  useContext,
+  useReducer,
+  useEffect,
+  useCallback,
+} from 'react';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
 import {
   View,
@@ -8,7 +14,7 @@ import {
   TextInput,
   Alert,
   RefreshControl,
-  LogBox
+  LogBox,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -19,7 +25,7 @@ import {
 } from 'react-native-responsive-screen';
 // import MySpotsButtonGroup from '../childComponents/MySpotsButtonGroup.js';
 import GET_MY_SPOTS from '../../graphql/queries/getMySpots';
-import GET_SPOTS from "../../graphql/queries/getSpots";
+import GET_SPOTS from '../../graphql/queries/getSpots';
 import GET_BOOKMARKS from '../../graphql/queries/getBookmarks';
 // import GET_BOOKMARKS from '../../graphql/queries/getBookmarks';
 import DELETE_SPOT_MUTATION from '../../graphql/mutations/deleteSpotMutation';
@@ -27,47 +33,55 @@ import DELETE_BOOKMARK_MUTATION from '../../graphql/mutations/deleteBookmarkMuta
 import { reducer, spotBookState } from './reducer';
 import SpotCard from '../../components/SpotCard';
 import SpotsButtonGroup from '../../components/SpotsButtonGroup';
-import { store } from "../../store";
-import TopHeader from "../../components/Header"
-import { getCurrentLocation } from '../../utils/helpers'
+import { store } from '../../store';
+import TopHeader from '../../components/Header';
+import { getCurrentLocation } from '../../utils/helpers';
 import Loading from '../../components/Loading';
 
 const SpotBook = ({ navigation }) => {
-  const { state: myStore } = useContext(store)
+  const { state: myStore } = useContext(store);
   const [tab, setTab] = useState(0);
   const [term, setTerm] = useState('');
   const [refreshing] = useState(false);
   const [deleteSpot] = useMutation(DELETE_SPOT_MUTATION);
   const [deleteBookmark] = useMutation(DELETE_BOOKMARK_MUTATION);
-  const [location, setLocation] = useState()
-
+  const [location, setLocation] = useState();
 
   const [getMySpots, { loading, data: mySpots }] = useLazyQuery(GET_MY_SPOTS);
 
-  const [getMyBookmarks, { loading: loading2, data: myBookmarks }] = useLazyQuery(GET_BOOKMARKS, {
+  const [
+    getMyBookmarks,
+    { loading: loading2, data: myBookmarks },
+  ] = useLazyQuery(GET_BOOKMARKS, {
     variables: { user_id: myStore.user_id },
   });
-
 
   useFocusEffect(
     useCallback(() => {
       async function fetchMyAPI() {
-        let location = await getCurrentLocation()
-        getMySpots({ variables: { locationInput: { latitude: location.coords.latitude, longitude: location.coords.longitude } } });
+        const location = await getCurrentLocation();
+        getMySpots({
+          variables: {
+            locationInput: {
+              latitude: location.coords.latitude,
+              longitude: location.coords.longitude,
+            },
+          },
+        });
         getMyBookmarks();
       }
-      fetchMyAPI()
+      fetchMyAPI();
     }, [])
-  )
+  );
 
   const getCoords = async () => {
-    return
-  }
+    return;
+  };
 
-  const onSearchChange = e => setTerm(e);
-  const onChangeTab = e => setTab(e);
+  const onSearchChange = (e) => setTerm(e);
+  const onChangeTab = (e) => setTab(e);
 
-  const unBookmark = async _id => {
+  const unBookmark = async (_id) => {
     try {
       await deleteBookmark({
         variables: {
@@ -88,7 +102,7 @@ const SpotBook = ({ navigation }) => {
     }
   };
 
-  const unBookmarkAlertMsg = _id => {
+  const unBookmarkAlertMsg = (_id) => {
     Alert.alert(
       'Unbookmarking spot',
       'Are you sure you want to unbookmark this spot?',
@@ -100,32 +114,45 @@ const SpotBook = ({ navigation }) => {
           style: 'cancel',
         },
       ],
-      { cancelable: false },
+      { cancelable: false }
     );
   };
 
-  const handleDeleteSpot = async _id => {
-    const location = await getCurrentLocation()
+  const handleDeleteSpot = async (_id) => {
+    const location = await getCurrentLocation();
 
     try {
-
       await deleteSpot({
         variables: {
           _id,
         },
         refetchQueries: [
-          { query: GET_MY_SPOTS, variables: { locationInput: { latitude: location.coords.latitude, longitude: location.coords.longitude } } },
-          { query: GET_SPOTS }
+          {
+            query: GET_MY_SPOTS,
+            variables: {
+              locationInput: {
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude,
+              },
+            },
+          },
+          { query: GET_SPOTS },
         ],
       });
-      getMySpots({ variables: { locationInput: { latitude: location.coords.latitude, longitude: location.coords.longitude } } });
-
+      getMySpots({
+        variables: {
+          locationInput: {
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+          },
+        },
+      });
     } catch (e) {
       alert('Unable to delete spot at this time.');
     }
   };
 
-  const deleteAlertMsg = _id => {
+  const deleteAlertMsg = (_id) => {
     Alert.alert(
       'Deleting spot',
       'Are you sure you want to delete this spot?',
@@ -137,27 +164,32 @@ const SpotBook = ({ navigation }) => {
           style: 'cancel',
         },
       ],
-      { cancelable: false },
+      { cancelable: false }
     );
   };
 
   const launchRefetch = async () => {
     if (tab === 0) {
-      let location = await getCurrentLocation()
-      getMySpots({ variables: { locationInput: { latitude: location.coords.latitude, longitude: location.coords.longitude } } });
-
+      const location = await getCurrentLocation();
+      getMySpots({
+        variables: {
+          locationInput: {
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude,
+          },
+        },
+      });
     }
     if (tab === 1) {
-      getMyBookmarks()
+      getMyBookmarks();
     }
   };
 
-
   if (loading || mySpots === undefined) {
-    return <Loading />
+    return <Loading />;
   }
   if (loading2 || myBookmarks === undefined) {
-    return <Loading />
+    return <Loading />;
   }
 
   return (
@@ -168,20 +200,20 @@ const SpotBook = ({ navigation }) => {
         style={styles.search}
         placeholder="Search"
         returnKeyType="search"
-        onChangeText={value => onSearchChange(value)}
+        onChangeText={(value) => onSearchChange(value)}
       />
 
       <SpotsButtonGroup onChangeTab={onChangeTab} />
 
-      {tab === 0 &&
+      {tab === 0 && (
         <ScrollView
           contentContainerStyle={styles.containerStyle}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={launchRefetch} />
-          }>
-
-          {mySpots.getUserCreatedSpots.length > 0
-            ? mySpots.getUserCreatedSpots.map((spot, i) => (
+          }
+        >
+          {mySpots.getUserCreatedSpots.length > 0 ? (
+            mySpots.getUserCreatedSpots.map((spot, i) => (
               <SpotCard
                 key={i}
                 spot={spot}
@@ -189,20 +221,23 @@ const SpotBook = ({ navigation }) => {
                 deleteAlertMsg={deleteAlertMsg}
               />
             ))
-            : <Text style={styles.noneText}>You haven't created any spots yet</Text>}
-
+          ) : (
+            <Text style={styles.noneText}>
+              You haven't created any spots yet
+            </Text>
+          )}
         </ScrollView>
-      }
+      )}
 
-      {tab === 1 &&
+      {tab === 1 && (
         <ScrollView
           contentContainerStyle={styles.containerStyle}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={launchRefetch} />
-          }>
-
-          {myBookmarks.getBookmarks.length > 0
-            ? myBookmarks.getBookmarks.map((spot, i) => (
+          }
+        >
+          {myBookmarks.getBookmarks.length > 0 ? (
+            myBookmarks.getBookmarks.map((spot, i) => (
               <SpotCard
                 key={i}
                 spot={spot}
@@ -211,10 +246,13 @@ const SpotBook = ({ navigation }) => {
                 unBookmarkAlertMsg={unBookmarkAlertMsg}
               />
             ))
-            : <Text style={styles.noneText}>You haven't bookmarked any spots yet</Text>}
-
+          ) : (
+            <Text style={styles.noneText}>
+              You haven't bookmarked any spots yet
+            </Text>
+          )}
         </ScrollView>
-      }
+      )}
     </View>
   );
 };
@@ -223,7 +261,7 @@ export default SpotBook;
 
 const styles = StyleSheet.create({
   containerStyle: {
-    paddingBottom: 200
+    paddingBottom: 200,
   },
 
   search: {
@@ -238,6 +276,6 @@ const styles = StyleSheet.create({
 
   noneText: {
     textAlign: 'center',
-    color: 'grey'
-  }
+    color: 'grey',
+  },
 });

@@ -6,7 +6,7 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import { getCurrentLocation } from '../../../utils/helpers'
+import { getCurrentLocation } from '../../../utils/helpers';
 
 import markerIcon from '../../../../assets/markerIcon.png';
 import { animateToUserLocation } from '../../Map/utils';
@@ -23,19 +23,18 @@ const LocationSelectorMap = ({ navigation }) => {
 
   useEffect(() => {
     (async () => {
-      const location = await getCurrentLocation()
-      setUserLocation(location.coords)
+      const location = await getCurrentLocation();
+      setUserLocation(location.coords);
     })();
   }, []);
 
-
   useEffect(() => {
     if (state.locationSelected) {
-      navigation.navigate("New Spot Page", { region })
+      navigation.navigate('New Spot Page', { region });
     }
   }, [state]);
 
-  const onRegionChange = region => {
+  const onRegionChange = (region) => {
     setRegion(region);
   };
 
@@ -49,12 +48,9 @@ const LocationSelectorMap = ({ navigation }) => {
     });
   };
 
-
   if (userLocation.latitude === undefined) {
     return <Text>Loading...</Text>;
   }
-
-
 
   return (
     <View style={{ flex: 1 }}>
@@ -89,7 +85,8 @@ const LocationSelectorMap = ({ navigation }) => {
           top: '85%',
           left: '0%',
           justifyContent: 'center',
-        }}>
+        }}
+      >
         <Button
           title="Submit Location"
           buttonStyle={{
@@ -101,8 +98,8 @@ const LocationSelectorMap = ({ navigation }) => {
         />
       </View>
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {

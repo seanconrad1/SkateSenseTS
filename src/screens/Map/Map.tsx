@@ -1,55 +1,51 @@
-import React, { useEffect, useReducer, useRef, useCallback, useState, useContext } from "react";
-import {
-  Text,
-  View,
-  Animated,
-  Image,
-  TouchableOpacity,
-} from "react-native";
+import React, {
+  useEffect,
+  useReducer,
+  useRef,
+  useCallback,
+  useState,
+  useContext,
+} from 'react';
+import { Text, View, Animated, Image, TouchableOpacity } from 'react-native';
 // import { TouchableOpacity } from 'react-native-gesture-handler';
-import MapView, { Callout } from "react-native-maps";
-import { Icon, Button } from "react-native-elements";
-import GET_SPOTS from "../../graphql/queries/getSpots";
-import { useQuery } from "@apollo/react-hooks";
+import MapView, { Callout } from 'react-native-maps';
+import { Icon, Button } from 'react-native-elements';
+import GET_SPOTS from '../../graphql/queries/getSpots';
+import { useQuery } from '@apollo/react-hooks';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
-} from "react-native-responsive-screen";
+} from 'react-native-responsive-screen';
 // import Geolocation from "@react-native-community/geolocation";
-import markerIcon from "../../../assets/markerIcon.png";
-import { animateToUserLocation } from "./utils";
-import { reducer, mapState } from "./reducer";
-import MapSpotCard from "../../components/MapSpotCard";
+import markerIcon from '../../../assets/markerIcon.png';
+import { animateToUserLocation } from './utils';
+import { reducer, mapState } from './reducer';
+import MapSpotCard from '../../components/MapSpotCard';
 import * as Location from 'expo-location';
-import styles from './styles'
-import { store } from '../../store'
-import { getCurrentLocation } from '../../utils/helpers'
-import Loading from "../../components/Loading";
-
-
+import styles from './styles';
+import { store } from '../../store';
+import { getCurrentLocation } from '../../utils/helpers';
+import Loading from '../../components/Loading';
 
 const LOCATION_TASK_NAME = 'background-location-task';
-const CARD_WIDTH = wp("95%");
-
-
+const CARD_WIDTH = wp('95%');
 
 const Map = (props) => {
-  const { state: myStore, dispatch: storeDispatch } = useContext(store)
+  const { state: myStore, dispatch: storeDispatch } = useContext(store);
   const { loading, error, data, refetch } = useQuery(GET_SPOTS);
   const [state, dispatch] = useReducer(reducer, mapState);
   const mapRef = useRef();
   const flatListRef = useRef();
-  const [slideUpValue, setSideUpValie] = useState(new Animated.Value(0))
-  const [raiseOrLower, setRaiseOrLower] = useState(true)
-  const [userLocation, setUserLocation] = useState()
+  const [slideUpValue, setSideUpValie] = useState(new Animated.Value(0));
+  const [raiseOrLower, setRaiseOrLower] = useState(true);
+  const [userLocation, setUserLocation] = useState();
 
-  const { filteredSpots } = state
-  const { navigation } = props
-
+  const { filteredSpots } = state;
+  const { navigation } = props;
 
   useEffect(() => {
-    test()
-  }, [])
+    test();
+  }, []);
 
   useEffect(() => {
     if (data) {
@@ -64,7 +60,7 @@ const Map = (props) => {
       //     geoLocationSwitch: true,
       //   };
 
-      dispatch({ type: "SET_SPOTS", payload: data.getSpots });
+      dispatch({ type: 'SET_SPOTS', payload: data.getSpots });
       //   dispatch({ type: "SET_INIT_LOCATION", payload: initReg });
       // });
     }
@@ -78,9 +74,6 @@ const Map = (props) => {
     state.currentRegion,
   ]);
 
-
-
-
   // useEffect(() => {
   //   async function checkAuth() {
   //     const user_id = await AsyncStorage.getItem("AUTH_TOKEN");
@@ -89,8 +82,6 @@ const Map = (props) => {
 
   //   checkAuth();
   // });
-
-
 
   // This is the function to scroll
   // to the end of the spots when a new spot is created
@@ -121,21 +112,23 @@ const Map = (props) => {
   const test = async () => {
     const { status } = await Location.requestPermissionsAsync();
     if (status === 'granted') {
-      let a = await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
+      const a = await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
         accuracy: Location.Accuracy.Balanced,
       });
 
-      // const location = await getCurrentLocation()
+      const location = await getCurrentLocation();
+
+      console.log('WHAT IS MY LOCATION', location);
       // setUserLocation(location.coords)
     }
-  }
+  };
 
   const onRegionChange = (region) => {
-    dispatch({ type: "SET_CURRENT_REGION", payload: region });
+    dispatch({ type: 'SET_CURRENT_REGION', payload: region });
   };
 
   const goToSpotPage = (marker) => {
-    navigation.navigate("SpotPage", { skatespot: marker });
+    navigation.navigate('SpotPage', { skatespot: marker });
   };
 
   const onMarkerPressHandler = (marker, index) => {
@@ -160,13 +153,13 @@ const Map = (props) => {
           // spot.approved === true,
         );
         // setState({filteredSpots: filteredSpots})
-        dispatch({ type: "SET_SPOTS", payload: filteredSpots });
+        dispatch({ type: 'SET_SPOTS', payload: filteredSpots });
       }
     }
   }, [data, state.animation, state.currentRegion]);
 
   const setAnimatorListener = useCallback(() => {
-    let regionTimeout = "";
+    let regionTimeout = '';
 
     state.animation.addListener(({ value }) => {
       let animationIndex = Math.floor(value / CARD_WIDTH + 0.3); // animate 30% away from landing on the next item
@@ -183,8 +176,7 @@ const Map = (props) => {
           state.index = animationIndex;
           mapRef.current.animateToRegion(
             {
-              latitude:
-                filteredSpots[animationIndex].location.latitude - 0.02,
+              latitude: filteredSpots[animationIndex].location.latitude - 0.02,
               longitude: filteredSpots[animationIndex].location.longitude,
               latitudeDelta: state.region.latitudeDelta,
               longitudeDelta: state.region.longitudeDelta,
@@ -212,19 +204,19 @@ const Map = (props) => {
       const scale = state.animation.interpolate({
         inputRange,
         outputRange: [1, 2.5, 1],
-        extrapolate: "clamp",
+        extrapolate: 'clamp',
       });
       const opacity = state.animation.interpolate({
         inputRange,
         outputRange: [10, 1, 10],
-        extrapolate: "clamp",
+        extrapolate: 'clamp',
       });
       return { scale, opacity };
     })
     : null;
 
   if (loading) {
-    return <Loading />
+    return <Loading />;
   }
   if (error) {
     return <Text style={styles.error}>Error! {error.message}</Text>;
@@ -234,18 +226,18 @@ const Map = (props) => {
     Animated.timing(slideUpValue, {
       toValue: 1,
       duration: 500,
-      useNativeDriver: true
+      useNativeDriver: true,
     }).start();
-    setRaiseOrLower(true)
+    setRaiseOrLower(true);
   };
 
   const lower = () => {
     Animated.timing(slideUpValue, {
       toValue: 0,
       duration: 500,
-      useNativeDriver: true
+      useNativeDriver: true,
     }).start();
-    setRaiseOrLower(false)
+    setRaiseOrLower(false);
   };
 
   // Map types
@@ -260,7 +252,7 @@ const Map = (props) => {
     <View style={styles.container}>
       <MapView
         showsUserLocation
-        onMapReady={() => console.log("ready!")}
+        onMapReady={() => console.log('ready!')}
         ref={mapRef}
         // initialRegion={{
         //   latitude: userLocation.latitude,
@@ -327,9 +319,8 @@ const Map = (props) => {
               />
             </TouchableOpacity>
 
-
             <TouchableOpacity
-              onPress={() => navigation.navigate("New Spot Page")}
+              onPress={() => navigation.navigate('New Spot Page')}
               style={styles.addSpotButton}
             >
               <Animated.View
@@ -338,13 +329,12 @@ const Map = (props) => {
                     {
                       translateY: slideUpValue.interpolate({
                         inputRange: [0, 1],
-                        outputRange: [200, 0]
-                      })
-                    }
+                        outputRange: [200, 0],
+                      }),
+                    },
                   ],
                 }}
               >
-
                 <Icon
                   raised
                   name="plus"
@@ -361,10 +351,10 @@ const Map = (props) => {
           <Button
             raised
             icon={{
-              name: "refresh",
+              name: 'refresh',
               size: 18,
-              color: "rgb(244, 2, 87)",
-              type: "font-awesome",
+              color: 'rgb(244, 2, 87)',
+              type: 'font-awesome',
               marginLeft: 5,
             }}
             title="Search this area"
@@ -381,13 +371,12 @@ const Map = (props) => {
                   {
                     translateY: slideUpValue.interpolate({
                       inputRange: [0, 1],
-                      outputRange: [200, 0]
-                    })
-                  }
+                      outputRange: [200, 0],
+                    }),
+                  },
                 ],
               }}
             >
-
               <Icon
                 raised
                 name="location-arrow"
@@ -407,9 +396,9 @@ const Map = (props) => {
             {
               translateY: slideUpValue.interpolate({
                 inputRange: [0, 1],
-                outputRange: [200, 0]
-              })
-            }
+                outputRange: [200, 0],
+              }),
+            },
           ],
         }}
       >
@@ -434,8 +423,13 @@ const Map = (props) => {
           )}
           data={filteredSpots}
           renderItem={({ item }) => (
-
-            <MapSpotCard spot={item} raise={raise} lower={lower} CARD_WIDTH={CARD_WIDTH} />
+            <MapSpotCard
+              navigation={navigation}
+              spot={item}
+              raise={raise}
+              lower={lower}
+              CARD_WIDTH={CARD_WIDTH}
+            />
           )}
           keyExtractor={(item, index) => index.toString()}
         />
@@ -443,9 +437,5 @@ const Map = (props) => {
     </View>
   );
 };
-
-
-
-
 
 export default Map;

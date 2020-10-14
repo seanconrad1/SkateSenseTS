@@ -43,21 +43,20 @@ const SpotCard = ({
     }
   };
 
-
-
   return (
     <TouchableWithoutFeedback
       onPress={() => {
-        console.log('spot page')
+        console.log('spot page');
         // navigation.navigate('SpotPage', {
         //   skatespot: spot,
         // });
-      }}>
-      <Card
-        key={spot.id}
-        containerStyle={styles.spot}>
+      }}
+    >
+      <Card key={spot.id} containerStyle={styles.spot}>
         <Card.Title>{spot.name}</Card.Title>
-        <Card.Image source={{ uri: `data:image/gif;base64,${spot.images[0].base64}` }} />
+        <Card.Image
+          source={{ uri: `data:image/gif;base64,${spot.images[0].base64}` }}
+        />
         <Text style={styles.aboutContainer}>
           <Text style={styles.aboutContainerItem}>About: </Text>
           <Text>{spot.description}</Text>
@@ -80,7 +79,7 @@ const SpotCard = ({
             color="black"
             onPress={() =>
               Linking.openURL(
-                `http://maps.apple.com/?daddr=${spot.location.latitude},${spot.location.longitude}`,
+                `http://maps.apple.com/?daddr=${spot.location.latitude},${spot.location.longitude}`
               )
             }
           />
@@ -94,15 +93,15 @@ const SpotCard = ({
               onPress={() => unBookmarkAlertMsg(spot._id)}
             />
           ) : (
-              <Icon
-                raised
-                name="trash"
-                type="font-awesome"
-                size={17}
-                color="rgb(244, 2, 87)"
-                onPress={() => deleteAlertMsg(spot._id)}
-              />
-            )}
+            <Icon
+              raised
+              name="trash"
+              type="font-awesome"
+              size={17}
+              color="rgb(244, 2, 87)"
+              onPress={() => deleteAlertMsg(spot._id)}
+            />
+          )}
 
           <Icon
             raised

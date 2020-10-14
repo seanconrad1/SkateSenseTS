@@ -1,19 +1,19 @@
-import React, { useState, useEffect, useContext } from "react";
-import { View, KeyboardAvoidingView, Animated, Text } from "react-native";
-import AsyncStorage from "@react-native-community/async-storage";
-import { Input, Button } from "react-native-elements";
-import Icon from "react-native-vector-icons/FontAwesome";
-import CREATE_USER from "../graphql/mutations/newUserMutation";
-import { useMutation } from "@apollo/react-hooks";
-import { store } from "../store";
-import styles from "../styles";
+import React, { useState, useEffect, useContext } from 'react';
+import { View, KeyboardAvoidingView, Animated, Text } from 'react-native';
+import AsyncStorage from '@react-native-community/async-storage';
+import { Input, Button } from 'react-native-elements';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import CREATE_USER from '../graphql/mutations/newUserMutation';
+import { useMutation } from '@apollo/react-hooks';
+import { store } from '../store';
+import styles from '../styles';
 
 const SignUp = (props) => {
-  const [name, setName] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [email, setEmail] = useState("");
-  const [error, setError] = useState("");
+  const [name, setName] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [email, setEmail] = useState('');
+  const [error, setError] = useState('');
   const globalState = useContext(store);
   const [disableButton, setDisableButton] = useState(false);
   const { dispatch } = globalState;
@@ -48,7 +48,7 @@ const SignUp = (props) => {
     try {
       data = await createUser({ variables: obj });
       setDisableButton(false);
-      setError("");
+      setError('');
     } catch (e) {
       setError(e.networkError.result.errors[0].message);
     }
@@ -94,7 +94,7 @@ const SignUp = (props) => {
         leftIcon={<Icon name="user" size={24} color="black" />}
         clearButtonMode="never"
         value={name}
-        placeholderTextColor={"grey"}
+        placeholderTextColor={'grey'}
         autoCapitalize="none"
         textContentType="name"
         autoCompleteType="name"
@@ -110,7 +110,7 @@ const SignUp = (props) => {
         leftIcon={<Icon name="envelope" size={22} color="black" />}
         clearButtonMode="never"
         value={email}
-        placeholderTextColor={"grey"}
+        placeholderTextColor={'grey'}
         autoCapitalize="none"
         autoCorrect={false}
         autoCompleteType="email"
@@ -124,7 +124,7 @@ const SignUp = (props) => {
         placeholder="Password"
         autoCapitalize="none"
         autoCorrect={false}
-        placeholderTextColor={"grey"}
+        placeholderTextColor={'grey'}
         value={password}
         clearButtonMode="never"
         secureTextEntry
@@ -137,7 +137,7 @@ const SignUp = (props) => {
         placeholder="Confirm password"
         autoCapitalize="none"
         value={confirmPassword}
-        placeholderTextColor={"grey"}
+        placeholderTextColor={'grey'}
         autoCorrect={false}
         clearButtonMode="never"
         secureTextEntry

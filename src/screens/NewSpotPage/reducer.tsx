@@ -1,6 +1,6 @@
-import { ActivityIndicatorComponent } from "react-native";
-import { spotBookState } from "../SpotBook/reducer";
-import { streetSpotContains } from "./typesAndSelections";
+import { ActivityIndicatorComponent } from 'react-native';
+import { spotBookState } from '../SpotBook/reducer';
+import { streetSpotContains } from './typesAndSelections';
 
 export const newSpotState = {
   name: null,
@@ -8,7 +8,7 @@ export const newSpotState = {
   kickout_level: 0,
   photo: [],
   validation: false,
-  spotType: "",
+  spotType: '',
   spotContains: [],
   selectedLat: null,
   selectedLng: null,
@@ -26,11 +26,17 @@ export function reducer(state, action) {
     case 'SET_KICKOUT_LEVEL':
       return { ...state, kickout_level: action.payload };
     case 'SET_SPOT_TYPE':
-      return { ...state, spotType: action.payload }
+      return { ...state, spotType: action.payload };
     case 'SET_SPOT_CONTAINS':
-      return { ...state, spotContains: [...state.spotContains, action.payload] }
+      return {
+        ...state,
+        spotContains: [...state.spotContains, action.payload],
+      };
     case 'REMOVE_SPOT_CONTAINS':
-      return { ...state, spotContains: state.spotContains.filter(i => i !== action.payload) }
+      return {
+        ...state,
+        spotContains: state.spotContains.filter((i) => i !== action.payload),
+      };
     case 'SET_PHOTO':
       if (state.photo) {
         return { ...state, photo: [...state.photo, action.payload] };
@@ -38,7 +44,7 @@ export function reducer(state, action) {
         return { ...state, photo: [action.payload] };
       }
     case 'REMOVE_PHOTO':
-      state.photo.splice(action.payload, 1)
+      state.photo.splice(action.payload, 1);
       return { ...state, photo: state.photo };
     case 'SPOT_SUBMITED':
       return { ...state, spotSubmitted: action.payload };
@@ -68,19 +74,20 @@ export function reducer(state, action) {
 
     case 'CLEAR_STATE':
       return {
-        ...state, name: "",
-        description: "",
+        ...state,
+        name: '',
+        description: '',
         kickout_level: 0,
         photo: [],
         validation: false,
-        spotType: "",
+        spotType: '',
         spotContains: [],
         selectedLat: null,
         selectedLng: null,
         spotSubmitted: false,
         currentLocationSelected: false,
         locationSelected: false,
-      }
+      };
     default:
       throw new Error();
   }

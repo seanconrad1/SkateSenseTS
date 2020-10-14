@@ -4,7 +4,7 @@ const USERS_FETCH = gql`
   query getUsers {
     getUsers {
       name
-      bookmarks {
+      spots {
         name
         owner {
           _id
@@ -18,6 +18,8 @@ const USERS_FETCH = gql`
           latitude
         }
         kickout_level
+        contains
+        spotType
       }
     }
   }
