@@ -7,6 +7,7 @@ import {
   Animated,
   Image,
   Linking,
+  ScrollView
 } from 'react-native';
 import { useMutation } from '@apollo/react-hooks';
 import GET_SPOTS from '../graphql/queries/getSpots';
@@ -20,12 +21,25 @@ import ramp from '../../assets/ramp.svg';
 
 const SpotPage = ({ route, navigation }) => {
   const spot = route.params.spot;
-  console.log(spot);
+  console.log(spot.spotType);
+
+  const getIcon =() =>{
+    
+   switch (spot.spotType) {
+     case 'Street Spot':
+       return require('../../assets/stairs.png')
+      case'Skatepark':
+       return require('../../assets/ramp.png')
+  
+     default:
+       break;
+   } 
+  }
 
   const _renderItem = ({ item, key }) => (
     <View key={key}>
       <Image
-        style={{ width: wp('100%'), height: hp('50%') }}
+        style={styles.image}
         source={{
           uri: `data:image/gif;base64,${item.base64}`,
         }}
@@ -72,11 +86,12 @@ const SpotPage = ({ route, navigation }) => {
         style={styles.flatListContainer}
       />
 
+      <ScrollView style={{height: '100%'}}>
       <View style={styles.infoContainer}>
         <View style={styles.typeContainer}>
           <Image
             style={styles.littleIcons}
-            source={require('../../assets/ramp.png')}
+            source={getIcon()}
           />
           <Text style={styles.description}>{spot.spotType}</Text>
         </View>
@@ -93,24 +108,30 @@ const SpotPage = ({ route, navigation }) => {
 
         <Text style={styles.description}>{spot.description}</Text>
       </View>
+      </ScrollView>
+
+      
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
     fontFamily: 'ProximaNova',
-    alignItems: 'center',
+    height: '100%',
+    width: '100%',
+    // backgroundColor: 'red',
   },
   flatListContainer: {
-    height: '50%',
+    height: '100%'
   },
   infoContainer: {
-    display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'space-around',
-    margin: 10,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    height: '100%',
+    width: '100%',
+    // backgroundColor: 'blue'
     // backgroundColor: 'lightgrey',
   },
 
@@ -135,9 +156,10 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   contains: {
-    height: hp('5%'),
+    height: 45,
     backgroundColor: 'rgb(244, 2, 87)',
     alignContent: 'center',
+    alignItems: 'center',
     borderRadius: 10,
     padding: 10,
     margin: 10,
@@ -172,6 +194,7 @@ const styles = StyleSheet.create({
     marginTop: hp('90%'),
     alignSelf: 'flex-end',
   },
+  image:{ width: wp('100%'), height: hp('50%') }
 });
 
 export default SpotPage;

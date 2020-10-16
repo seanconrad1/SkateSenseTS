@@ -95,7 +95,7 @@ const NewSpotPage = props => {
       allowsEditing: true,
       base64: true,
       aspect: [4, 3],
-      quality: 1,
+      quality: 0,
     });
 
     if (!result.cancelled) {
@@ -327,8 +327,8 @@ const NewSpotPage = props => {
             <Button
               title="Submit"
               buttonStyle={styles.submitButton}
-              // disabled={disableButton}
-              // loading={disableButton}
+              disabled={disableButton}
+              loading={disableButton}
               onPress={onSubmit}
             />
           </View>

@@ -39,13 +39,27 @@ const Map = (props) => {
   const [slideUpValue, setSideUpValie] = useState(new Animated.Value(0));
   const [raiseOrLower, setRaiseOrLower] = useState(true);
   const [userLocation, setUserLocation] = useState();
-
   const { filteredSpots } = state;
   const { navigation } = props;
 
   useEffect(() => {
-    test();
-  }, []);
+
+    async function mounting() {
+      const { status } = await Location.requestPermissionsAsync();
+      await animateToUserLocation(mapRef);
+
+
+      if (status === 'granted') {
+        const a = await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
+          accuracy: Location.Accuracy.Balanced,
+        });
+        console.log('what is a', a)
+      }
+    }
+
+    mounting()
+  }, [])
+
 
   useEffect(() => {
     if (data) {
@@ -54,8 +68,8 @@ const Map = (props) => {
       //     initialRegion: {
       //       latitude: position.coords.latitude - 0.02,
       //       longitude: position.coords.longitude,
-      //       latitudeDelta: 0.115,
-      //       longitudeDelta: 0.1121,
+            // latitudeDelta: 0.115,
+            // longitudeDelta: 0.1121,
       //     },
       //     geoLocationSwitch: true,
       //   };
@@ -109,19 +123,6 @@ const Map = (props) => {
   //   }
   // }, [state.filteredSpots, state.initialRegion, state.updateCounter]);
 
-  const test = async () => {
-    const { status } = await Location.requestPermissionsAsync();
-    if (status === 'granted') {
-      const a = await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-        accuracy: Location.Accuracy.Balanced,
-      });
-
-      const location = await getCurrentLocation();
-
-      console.log('WHAT IS MY LOCATION', location);
-      // setUserLocation(location.coords)
-    }
-  };
 
   const onRegionChange = (region) => {
     dispatch({ type: 'SET_CURRENT_REGION', payload: region });
@@ -254,12 +255,7 @@ const Map = (props) => {
         showsUserLocation
         onMapReady={() => console.log('ready!')}
         ref={mapRef}
-        // initialRegion={{
-        //   latitude: userLocation.latitude,
-        //   longitude: userLocation.longitude,
-        //   latitudeDelta: 0.0922,
-        //   longitudeDelta: 0.0421,
-        // }}
+
         style={{ flex: 1 }}
         rotateEnabled={false}
         // region={this.state.region}
