@@ -1,24 +1,21 @@
 import React, {
   useState,
   useContext,
-  useReducer,
-  useEffect,
   useCallback,
+  useRef
 } from 'react';
-import { useQuery, useMutation, useLazyQuery } from '@apollo/react-hooks';
+import { useMutation, useLazyQuery } from '@apollo/react-hooks';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
-  TextInput,
   Alert,
   RefreshControl,
-  LogBox,
+  TouchableOpacity
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import AsyncStorage from '@react-native-community/async-storage';
-import { Header } from 'react-native-elements';
+import { Input, Divider, Button} from 'react-native-elements';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -30,24 +27,32 @@ import GET_BOOKMARKS from '../../graphql/queries/getBookmarks';
 // import GET_BOOKMARKS from '../../graphql/queries/getBookmarks';
 import DELETE_SPOT_MUTATION from '../../graphql/mutations/deleteSpotMutation';
 import DELETE_BOOKMARK_MUTATION from '../../graphql/mutations/deleteBookmarkMutation';
-import { reducer, spotBookState } from './reducer';
 import SpotCard from '../../components/SpotCard';
 import SpotsButtonGroup from '../../components/SpotsButtonGroup';
 import { store } from '../../store';
 import TopHeader from '../../components/Header';
 import { getCurrentLocation } from '../../utils/helpers';
 import Loading from '../../components/Loading';
+import {streetSpotTypebuttons, streetSpotContains} from '../../utils/typesAndSelections'
+import Modal from 'react-native-modalbox';
+import CustomButtonGroup from '../../components/CustomButtonGroup';
 
 const SpotBook = ({ navigation }) => {
   const { state: myStore } = useContext(store);
   const [tab, setTab] = useState(0);
-  const [term, setTerm] = useState('');
+  const [searchInput, setSearchInput] = useState('');
   const [refreshing] = useState(false);
   const [deleteSpot] = useMutation(DELETE_SPOT_MUTATION);
   const [deleteBookmark] = useMutation(DELETE_BOOKMARK_MUTATION);
   const [location, setLocation] = useState();
+  const [filteredBookmarks, setFilteredBookmarks] = useState([]);
+  const [filteredSpots, setFilteredSpots] = useState([]);
+  const modalRef = useRef(null)
+  const[isOpen, setOpen] = useState(false)
 
   const [getMySpots, { loading, data: mySpots }] = useLazyQuery(GET_MY_SPOTS);
+
+  const filters = [... streetSpotTypebuttons, ...streetSpotContains]
 
   const [
     getMyBookmarks,
@@ -69,6 +74,7 @@ const SpotBook = ({ navigation }) => {
           },
         });
         getMyBookmarks();
+
       }
       fetchMyAPI();
     }, [])
@@ -78,7 +84,18 @@ const SpotBook = ({ navigation }) => {
     return;
   };
 
-  const onSearchChange = (e) => setTerm(e);
+  const searchFilter = (input) => {
+    if (input === "") {
+      setSearchInput("");
+      return mySpots.getUserCreatedSpots;
+    } else {
+      setSearchInput(input.toLowerCase());
+      return setFilteredSpots(
+        mySpots.getUserCreatedSpots.filter((spot) => spot.name.toLowerCase().includes(input.toLowerCase()))
+      );
+    }
+  };
+  
   const onChangeTab = (e) => setTab(e);
 
   const unBookmark = async (_id) => {
@@ -185,6 +202,18 @@ const SpotBook = ({ navigation }) => {
     }
   };
 
+  const onClose = () => {
+    modalRef!.current.close()
+  }
+
+  const onOpen = (index: number) => {
+    modalRef!.current.open()
+    // setSeletctedPhotoIndex(index)
+  }
+
+
+
+
   if (loading || mySpots === undefined) {
     return <Loading />;
   }
@@ -192,18 +221,42 @@ const SpotBook = ({ navigation }) => {
     return <Loading />;
   }
 
+
+  const whichSpots = searchInput ? filteredSpots : mySpots.getUserCreatedSpots
+
+
   return (
     <View>
       <TopHeader name="My Spots" navigation={navigation} />
 
-      <TextInput
+      <Input
         style={styles.search}
         placeholder="Search"
         returnKeyType="search"
-        onChangeText={(value) => onSearchChange(value)}
+        onChangeText={(value) => searchFilter(value)}
+        rightIcon={
+          <Button title="Filter" onPress={onOpen} style={styles.btn}/>
+          }
       />
+      
 
       <SpotsButtonGroup onChangeTab={onChangeTab} />
+
+      <Modal swipeToClose={false}  style={[styles.modal, styles.modal3]} position={"center"} ref={modalRef} >
+          {/* <ScrollView showsHorizontalScrollIndicator={false} style={styles.scrollview}> */}
+          <View style={styles.container}>
+              {filters.map(filter => {
+                return(
+                    <TouchableOpacity style={styles.selectedButton}>
+                      <Text style={styles.buttonText}>{filter}</Text>
+                    </TouchableOpacity>
+                )
+              })}
+            </View>
+            {/* </ScrollView> */}
+          {/* <Button title={`Disable (${this.state.isDisabled ? "true" : "false"})`} onPress={() => this.setState({isDisabled: !this.state.isDisabled})} style={styles.btn}/> */}
+        </Modal>
+
 
       {tab === 0 && (
         <ScrollView
@@ -212,8 +265,8 @@ const SpotBook = ({ navigation }) => {
             <RefreshControl refreshing={refreshing} onRefresh={launchRefetch} />
           }
         >
-          {mySpots.getUserCreatedSpots.length > 0 ? (
-            mySpots.getUserCreatedSpots.map((spot, i) => (
+          {mySpots.getUserCreatedSpots.length > 0 ? (            
+            whichSpots.map((spot, i) => (
               <SpotCard
                 key={i}
                 spot={spot}
@@ -260,9 +313,64 @@ const SpotBook = ({ navigation }) => {
 export default SpotBook;
 
 const styles = StyleSheet.create({
+
+  btn: {
+    backgroundColor: 'rgb(244, 2, 87)',
+    color: 'black'
+  },
+
+
   containerStyle: {
     paddingBottom: 200,
   },
+
+  modal: {
+    top: -100,
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignContent:'center',
+    borderRadius: 50,
+    // backgroundColor: 'transparent'
+  },
+  modal3: {
+    height: 350,
+    width: 360
+  },
+  container:{
+    flex: 1, 
+    marginHorizontal: 20,
+    flexDirection: 'row',
+    color: 'grey',
+    flexWrap: 'wrap',
+    width: '100%',
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignContent: 'center',
+    alignItems: 'center'
+  },
+
+  selectedButton: {
+    borderWidth: .4,
+    borderRadius: 10,
+    padding:0, 
+    margin: 5,
+    width: wp(25),
+    backgroundColor: 'transparent',
+    height: 45,
+    color: 'blue',
+    alignContent: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+
+
+
+
+
+
+
+
 
   search: {
     marginLeft: wp('10%'),
@@ -278,4 +386,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: 'grey',
   },
+
+
+
 });
+

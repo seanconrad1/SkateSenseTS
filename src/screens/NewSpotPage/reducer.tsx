@@ -1,6 +1,6 @@
 import { ActivityIndicatorComponent } from 'react-native';
 import { spotBookState } from '../SpotBook/reducer';
-import { streetSpotContains } from './typesAndSelections';
+import { streetSpotContains } from '../../utils/typesAndSelections';
 
 export const newSpotState = {
   name: null,

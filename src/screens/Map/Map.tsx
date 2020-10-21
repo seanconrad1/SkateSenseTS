@@ -57,6 +57,8 @@ const Map = (props) => {
       }
     }
 
+    raise()
+
     mounting()
   }, [])
 

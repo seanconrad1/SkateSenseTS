@@ -10,6 +10,10 @@ import {
 } from 'react-native';
 import { Icon, Card } from 'react-native-elements';
 import { findDistance } from '../utils/helpers';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from 'react-native-responsive-screen';
 
 const SpotCard = ({
   spot,
@@ -53,8 +57,9 @@ const SpotCard = ({
       }}
     >
       <Card key={spot.id} containerStyle={styles.spot}>
-        <Card.Title>{spot.name}</Card.Title>
+        <Card.Title style={styles.title}>{spot.name}</Card.Title>
         <Card.Image
+          style={styles.img}
           source={{ uri: `data:image/gif;base64,${spot.images[0].base64}` }}
         />
         <Text style={styles.aboutContainer}>
@@ -145,6 +150,12 @@ const styles = StyleSheet.create({
     // marginRight:
     margin: 10,
   },
+  title:{
+    padding: 10,
+  },
+  img:{
+    height: hp('30%'),
+  }
 
   // lastSpot: {
   //   paddingBottom: 100,

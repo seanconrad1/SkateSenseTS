@@ -4,31 +4,27 @@ import {
   View,
   ScrollView,
   Alert,
-  StyleSheet
 } from 'react-native';
 import { Icon, Button } from 'react-native-elements';
 import { useMutation } from '@apollo/react-hooks';
 import * as ImagePicker from 'expo-image-picker';
 import { reducer, newSpotState } from './reducer';
 import NEW_SPOT_MUTATION from '../../graphql/mutations/newSpotMutation';
-// import RNFS from 'react-native-fs';
 import GET_SPOTS from '../../graphql/queries/getSpots';
-// import Geolocation from '@react-native-community/geolocation';
-import ImageResizer from 'react-native-image-resizer';
 import CustomButtonGroup from '../../components/CustomButtonGroup';
 import styles from './styles'
 import PhotoHolders from './components/PhotoHolders'
 import ButtonsRow from './components/ButtonsRow'
 import InputsContainer from './components/InputsContainer'
-import { streetSpotTypebuttons, streetSpotContains } from './typesAndSelections'
+import { streetSpotTypebuttons, streetSpotContains } from '../../utils/typesAndSelections'
 import TopHeader from '../../components/Header'
-import { validate } from 'graphql';
 import Modal from 'react-native-modalbox';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { store } from "../../store";
 import * as Permissions from 'expo-permissions';
 import * as Location from 'expo-location'
 import GET_MY_SPOTS from '../../graphql/queries/getMySpots';
+import * as ImageManipulator from "expo-image-manipulator";
 
 const NewSpotPage = props => {
   const [disableButton, setDisableButton] = useState(false);
@@ -93,15 +89,33 @@ const NewSpotPage = props => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
-      base64: true,
       aspect: [4, 3],
       quality: 0,
     });
 
+
+    const resizedImage = await resizeImage(result.uri)
+
+
     if (!result.cancelled) {
-      dispatch({ type: 'SET_PHOTO', payload: { uri: result.uri, base64: result.base64 } });
+      dispatch({ type: 'SET_PHOTO', payload: { uri: resizedImage.uri, base64: resizedImage.base64 } });
       onClose()
     }
+  };
+
+
+  const resizeImage = async (uri: string) => {
+    const manipResult = await ImageManipulator.manipulateAsync(
+      uri,
+      [
+        { resize: {width: 614, height: 610} }, 
+      ],
+      { 
+        compress: .5, 
+        base64: true
+      }
+    );
+    return manipResult
   };
 
   const approvalAlert = () => {
