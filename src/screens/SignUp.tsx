@@ -8,7 +8,7 @@ import { useMutation } from "@apollo/react-hooks";
 import { store } from "../store";
 import styles from "../styles";
 
-const SignUp = (props) => {
+const SignUp = ({ navigation }) => {
   const [name, setName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -53,29 +53,28 @@ const SignUp = (props) => {
       setError(e.networkError.result.errors[0].message);
     }
 
-    // dispatch({
-    //   type: "set user",
-    //   obj: {
-    //     name: data!.data.createUser.name,
-    //     email: data!.data.createUser.email,
-    //     user_id: data!.data.createUser.user_id,
-    //     token: data!.data.createUser.token,
-    //     authorized: true,
-    //   },
-    // });
+    dispatch({
+      type: "SET_USER",
+      payload: {
+        token: data!.data.createUser.token,
+        user_id: data!.data.createUser.user_id
+      },
+    });
 
-    // try {
-    //   await AsyncStorage.setItem("AUTH_TOKEN", data!.data.createUser.token);
-    // } catch (e) {
-    //   return e;
-    // }
-    // setEmail("");
-    // setPassword("");
-    // setName("");
-    // setConfirmPassword("");
-    // if (!error) {
-    //   props.navigation.navigate("NavDrawer", { screen: "Map" });
-    // }
+
+    try {
+      await AsyncStorage.setItem("AUTH_TOKEN", data!.data.createUser.token);
+    } catch (e) {
+      return e;
+    }
+
+    setEmail("");
+    setPassword("");
+    setName("");
+    setConfirmPassword("");
+    if (!error) {
+      navigation.navigate("NavDrawer", { screen: "Map" });
+    }
   };
 
   console.log(error);
@@ -149,7 +148,7 @@ const SignUp = (props) => {
       <Button
         icon={<Icon name="arrow-right" size={15} color="white" />}
         title="Submit"
-        buttonStyle={styles.signupButton}
+        buttonStyle={styles.submitButton}
         onPress={() => onSubmit()}
         disabled={mutationLoading}
       />

@@ -85,6 +85,11 @@ const App = () => {
   const [loaded] = useFonts({
     Lobster: require('./assets/fonts/Lobster-Regular.ttf'),
   });
+
+  if (!loaded) {
+    return null;
+  }
+
   return (
     <ApolloProvider client={client}>
       <StateProvider>

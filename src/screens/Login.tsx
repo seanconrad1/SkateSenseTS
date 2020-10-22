@@ -13,8 +13,6 @@ import {
 import { useMutation } from "@apollo/react-hooks";
 import LOGIN_MUTATION from "../graphql/mutations/loginMutation";
 import styles from "../styles";
-import TestAnimation from '../components/TestAnimation'
-// import { TEST_USERNAME, TEST_PASSWORD } from "react-native-dotenv";
 
 const FONT_SIZE_BIG = hp("8");
 const FONT_SIZE_SMALL = hp("6");
@@ -34,7 +32,7 @@ const Login = ({ navigation }) => {
   const [emailAddress, setEmailAddress] = useState(
     __DEV__ ? "seanconrad123@gmail.com" : ""
   );
-  const [password, setPassword] = useState(__DEV__ ? "123" : "");
+  const [password, setPassword] = useState(__DEV__ ? "123456789" : "");
   const [disableButton, setDisableButton] = useState(false);
   const [errors, setErrors] = useState("");
   const { state, dispatch } = useContext(store);
@@ -75,7 +73,6 @@ const Login = ({ navigation }) => {
 
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
-      <TestAnimation />
       <View>
         {/*eslint-disable-next-line react-native/no-raw-text*/}
         <Text style={styles.header}>SkateSense</Text>

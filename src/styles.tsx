@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
     height: hp("6%"),
     borderColor: "transparent",
     borderWidth: 0,
-    borderRadius: wp("20%"),
+    borderRadius: wp("10%"),
     marginBottom: hp("2%"),
   },
   signupButton: {
@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     height: hp("6%"),
     borderColor: "transparent",
     borderWidth: 0,
-    borderRadius: wp("20%"),
+    borderRadius: wp("10%"),
   },
   errors: {
     color: "red",

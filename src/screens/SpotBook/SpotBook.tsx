@@ -7,6 +7,7 @@ import {
   TextInput,
   Alert,
   RefreshControl,
+  LogBox
 } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import { Header } from 'react-native-elements';
@@ -26,13 +27,14 @@ import SpotsButtonGroup from '../../components/SpotsButtonGroup';
 import { store } from "../../store";
 import TopHeader from "../../components/Header"
 
-console.disableYellowBox = true;
+LogBox.ignoreAllLogs()
 
 const SpotBook = props => {
   const [state, dispatch] = useReducer(reducer, spotBookState);
   const [deleteSpot] = useMutation(DELETE_SPOT_MUTATION);
   const [deleteBookmark] = useMutation(DELETE_BOOKMARK_MUTATION);
   const { state: myStore } = useContext(store)
+
 
   const { navigation } = props
 
@@ -70,7 +72,7 @@ const SpotBook = props => {
     }
   }, [bookmarks, createdSpots, error, error2, loading, loading2]);
 
-  if (loading) {
+  if (loading || !loaded) {
     return <Text>Loading...</Text>;
   }
   if (error) {

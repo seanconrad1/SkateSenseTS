@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Image, Dimensions, Text } from 'react-native';
+import { StyleSheet, View, Image, Dimensions, Text, LogBox } from 'react-native';
 import MapView from 'react-native-maps';
 import { Button } from 'react-native-elements';
 import {
@@ -10,7 +10,7 @@ import Geolocation from '@react-native-community/geolocation';
 
 import markerIcon from '../../../assets/markerIcon.png';
 
-console.disableYellowBox = true;
+LogBox.ignoreAllLogs()
 
 const { height, width } = Dimensions.get('window');
 
