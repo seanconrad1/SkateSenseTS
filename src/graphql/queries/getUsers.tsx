@@ -4,6 +4,7 @@ const USERS_FETCH = gql`
   query getUsers {
     getUsers {
       name
+      email
       spots {
         name
         owner {

@@ -7,7 +7,8 @@ import {
   Animated,
   Image,
   Linking,
-  ScrollView
+  ScrollView,
+  Alert,
 } from 'react-native';
 import { useMutation } from '@apollo/react-hooks';
 import GET_SPOTS from '../graphql/queries/getSpots';
@@ -23,18 +24,17 @@ const SpotPage = ({ route, navigation }) => {
   const spot = route.params.spot;
   console.log(spot.spotType);
 
-  const getIcon =() =>{
-    
-   switch (spot.spotType) {
-     case 'Street Spot':
-       return require('../../assets/stairs.png')
-      case'Skatepark':
-       return require('../../assets/ramp.png')
-  
-     default:
-       break;
-   } 
-  }
+  const getIcon = () => {
+    switch (spot.spotType) {
+      case 'Street Spot':
+        return require('../../assets/stairs.png');
+      case 'Skatepark':
+        return require('../../assets/ramp.png');
+
+      default:
+        break;
+    }
+  };
 
   const _renderItem = ({ item, key }) => (
     <View key={key}>
@@ -46,6 +46,26 @@ const SpotPage = ({ route, navigation }) => {
       />
     </View>
   );
+
+  const reportSpot = () => {
+    Alert.alert(
+      'Report spot!',
+      'Report?',
+      [
+        {
+          text: 'Report',
+          style: 'destructive',
+          onPress: () => console.log('REPORTED'),
+        },
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+      ],
+      { cancelable: false }
+    );
+  };
 
   return (
     <View style={styles.container} behavior="padding">
@@ -71,7 +91,7 @@ const SpotPage = ({ route, navigation }) => {
         name="exclamation-triangle"
         iconStyle={{ color: 'orange' }}
         containerStyle={styles.reportButton}
-        onPress={() => console.log('report!')}
+        onPress={reportSpot}
       />
 
       <Animated.FlatList
@@ -86,31 +106,26 @@ const SpotPage = ({ route, navigation }) => {
         style={styles.flatListContainer}
       />
 
-      <ScrollView style={{height: '100%'}}>
-      <View style={styles.infoContainer}>
-        <View style={styles.typeContainer}>
-          <Image
-            style={styles.littleIcons}
-            source={getIcon()}
-          />
-          <Text style={styles.description}>{spot.spotType}</Text>
-        </View>
+      <ScrollView style={{ height: '100%' }}>
+        <View style={styles.infoContainer}>
+          <View style={styles.typeContainer}>
+            <Image style={styles.littleIcons} source={getIcon()} />
+            <Text style={styles.description}>{spot.spotType}</Text>
+          </View>
 
-        <View style={styles.containsContainer}>
-          {spot.contains.map((contain, i) => (
-            <View style={styles.contains}>
-              <Text style={styles.containsText} key={i}>
-                {contain}
-              </Text>
-            </View>
-          ))}
-        </View>
+          <View style={styles.containsContainer}>
+            {spot.contains.map((contain, i) => (
+              <View style={styles.contains}>
+                <Text style={styles.containsText} key={i}>
+                  {contain}
+                </Text>
+              </View>
+            ))}
+          </View>
 
-        <Text style={styles.description}>{spot.description}</Text>
-      </View>
+          <Text style={styles.description}>{spot.description}</Text>
+        </View>
       </ScrollView>
-
-      
     </View>
   );
 };
@@ -123,7 +138,7 @@ const styles = StyleSheet.create({
     // backgroundColor: 'red',
   },
   flatListContainer: {
-    height: '100%'
+    height: '100%',
   },
   infoContainer: {
     flexDirection: 'column',
@@ -152,6 +167,7 @@ const styles = StyleSheet.create({
   containsContainer: {
     display: 'flex',
     flexDirection: 'row',
+    flexWrap: 'wrap',
     alignContent: 'space-between',
     marginBottom: 20,
   },
@@ -194,7 +210,10 @@ const styles = StyleSheet.create({
     marginTop: hp('90%'),
     alignSelf: 'flex-end',
   },
-  image:{ width: wp('100%'), height: hp('50%') }
+  image: {
+    width: wp('100%'),
+    height: hp('50%'),
+  },
 });
 
 export default SpotPage;

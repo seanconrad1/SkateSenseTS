@@ -23,7 +23,7 @@ import BookmarkButton from './BookmarkButton';
 import { store } from '../store';
 const CARD_WIDTH = wp('95%');
 
-interface iSpot { }
+interface iSpot {}
 
 const MapSpotCard = ({ spot, raise, lower, navigation }) => {
   const [opened, setOpened] = useState(true);

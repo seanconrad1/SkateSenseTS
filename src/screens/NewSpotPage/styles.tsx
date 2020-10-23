@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     flexDirection: 'column',
     width: '90%',
-    backgroundColor: 'lightgrey',
+    backgroundColor: 'white',
     borderTopRightRadius: 10,
     borderTopLeftRadius: 10,
   },

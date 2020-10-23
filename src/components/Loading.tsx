@@ -8,7 +8,7 @@ const Loading = () => (
   <View style={styles.container}>
     <Image
       style={styles.imageStyle}
-      source={require('../../assets/skatergifguy.gif')}
+      source={require('../../assets/loader.gif')}
     />
   </View>
 );
@@ -23,8 +23,8 @@ const styles = StyleSheet.create({
   },
 
   imageStyle: {
-    width: window.width / 2.5,
-    height: window.height / 2.5,
+    width: 40,
+    height: 40,
   },
 });
 

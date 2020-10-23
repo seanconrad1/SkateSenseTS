@@ -1,40 +1,68 @@
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, FlatList } from 'react-native';
-import { ListItem, Icon } from 'react-native-elements';
+import React, { useState } from 'react';
+import { StyleSheet, FlatList, RefreshControl } from 'react-native';
+import { ListItem, Divider } from 'react-native-elements';
 
 import { useLazyQuery, useApolloClient, useQuery } from '@apollo/react-hooks';
 import GET_USERS from '../graphql/queries/getUsers';
 import Loading from '../components/Loading';
+import TopHeader from '../components/Header';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
-const Administration = () => {
+const wait = (timeout) =>
+  new Promise((resolve) => {
+    setTimeout(resolve, timeout);
+  });
+
+const Administration = ({ navigation }) => {
   const [users, setUsers] = useState('');
-  const { loading, error, data } = useQuery(GET_USERS);
-  const client = useApolloClient();
-
-  // useEffect(() => {
-  //   callQuery();
-  // }, []);
-
-  // const callQuery = async () => {
-  //   const { data } = await client.query({
-  //     query: GET_USERS,
-  //   });
-  //   setUsers(data);
-  // };
+  const { loading, error, data, refetch } = useQuery(GET_USERS);
+  const [refreshing, setRefreshing] = useState(false);
 
   if (loading) {
     return <Loading />;
   }
 
-  console.log(data.getUsers);
+  const getUsers = async () => {
+    await refetch();
 
-  return data.getUsers.map((user, i) => (
-    <ListItem onPress={console.log('test')} key={i}>
-      <ListItem.Content>
-        <ListItem.Title>{user.name}</ListItem.Title>
-      </ListItem.Content>
-    </ListItem>
-  ));
+    // setRefreshing(true);
+    wait(2000).then(() => setRefreshing(false));
+  };
+
+  const renderItem = ({ item }) => (
+    <TouchableOpacity
+      onPress={() => navigation.navigate('User Spots', { user: item })}
+    >
+      <ListItem>
+        <ListItem.Content style={styles.content}>
+          <ListItem.Title style={styles.title}>{item.name}</ListItem.Title>
+          <ListItem.Subtitle style={styles.subtitle}>
+            {item.email}
+          </ListItem.Subtitle>
+          <ListItem.Subtitle style={styles.subtitle}>
+            Spots posted: {item.spots.length}
+          </ListItem.Subtitle>
+        </ListItem.Content>
+        <ListItem.Chevron style={styles.chevron} />
+      </ListItem>
+      <Divider />
+    </TouchableOpacity>
+  );
+
+  return (
+    <>
+      <TopHeader name="Administration" navigation={navigation} />
+
+      <FlatList
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={getUsers} />
+        }
+        data={data.getUsers}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id}
+      />
+    </>
+  );
 };
 
 export default Administration;
@@ -46,6 +74,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignContent: 'center',
   },
+  content: {
+    width: '100%',
+    justifyContent: 'space-between',
+  },
+  title: { fontWeight: 'bold' },
+  subtitle: { fontSize: 14, color: 'grey' },
+
+  chevron: { color: 'black' },
   button: {
     height: 50,
     width: 50,

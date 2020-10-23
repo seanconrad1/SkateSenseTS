@@ -9,9 +9,9 @@ const distance = (lon1, lat1, lon2, lat2) => {
   const a =
     Math.sin(dLat / 2) * Math.sin(dLat / 2) +
     Math.cos(lat1.toRad()) *
-    Math.cos(lat2.toRad()) *
-    Math.sin(dLon / 2) *
-    Math.sin(dLon / 2);
+      Math.cos(lat2.toRad()) *
+      Math.sin(dLon / 2) *
+      Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   const d = R * c; // Distance in km
   return d * factor;
@@ -24,10 +24,8 @@ if (typeof Number.prototype.toRad === 'undefined') {
   };
 }
 
-export const getCurrentLocation = async () => {
-  console.log('got here');
-  return Location.getCurrentPositionAsync({});
-};
+export const getCurrentLocation = async () =>
+  Location.getCurrentPositionAsync({});
 
 export const findDistance = (setDistanceFrom, spot) => {
   // Geolocation.getCurrentPosition(async pos => {

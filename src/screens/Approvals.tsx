@@ -20,26 +20,22 @@ const wait = (timeout) =>
   });
 
 const Approvals = ({ navigation }) => {
-  // const { loading, error, data } = useLazyQuery(GET_NOT_APPROVED_LIST);
+  const { loading, error, data, refetch } = useQuery(GET_NOT_APPROVED_LIST);
   const [refreshing, setRefreshing] = useState(false);
 
-  const [getSpotsNeedingApproval, { called, loading, data }] = useLazyQuery(
-    GET_NOT_APPROVED_LIST
-  );
+  const getSpots = async () => {
+    await refetch();
 
-  useEffect(() => {
-    getSpots();
-  }, []);
-
-  const getSpots = () => {
-    getSpotsNeedingApproval();
-
-    setRefreshing(true);
+    // setRefreshing(true);
     wait(2000).then(() => setRefreshing(false));
   };
 
   if (loading || data === undefined) {
     return <Loading />;
+  }
+
+  if (error) {
+    return <View>{error}</View>;
   }
 
   return (
@@ -58,39 +54,42 @@ const Approvals = ({ navigation }) => {
 
       <ScrollView
         refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={getSpotsNeedingApproval}
-          />
+          <RefreshControl refreshing={refreshing} onRefresh={getSpots} />
         }
       >
-        {data.getNotApprovedList.map((spot, i) => (
-          <ListItem
-            key={i}
-            bottomDivider
-            onPress={() => navigation.navigate('ApprovalSpotPage', { spot })}
-          >
-            <Avatar
-              containerStyle={styles.avatarContainer}
-              size="large"
-              rounded
-              source={{
-                uri: `data:image/gif;base64,${spot.images[0].base64}`,
-              }}
-            />
+        {data.getNotApprovedList.length > 0 ? (
+          data.getNotApprovedList.map((spot, i) => (
+            <ListItem
+              key={i}
+              bottomDivider
+              onPress={() => navigation.navigate('ApprovalSpotPage', { spot })}
+            >
+              <Avatar
+                containerStyle={styles.avatarContainer}
+                size="large"
+                rounded
+                source={{
+                  uri: `data:image/gif;base64,${spot.images[0].base64}`,
+                }}
+              />
 
-            <ListItem.Content>
-              <ListItem.Title style={styles.listItemTitle}>
-                {spot.name}
-              </ListItem.Title>
-              <View style={styles.subtitleView}>
-                <Text>5 months ago</Text>
-              </View>
-            </ListItem.Content>
+              <ListItem.Content>
+                <ListItem.Title style={styles.listItemTitle}>
+                  {spot.name}
+                </ListItem.Title>
+                <View style={styles.subtitleView}>
+                  <Text>5 months ago</Text>
+                </View>
+              </ListItem.Content>
 
-            <ListItem.Chevron color="black" />
-          </ListItem>
-        ))}
+              <ListItem.Chevron color="black" />
+            </ListItem>
+          ))
+        ) : (
+          <View style={styles.noMoreItems}>
+            <Text>No more spots to approve</Text>
+          </View>
+        )}
       </ScrollView>
     </View>
   );
@@ -112,6 +111,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
     resizeMode: 'stretch',
+  },
+  noMoreItems: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignContent: 'center',
+    textAlign: 'center',
   },
   listItemStyle: {},
   avatarContainer: {

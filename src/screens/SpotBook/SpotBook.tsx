@@ -234,27 +234,26 @@ const SpotBook = ({ navigation }) => {
         placeholder="Search"
         returnKeyType="search"
         onChangeText={(value) => searchFilter(value)}
-        rightIcon={
-          <Button title="Filter" onPress={onOpen} style={styles.btn}/>
-          }
+        // rightIcon={
+        //   <Button title="Filter" onPress={onOpen} buttonStyle={styles.btn}/>
+        //   }
       />
       
 
       <SpotsButtonGroup onChangeTab={onChangeTab} />
 
-      <Modal swipeToClose={false}  style={[styles.modal, styles.modal3]} position={"center"} ref={modalRef} >
+      <Modal swipeToClose={false}  style={styles.modal} position={"center"} ref={modalRef} >
           {/* <ScrollView showsHorizontalScrollIndicator={false} style={styles.scrollview}> */}
           <View style={styles.container}>
-              {filters.map(filter => {
+              {filters.map((filter, key) => {
                 return(
-                    <TouchableOpacity style={styles.selectedButton}>
+                    <TouchableOpacity key={key} style={styles.selectedButton}>
                       <Text style={styles.buttonText}>{filter}</Text>
                     </TouchableOpacity>
                 )
               })}
             </View>
-            {/* </ScrollView> */}
-          {/* <Button title={`Disable (${this.state.isDisabled ? "true" : "false"})`} onPress={() => this.setState({isDisabled: !this.state.isDisabled})} style={styles.btn}/> */}
+          <Button title={"Apply"} onPress={onClose} buttonStyle={styles.applyButton}/>
         </Modal>
 
 
@@ -316,26 +315,46 @@ const styles = StyleSheet.create({
 
   btn: {
     backgroundColor: 'rgb(244, 2, 87)',
-    color: 'black'
+    color: 'black',
+    borderRadius: 10,
+    padding: 5,
+    textAlign: 'center',
+    alignContent: 'center',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+
+  applyButton:{
+    backgroundColor: 'rgb(244, 2, 87)',
+    color: 'black',
+    borderRadius: 10,
+    paddingLeft: 20,
+    paddingRight: 20,
+    textAlign: 'center',
+    alignContent: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    margin: 10
+
   },
 
 
   containerStyle: {
     paddingBottom: 200,
+    height: '100%',
   },
 
   modal: {
-    top: -100,
+    bottom: 100,
     justifyContent: 'center',
     alignItems: 'center',
     alignContent:'center',
     borderRadius: 50,
+    height: 420,
+    width: 380,
     // backgroundColor: 'transparent'
   },
-  modal3: {
-    height: 350,
-    width: 360
-  },
+
   container:{
     flex: 1, 
     marginHorizontal: 20,
@@ -364,14 +383,6 @@ const styles = StyleSheet.create({
   },
 
 
-
-
-
-
-
-
-
-
   search: {
     marginLeft: wp('10%'),
     borderColor: 'black',
@@ -385,6 +396,7 @@ const styles = StyleSheet.create({
   noneText: {
     textAlign: 'center',
     color: 'grey',
+    height: '100%',
   },
 
 

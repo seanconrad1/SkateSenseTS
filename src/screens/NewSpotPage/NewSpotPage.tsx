@@ -1,10 +1,11 @@
-import React, { useReducer, useEffect, useState, useContext, useRef } from 'react';
-import {
-  Text,
-  View,
-  ScrollView,
-  Alert,
-} from 'react-native';
+import React, {
+  useReducer,
+  useEffect,
+  useState,
+  useContext,
+  useRef,
+} from 'react';
+import { Text, View, ScrollView, Alert } from 'react-native';
 import { Icon, Button } from 'react-native-elements';
 import { useMutation } from '@apollo/react-hooks';
 import * as ImagePicker from 'expo-image-picker';
@@ -12,33 +13,39 @@ import { reducer, newSpotState } from './reducer';
 import NEW_SPOT_MUTATION from '../../graphql/mutations/newSpotMutation';
 import GET_SPOTS from '../../graphql/queries/getSpots';
 import CustomButtonGroup from '../../components/CustomButtonGroup';
-import styles from './styles'
-import PhotoHolders from './components/PhotoHolders'
-import ButtonsRow from './components/ButtonsRow'
-import InputsContainer from './components/InputsContainer'
-import { streetSpotTypebuttons, streetSpotContains } from '../../utils/typesAndSelections'
-import TopHeader from '../../components/Header'
+import styles from './styles';
+import PhotoHolders from './components/PhotoHolders';
+import ButtonsRow from './components/ButtonsRow';
+import InputsContainer from './components/InputsContainer';
+import {
+  streetSpotTypebuttons,
+  streetSpotContains,
+} from '../../utils/typesAndSelections';
+import TopHeader from '../../components/Header';
 import Modal from 'react-native-modalbox';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { store } from "../../store";
+import { store } from '../../store';
 import * as Permissions from 'expo-permissions';
-import * as Location from 'expo-location'
+import * as Location from 'expo-location';
 import GET_MY_SPOTS from '../../graphql/queries/getMySpots';
-import * as ImageManipulator from "expo-image-manipulator";
+import * as ImageManipulator from 'expo-image-manipulator';
+import OptionsMenu from 'react-native-option-menu';
 
-const NewSpotPage = props => {
+const NewSpotPage = (props) => {
   const [disableButton, setDisableButton] = useState(false);
   const [state, dispatch] = useReducer(reducer, newSpotState);
   const [createSpot, { data }] = useMutation(NEW_SPOT_MUTATION);
   const { state: myStore } = useContext(store);
-  const { navigation } = props
-  const modalRef = useRef(null)
-  const [selectedPhotoIndex, setSeletctedPhotoIndex] = useState(0)
+  const { navigation } = props;
+  const modalRef = useRef(null);
+  const [selectedPhotoIndex, setSeletctedPhotoIndex] = useState(0);
 
   useEffect(() => {
     (async () => {
       if (Platform.OS !== 'web') {
-        const { status } = await ImagePicker.requestCameraRollPermissionsAsync();
+        const {
+          status,
+        } = await ImagePicker.requestCameraRollPermissionsAsync();
         if (status !== 'granted') {
           alert('Sorry, we need camera roll permissions to make this work!');
         }
@@ -62,60 +69,56 @@ const NewSpotPage = props => {
     }
   }, [props.route.params]);
 
-
-
   const launchCamera = async () => {
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
     if (status !== 'granted') {
       alert('Sorry, we need camera roll permissions to make this work!');
     } else {
-      let result = await ImagePicker.launchCameraAsync({
+      const result = await ImagePicker.launchCameraAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
         base64: true,
         aspect: [4, 3],
         quality: 1,
-      })
-
+      });
 
       if (!result.cancelled) {
-        dispatch({ type: 'SET_PHOTO', payload: { uri: result.uri, base64: result.base64 } });
-        onClose()
+        dispatch({
+          type: 'SET_PHOTO',
+          payload: { uri: result.uri, base64: result.base64 },
+        });
       }
     }
-  }
+  };
 
   const getPhotoFromCameraRoll = async () => {
-    let result = await ImagePicker.launchImageLibraryAsync({
+    const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 0,
     });
 
-
-    const resizedImage = await resizeImage(result.uri)
-
+    const resizedImage = await resizeImage(result.uri);
 
     if (!result.cancelled) {
-      dispatch({ type: 'SET_PHOTO', payload: { uri: resizedImage.uri, base64: resizedImage.base64 } });
-      onClose()
+      dispatch({
+        type: 'SET_PHOTO',
+        payload: { uri: resizedImage.uri, base64: resizedImage.base64 },
+      });
     }
   };
-
 
   const resizeImage = async (uri: string) => {
     const manipResult = await ImageManipulator.manipulateAsync(
       uri,
-      [
-        { resize: {width: 614, height: 610} }, 
-      ],
-      { 
-        compress: .5, 
-        base64: true
+      [{ resize: { width: 614, height: 614 } }],
+      {
+        // compress: 0.2,
+        base64: true,
       }
     );
-    return manipResult
+    return manipResult;
   };
 
   const approvalAlert = () => {
@@ -125,17 +128,16 @@ const NewSpotPage = props => {
       [
         {
           text: 'OK',
-          onPress: () =>
-            navigation.navigate('Map'),
+          onPress: () => navigation.navigate('Map'),
         },
       ],
-      { cancelable: false },
+      { cancelable: false }
     );
   };
 
   const getCurrentLocation = async () => {
     if (!state.currentLocationSelected) {
-      let location = await Location.getCurrentPositionAsync({});
+      const location = await Location.getCurrentPositionAsync({});
       dispatch({
         type: 'SET_CURRENT_LOCATION',
         payload: {
@@ -153,42 +155,39 @@ const NewSpotPage = props => {
 
   const validate = () => {
     if (!state.name) {
-      alert("Spot name is required")
-      return false
+      alert('Spot name is required');
+      return false;
     }
     if (!state.description) {
-      alert("Spot description is required")
-      return false
+      alert('Spot description is required');
+      return false;
     }
     if (state.photo.length <= 0) {
-      alert("Spot must have at least 1 photo")
-      return false
+      alert('Spot must have at least 1 photo');
+      return false;
     }
     if (!state.selectedLat && !state.selectedLng) {
-      alert("Must select spot location")
-      return false
+      alert('Must select spot location');
+      return false;
     }
     if (!state.spotType) {
-      alert("Must select spot type")
-      return false
+      alert('Must select spot type');
+      return false;
     }
     if (state.contains) {
-      alert("Must select what the spot contains")
-      return false
+      alert('Must select what the spot contains');
+      return false;
     }
-    return true
-  }
-
+    return true;
+  };
 
   const onSubmit = async () => {
     // dispatch({ type: 'SPOT_SUBMITED', payload: true });
 
-    let location = await Location.getCurrentPositionAsync({});
+    const location = await Location.getCurrentPositionAsync({});
 
     if (validate()) {
-      const images = state.photo.map(img => {
-        return { base64: img.base64 };
-      });
+      const images = state.photo.map((img) => ({ base64: img.base64 }));
 
       const spotInput = {
         name: state.name,
@@ -201,8 +200,8 @@ const NewSpotPage = props => {
         kickout_level: state.kickout_level,
         owner: myStore.user_id,
         spotType: state.spotType,
-        contains: state.spotContains
-      }
+        contains: state.spotContains,
+      };
 
       setDisableButton(true);
       try {
@@ -210,48 +209,54 @@ const NewSpotPage = props => {
           variables: { spotInput },
           refetchQueries: [
             { query: GET_SPOTS },
-            { query: GET_MY_SPOTS, variables: { locationInput: { latitude: location.coords.latitude, longitude: location.coords.longitude } } }
+            {
+              query: GET_MY_SPOTS,
+              variables: {
+                locationInput: {
+                  latitude: location.coords.latitude,
+                  longitude: location.coords.longitude,
+                },
+              },
+            },
           ],
           awaitRefetchQueries: true,
         });
 
-        dispatch({ type: 'CLEAR_STATE' })
+        dispatch({ type: 'CLEAR_STATE' });
         setDisableButton(false);
         approvalAlert();
-
       } catch (e) {
-        console.log(e)
-        console.log(e.networkError.result.errors[0].message)
+        console.log(e);
+        console.log(e.networkError.result.errors[0].message);
         alert('Unable to create spot at this time.');
         setDisableButton(false);
       }
-
     }
   };
 
+  const removePhoto = () => {
+    dispatch({ type: 'REMOVE_PHOTO', payload: selectedPhotoIndex });
+  };
 
-  const onClose = () => {
-    modalRef!.current.close()
-  }
-
-  const onOpen = (index: number) => {
-    modalRef!.current.open()
-    setSeletctedPhotoIndex(index)
-  }
-
-  const removePhoto = (index: number) => {
-    dispatch({ type: 'REMOVE_PHOTO', payload: index })
-    onClose()
-  }
-
-
+  const options = ['Camera Roll', 'Take Photo', 'Delete', 'Cancel'];
 
   return (
-
     <View style={styles.topView}>
       <TopHeader navigation={navigation} name={'Create New Spot'} />
 
-      <Modal swipeToClose={false} style={[styles.modal, { height: state.photo && state.photo[selectedPhotoIndex] ? 280 : 200 }]} position={"bottom"} ref={modalRef}>
+      <OptionsMenu
+        customButton={<PhotoHolders state={state} />}
+        options={options}
+        destructiveIndex={2}
+        actions={[
+          () => getPhotoFromCameraRoll(),
+          () => launchCamera(),
+          () => removePhoto(),
+          () => console.log('cancel'),
+        ]}
+      />
+
+      {/* <Modal swipeToClose={false} style={[styles.modal, { height: state.photo && state.photo[selectedPhotoIndex] ? 280 : 200 }]} position={"bottom"} ref={modalRef}>
         <TouchableOpacity onPress={getPhotoFromCameraRoll} style={styles.textContainer} >
           <Text style={styles.modelText}>Camera Roll</Text>
         </TouchableOpacity>
@@ -267,16 +272,14 @@ const NewSpotPage = props => {
         <TouchableOpacity onPress={onClose} style={styles.textContainer}>
           <Text style={styles.modelText}>Cancel</Text>
         </TouchableOpacity>
-      </Modal>
+      </Modal> */}
 
       <ScrollView style={styles.scrollview}>
-
         <View style={styles.insideContainer}>
-
-          <PhotoHolders
+          {/* <PhotoHolders
             state={state}
             onOpen={onOpen}
-          />
+          /> */}
           <ButtonsRow
             navigation={navigation}
             locationSelected={state.locationSelected}
@@ -291,7 +294,8 @@ const NewSpotPage = props => {
                 display: 'flex',
                 flexDirection: 'row',
                 marginRight: 10,
-              }}>
+              }}
+            >
               <Text>Photo Uploaded</Text>
               <Icon name="check" />
             </View>
@@ -303,12 +307,12 @@ const NewSpotPage = props => {
                 display: 'flex',
                 flexDirection: 'row',
                 marginRight: 10,
-              }}>
+              }}
+            >
               <Text>Location Selected</Text>
               <Icon name="check" />
             </View>
           ) : null}
-
 
           <InputsContainer state={state} dispatch={dispatch} />
 
@@ -317,24 +321,32 @@ const NewSpotPage = props => {
             Best time to skate
           </Text> */}
 
-          <Text
-            style={styles.text}>
-            Spot Type
-          </Text>
+          <Text style={styles.text}>Spot Type</Text>
 
           <View style={styles.containsContainer}>
             {streetSpotTypebuttons.map((button, key) => (
-              <CustomButtonGroup key={key} contains={false} type state={state} dispatch={dispatch} button={button} />
+              <CustomButtonGroup
+                key={key}
+                contains={false}
+                type
+                state={state}
+                dispatch={dispatch}
+                button={button}
+              />
             ))}
           </View>
 
-          <Text
-            style={styles.text}>
-            Spot Contains
-          </Text>
+          <Text style={styles.text}>Spot Contains</Text>
           <View style={styles.containsContainer}>
             {streetSpotContains.map((button, key) => (
-              <CustomButtonGroup key={key} type={false} contains state={state} dispatch={dispatch} button={button} />
+              <CustomButtonGroup
+                key={key}
+                type={false}
+                contains
+                state={state}
+                dispatch={dispatch}
+                button={button}
+              />
             ))}
           </View>
           <View>
@@ -348,41 +360,39 @@ const NewSpotPage = props => {
           </View>
         </View>
       </ScrollView>
-    </View >
+    </View>
   );
 };
 
-
 export default NewSpotPage;
 
-
-  // const resize = photos => {
-    // ImageResizer.createResizedImage(photos.uri, 350, 280, 'JPEG', 300)
-    //   .then(res => {
-    //     // response.uri is the URI of the new image that can now be displayed, uploaded...
-    //     // response.path is the path of the new image
-    //     // response.name is the name of the new image with the extension
-    //     // response.size is the size of the new image
-    //     RNFS.readFile(res.path, 'base64')
-    //       .then(respo => {
-    //         const photo = {
-    //           path: res.path,
-    //           uri: res.uri,
-    //           data: respo,
-    //         };
-    //         if (state.photo && state.photo.length === 4) {
-    //           return null;
-    //         }
-    //         dispatch({ type: 'SET_PHOTO', payload: photo });
-    //       })
-    //       .catch(err => {
-    //         console.log(err);
-    //       });
-    //     // // Limit to 4 photos uploaded
-    //   })
-    //   .catch(err => {
-    //     console.log(err);
-    //     // Oops, something went wrong. Check that the filename is correct and
-    //     // inspect err to get more details.
-    //   });
-  // };
+// const resize = photos => {
+// ImageResizer.createResizedImage(photos.uri, 350, 280, 'JPEG', 300)
+//   .then(res => {
+//     // response.uri is the URI of the new image that can now be displayed, uploaded...
+//     // response.path is the path of the new image
+//     // response.name is the name of the new image with the extension
+//     // response.size is the size of the new image
+//     RNFS.readFile(res.path, 'base64')
+//       .then(respo => {
+//         const photo = {
+//           path: res.path,
+//           uri: res.uri,
+//           data: respo,
+//         };
+//         if (state.photo && state.photo.length === 4) {
+//           return null;
+//         }
+//         dispatch({ type: 'SET_PHOTO', payload: photo });
+//       })
+//       .catch(err => {
+//         console.log(err);
+//       });
+//     // // Limit to 4 photos uploaded
+//   })
+//   .catch(err => {
+//     console.log(err);
+//     // Oops, something went wrong. Check that the filename is correct and
+//     // inspect err to get more details.
+//   });
+// };

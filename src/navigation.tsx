@@ -14,6 +14,7 @@ import Approvals from './screens/Approvals';
 import ApprovalSpotPage from './screens/ApprovalSpotPage';
 import SpotPage from './screens/SpotPage';
 import Administration from './screens/Administration';
+import UserSpots from './screens/UserSpots';
 
 import { store, SET_USER } from './store';
 
@@ -21,6 +22,8 @@ const RootStack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator();
 const MapStack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
+const AdminStack = createNativeStackNavigator();
+const ApprovalStack = createNativeStackNavigator();
 
 const userToken = false;
 
@@ -32,6 +35,7 @@ const MapStackComponent = () => (
   <MapStack.Navigator
     screenOptions={{
       headerShown: false,
+      drawerLockMode: 'locked-closed',
     }}
   >
     <MapStack.Screen name="Map" component={Map} />
@@ -55,6 +59,28 @@ const AuthStackScreen = () => (
   </AuthStack.Navigator>
 );
 
+const AdministrationStack = () => (
+  <AdminStack.Navigator
+    screenOptions={{
+      headerShown: false,
+    }}
+  >
+    <AdminStack.Screen name="Administration" component={Administration} />
+    <AdminStack.Screen name="User Spots" component={UserSpots} />
+  </AdminStack.Navigator>
+);
+
+const ApprovalNavStack = () => (
+  <ApprovalStack.Navigator
+    screenOptions={{
+      headerShown: false,
+    }}
+  >
+    <Drawer.Screen name="Approvals" component={Approvals} />
+    <Drawer.Screen name="ApprovalSpotPage" component={ApprovalSpotPage} />
+  </ApprovalStack.Navigator>
+);
+
 const NavDrawer = () => (
   <Drawer.Navigator
     headerMode={null}
@@ -63,9 +89,8 @@ const NavDrawer = () => (
   >
     <Drawer.Screen name="Map" component={MapStackComponent} />
     <Drawer.Screen name="My Spots" component={SpotBook} />
-    <Drawer.Screen name="Approvals" component={Approvals} />
-    <Drawer.Screen name="ApprovalSpotPage" component={ApprovalSpotPage} />
-    <Drawer.Screen name="Administration" component={Administration} />
+    <Drawer.Screen name="Approvals" component={ApprovalNavStack} />
+    <Drawer.Screen name="Administration" component={AdministrationStack} />
   </Drawer.Navigator>
 );
 
@@ -107,8 +132,8 @@ const RootStackScreen = ({ getAuthToken }) => {
         {state.token ? (
           <RootStack.Screen name="App" component={NavDrawer} />
         ) : (
-            <RootStack.Screen name="Auth" component={AuthStackScreen} />
-          )}
+          <RootStack.Screen name="Auth" component={AuthStackScreen} />
+        )}
       </RootStack.Navigator>
     </NavigationContainer>
   );

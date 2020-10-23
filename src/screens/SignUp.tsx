@@ -53,29 +53,26 @@ const SignUp = (props) => {
       setError(e.networkError.result.errors[0].message);
     }
 
-    // dispatch({
-    //   type: "set user",
-    //   obj: {
-    //     name: data!.data.createUser.name,
-    //     email: data!.data.createUser.email,
-    //     user_id: data!.data.createUser.user_id,
-    //     token: data!.data.createUser.token,
-    //     authorized: true,
-    //   },
-    // });
+    dispatch({
+      type: "SET_USER",
+      payload: {
+        user_id: data!.data.createUser.user_id,
+        token: data!.data.createUser.token,
+      },
+    });
 
-    // try {
-    //   await AsyncStorage.setItem("AUTH_TOKEN", data!.data.createUser.token);
-    // } catch (e) {
-    //   return e;
-    // }
-    // setEmail("");
-    // setPassword("");
-    // setName("");
-    // setConfirmPassword("");
-    // if (!error) {
-    //   props.navigation.navigate("NavDrawer", { screen: "Map" });
-    // }
+    try {
+      await AsyncStorage.setItem("AUTH_TOKEN", data!.data.createUser.token);
+    } catch (e) {
+      return e;
+    }
+    setEmail("");
+    setPassword("");
+    setName("");
+    setConfirmPassword("");
+    if (!error) {
+      props.navigation.navigate("NavDrawer", { screen: "Map" });
+    }
   };
 
   console.log(error);

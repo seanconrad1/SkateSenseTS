@@ -7,9 +7,12 @@ import {
   Animated,
   Image,
   Linking,
+  Alert,
 } from 'react-native';
 import { useMutation } from '@apollo/react-hooks';
 import APPROVE_SPOT_MUTATION from '../graphql/mutations/approveSpotMutation';
+import DELETE_SPOT_MUTATION from '../graphql/mutations/deleteSpotMutation';
+
 import GET_SPOTS from '../graphql/queries/getSpots';
 import GET_NOT_APPROVED_LIST from '../graphql/queries/getNotApprovedList';
 import { Divider, Icon } from 'react-native-elements';
@@ -21,6 +24,7 @@ import {
 
 const ApprovalSpotPage = ({ route, navigation }) => {
   const [approveSpotMutation] = useMutation(APPROVE_SPOT_MUTATION);
+  const [deleteSpot] = useMutation(DELETE_SPOT_MUTATION);
 
   const spot = route.params.spot;
 
@@ -35,8 +39,33 @@ const ApprovalSpotPage = ({ route, navigation }) => {
     </View>
   );
 
+  const deleteSpotAndNav = async () => {
+    await deleteSpot({
+      variables: { _id: spot._id },
+      refetchQueries: [{ query: GET_SPOTS }, { query: GET_NOT_APPROVED_LIST }],
+    });
+
+    navigation.goBack();
+  };
+
   const deletingSpotAlert = () => {
-    console.log('deleting');
+    Alert.alert(
+      'Delete spot?',
+      'Spot will be deleted.',
+      [
+        {
+          text: 'Delete',
+          onPress: () => deleteSpotAndNav(),
+          style: 'destructive',
+        },
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+      ],
+      { cancelable: true }
+    );
   };
 
   const approveSpot = async () => {

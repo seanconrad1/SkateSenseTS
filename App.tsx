@@ -17,7 +17,7 @@ enableScreens();
 
 const cache = new InMemoryCache();
 const httpLink = new HttpLink({
-  uri: 'http://localhost:4000/graphql',
+  uri: 'https://sean.software/skatesense/',
   fetch: unfetch,
 });
 
@@ -85,6 +85,11 @@ const App = () => {
     Lobster: require('./assets/fonts/Lobster-Regular.ttf'),
     ProximaNova: require('./assets/fonts/ProximaNova-Regular.otf'),
   });
+
+  if (!loaded) {
+    return null;
+  }
+
   return (
     <ApolloProvider client={client}>
       <StateProvider>

@@ -24,7 +24,6 @@ import MapSpotCard from '../../components/MapSpotCard';
 import * as Location from 'expo-location';
 import styles from './styles';
 import { store } from '../../store';
-import { getCurrentLocation } from '../../utils/helpers';
 import Loading from '../../components/Loading';
 
 const LOCATION_TASK_NAME = 'background-location-task';
@@ -42,26 +41,40 @@ const Map = (props) => {
   const { filteredSpots } = state;
   const { navigation } = props;
 
-  useEffect(() => {
+  const raise = () => {
+    Animated.timing(slideUpValue, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+    setRaiseOrLower(true);
+  };
 
+  const lower = () => {
+    Animated.timing(slideUpValue, {
+      toValue: 0,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+    setRaiseOrLower(false);
+  };
+
+  useEffect(() => {
     async function mounting() {
       const { status } = await Location.requestPermissionsAsync();
       await animateToUserLocation(mapRef);
-
 
       if (status === 'granted') {
         const a = await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
           accuracy: Location.Accuracy.Balanced,
         });
-        console.log('what is a', a)
       }
     }
 
-    raise()
+    raise();
 
-    mounting()
-  }, [])
-
+    mounting();
+  }, []);
 
   useEffect(() => {
     if (data) {
@@ -70,8 +83,8 @@ const Map = (props) => {
       //     initialRegion: {
       //       latitude: position.coords.latitude - 0.02,
       //       longitude: position.coords.longitude,
-            // latitudeDelta: 0.115,
-            // longitudeDelta: 0.1121,
+      // latitudeDelta: 0.115,
+      // longitudeDelta: 0.1121,
       //     },
       //     geoLocationSwitch: true,
       //   };
@@ -124,7 +137,6 @@ const Map = (props) => {
   //     dispatch({ type: 'UPDATE_COUNTER', payload: 1 });
   //   }
   // }, [state.filteredSpots, state.initialRegion, state.updateCounter]);
-
 
   const onRegionChange = (region) => {
     dispatch({ type: 'SET_CURRENT_REGION', payload: region });
@@ -199,23 +211,23 @@ const Map = (props) => {
 
   const interpolations = filteredSpots
     ? filteredSpots.map((marker, index) => {
-      const inputRange = [
-        (index - 1) * CARD_WIDTH,
-        index * CARD_WIDTH,
-        (index + 1) * CARD_WIDTH,
-      ];
-      const scale = state.animation.interpolate({
-        inputRange,
-        outputRange: [1, 2.5, 1],
-        extrapolate: 'clamp',
-      });
-      const opacity = state.animation.interpolate({
-        inputRange,
-        outputRange: [10, 1, 10],
-        extrapolate: 'clamp',
-      });
-      return { scale, opacity };
-    })
+        const inputRange = [
+          (index - 1) * CARD_WIDTH,
+          index * CARD_WIDTH,
+          (index + 1) * CARD_WIDTH,
+        ];
+        const scale = state.animation.interpolate({
+          inputRange,
+          outputRange: [1, 2.5, 1],
+          extrapolate: 'clamp',
+        });
+        const opacity = state.animation.interpolate({
+          inputRange,
+          outputRange: [10, 1, 10],
+          extrapolate: 'clamp',
+        });
+        return { scale, opacity };
+      })
     : null;
 
   if (loading) {
@@ -224,24 +236,6 @@ const Map = (props) => {
   if (error) {
     return <Text style={styles.error}>Error! {error.message}</Text>;
   }
-
-  const raise = () => {
-    Animated.timing(slideUpValue, {
-      toValue: 1,
-      duration: 500,
-      useNativeDriver: true,
-    }).start();
-    setRaiseOrLower(true);
-  };
-
-  const lower = () => {
-    Animated.timing(slideUpValue, {
-      toValue: 0,
-      duration: 500,
-      useNativeDriver: true,
-    }).start();
-    setRaiseOrLower(false);
-  };
 
   // Map types
   // "standard"
@@ -257,7 +251,6 @@ const Map = (props) => {
         showsUserLocation
         onMapReady={() => console.log('ready!')}
         ref={mapRef}
-
         style={{ flex: 1 }}
         rotateEnabled={false}
         // region={this.state.region}
@@ -267,39 +260,39 @@ const Map = (props) => {
       >
         {filteredSpots.length > 0
           ? filteredSpots.map((marker, index) => {
-            const scaleStyle = {
-              transform: [
-                {
-                  scale: interpolations[index].scale,
-                },
-              ],
-            };
-            const opacityStyle = {
-              opacity: interpolations[index].opacity,
-            };
-            return (
-              <MapView.Marker
-                key={index}
-                coordinate={{
-                  latitude: Number(marker.location.latitude),
-                  longitude: Number(marker.location.longitude),
-                }}
-                title={marker.name}
-                description={marker.description}
-                style={{ width: 40, height: 40 }}
-                onPress={(e) => {
-                  e.stopPropagation();
-                  onMarkerPressHandler(marker, index);
-                }}
-              >
-                <Animated.View style={[styles.markerWrap, opacityStyle]}>
-                  <Animated.View style={[styles.marker, scaleStyle]}>
-                    <Image source={markerIcon} style={styles.marker} />
+              const scaleStyle = {
+                transform: [
+                  {
+                    scale: interpolations[index].scale,
+                  },
+                ],
+              };
+              const opacityStyle = {
+                opacity: interpolations[index].opacity,
+              };
+              return (
+                <MapView.Marker
+                  key={index}
+                  coordinate={{
+                    latitude: Number(marker.location.latitude),
+                    longitude: Number(marker.location.longitude),
+                  }}
+                  title={marker.name}
+                  description={marker.description}
+                  style={{ width: 40, height: 40 }}
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    onMarkerPressHandler(marker, index);
+                  }}
+                >
+                  <Animated.View style={[styles.markerWrap, opacityStyle]}>
+                    <Animated.View style={[styles.marker, scaleStyle]}>
+                      <Image source={markerIcon} style={styles.marker} />
+                    </Animated.View>
                   </Animated.View>
-                </Animated.View>
-              </MapView.Marker>
-            );
-          })
+                </MapView.Marker>
+              );
+            })
           : null}
       </MapView>
 

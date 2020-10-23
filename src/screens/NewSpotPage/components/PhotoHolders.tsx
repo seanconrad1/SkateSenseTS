@@ -1,10 +1,10 @@
 import React from 'react';
-import { View, TouchableOpacity, Image, Text } from 'react-native';
+import { View, Image, Text } from 'react-native';
 import styles from '../styles';
 
-const PhotoHolders = ({ state, onOpen }) => (
+const PhotoHolders = ({ state }) => (
   <View style={styles.imageBoxContainer}>
-    <TouchableOpacity style={styles.photoBox} onPress={() => onOpen(0)}>
+    <View style={styles.photoBox}>
       {state.photo && state.photo[0] ? (
         <Image
           style={[styles.photoBox, { marginTop: -5 }]}
@@ -13,9 +13,9 @@ const PhotoHolders = ({ state, onOpen }) => (
       ) : (
         <Text> + </Text>
       )}
-    </TouchableOpacity>
+    </View>
 
-    <TouchableOpacity style={styles.photoBox} onPress={() => onOpen(1)}>
+    <View style={styles.photoBox}>
       {state.photo && state.photo[1] ? (
         <Image
           style={[styles.photoBox, { marginTop: -5 }]}
@@ -24,9 +24,9 @@ const PhotoHolders = ({ state, onOpen }) => (
       ) : (
         <Text> + </Text>
       )}
-    </TouchableOpacity>
+    </View>
 
-    <TouchableOpacity style={styles.photoBox} onPress={() => onOpen(2)}>
+    <View style={styles.photoBox}>
       {state.photo && state.photo[2] ? (
         <Image
           style={[styles.photoBox, { marginTop: -5 }]}
@@ -35,9 +35,9 @@ const PhotoHolders = ({ state, onOpen }) => (
       ) : (
         <Text> + </Text>
       )}
-    </TouchableOpacity>
+    </View>
 
-    <TouchableOpacity style={styles.photoBox} onPress={() => onOpen(2)}>
+    <View style={styles.photoBox}>
       {state.photo && state.photo[3] ? (
         <Image
           style={[styles.photoBox, { marginTop: -5 }]}
@@ -46,7 +46,7 @@ const PhotoHolders = ({ state, onOpen }) => (
       ) : (
         <Text> + </Text>
       )}
-    </TouchableOpacity>
+    </View>
   </View>
 );
 

@@ -33,9 +33,9 @@ interface Iresponse {
 
 const Login = ({ navigation }) => {
   const [emailAddress, setEmailAddress] = useState(
-    __DEV__ ? "test1234@gmail.com" : ""
+    __DEV__ ? "seanconrad123@gmail.com" : ""
   );
-  const [password, setPassword] = useState(__DEV__ ? "California11!" : "");
+  const [password, setPassword] = useState(__DEV__ ? "123456789" : "");
   const [disableButton, setDisableButton] = useState(false);
   const [errors, setErrors] = useState("");
   const { state, dispatch } = useContext(store);
