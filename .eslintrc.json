@@ -3,7 +3,8 @@
     "prettier",
     "prettier/react",
     "@react-native-community",
-    "plugin:jsx-a11y/recommended"
+    "plugin:jsx-a11y/recommended",
+    "plugin:json/recommended"
   ],
   "parser": "babel-eslint",
   "parserOptions": {

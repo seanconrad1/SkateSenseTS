@@ -49,8 +49,8 @@ const Login = ({ navigation }) => {
       setDisableButton(false);
       setErrors("");
     } catch (e) {
-      setErrors(e.networkError.result.errors[0].message);
       setDisableButton(false);
+      setErrors(e.networkError.result.errors[0].message);
     }
 
     const { token, email, user_id, name } = response!.data.login;

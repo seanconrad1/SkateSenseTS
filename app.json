@@ -2,13 +2,12 @@
   "expo": {
     "name": "SkateSense",
     "slug": "SSNew2",
-    "version": "1.0.0",
+    "version": "1.2",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/icons/skatesense.png",
     "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "image": "./assets/icons/splashScreen.png",
+      "resizeMode": "cover"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -17,7 +16,12 @@
       "**/*"
     ],
     "ios": {
+      "config": {
+        "usesNonExemptEncryption": false
+      },
       "supportsTablet": true,
+      "buildNumber": "3",
+      "bundleIdentifier": "org.reactjs.native.example.SkateSenseReactNative",
       "infoPlist": {
         "NSLocationAlwaysUsageDescription": "For a better experience, while using our Service, we may require you to provide us Location Permissions",
         "UIBackgroundModes": [
@@ -25,9 +29,6 @@
           "fetch"
         ]
       }
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
     }
   }
 }

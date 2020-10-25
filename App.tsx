@@ -17,7 +17,7 @@ enableScreens();
 
 const cache = new InMemoryCache();
 const httpLink = new HttpLink({
-  uri: 'https://sean.software/skatesense/',
+  uri: 'https://sean.software/skatesense/api/',
   fetch: unfetch,
 });
 
