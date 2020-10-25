@@ -1,0 +1,31 @@
+{
+    "expo": {
+      "name": "SkateSense",
+      "slug": "SSNew2",
+      "version": "1.2",
+      "orientation": "portrait",
+      "icon": "./assets/icons/skatesense.png",
+      "splash": {
+        "image": "./assets/icons/splashScreen.png",
+        "resizeMode": "cover"
+      },
+      "updates": {
+        "fallbackToCacheTimeout": 0
+      },
+      "assetBundlePatterns": [
+        "**/*"
+      ],
+      "ios": {
+        "supportsTablet": true,
+        "buildNumber": "2",
+        "bundleIdentifier":"org.reactjs.native.example.SkateSenseReactNative",
+        "infoPlist": {
+          "NSLocationAlwaysUsageDescription": "For a better experience, while using our Service, we may require you to provide us Location Permissions",
+          "UIBackgroundModes": [
+            "location",
+            "fetch"
+          ]
+        }
+      }
+    }
+  }
