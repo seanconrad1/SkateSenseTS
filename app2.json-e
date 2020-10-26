@@ -17,7 +17,7 @@
       ],
       "ios": {
         "supportsTablet": true,
-        "buildNumber": "2",
+        "XYZ": "2",
         "bundleIdentifier":"org.reactjs.native.example.SkateSenseReactNative",
         "infoPlist": {
           "NSLocationAlwaysUsageDescription": "For a better experience, while using our Service, we may require you to provide us Location Permissions",
