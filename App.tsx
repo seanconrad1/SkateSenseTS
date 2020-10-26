@@ -17,7 +17,9 @@ enableScreens();
 
 const cache = new InMemoryCache();
 const httpLink = new HttpLink({
-  uri: 'https://sean.software/skatesense/api/',
+  uri: __DEV__
+    ? 'http://localhost:4000/graphql'
+    : 'https://sean.software/skatesense/api/',
   fetch: unfetch,
 });
 

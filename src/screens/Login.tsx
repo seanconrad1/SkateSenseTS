@@ -35,7 +35,7 @@ const Login = ({ navigation }) => {
   const [emailAddress, setEmailAddress] = useState(
     __DEV__ ? "seanconrad123@gmail.com" : ""
   );
-  const [password, setPassword] = useState(__DEV__ ? "123456789" : "");
+  const [password, setPassword] = useState(__DEV__ ? "" : "");
   const [disableButton, setDisableButton] = useState(false);
   const [errors, setErrors] = useState("");
   const { state, dispatch } = useContext(store);

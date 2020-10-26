@@ -6,7 +6,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject",
-    "lint": "eslint --ext '.js,.jsx,.ts,.tsx' . --fix"
+    "lint": "eslint --ext '.js,.jsx,.ts,.tsx' . --fix",
+    "deploy": "./deploy.sh"
   },
   "dependencies": {
     "@apollo/react-hooks": "^4.0.0",
