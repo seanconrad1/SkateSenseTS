@@ -11,4 +11,4 @@ web-build/
 deploy.sh
 # macOS
 .DS_Store
-.ipa
+*.ipa
