@@ -9,6 +9,6 @@ npm-debug.*
 *.orig.*
 web-build/
 deploy.sh
+*.ipa
 # macOS
 .DS_Store
-*.ipa
