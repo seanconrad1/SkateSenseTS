@@ -258,8 +258,9 @@ const SpotBook = ({ navigation }) => {
 
 
       {tab === 0 && (
-        <ScrollView
-          contentContainerStyle={styles.containerStyle}
+        <View style={styles.containerStyle}>
+          <ScrollView
+          style={styles.scrollView}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={launchRefetch} />
           }
@@ -279,31 +280,35 @@ const SpotBook = ({ navigation }) => {
             </Text>
           )}
         </ScrollView>
+        </View>
+        
       )}
 
       {tab === 1 && (
-        <ScrollView
-          contentContainerStyle={styles.containerStyle}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={launchRefetch} />
-          }
-        >
-          {myBookmarks.getBookmarks.length > 0 ? (
-            myBookmarks.getBookmarks.map((spot, i) => (
-              <SpotCard
-                key={i}
-                spot={spot}
-                bookmark
-                navigation={navigation}
-                unBookmarkAlertMsg={unBookmarkAlertMsg}
-              />
-            ))
-          ) : (
-            <Text style={styles.noneText}>
-              You haven't bookmarked any spots yet
-            </Text>
-          )}
-        </ScrollView>
+        <View style={styles.containerStyle}>
+          <ScrollView
+            style={styles.scrollView}
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={launchRefetch} />
+            }
+          >
+            {myBookmarks.getBookmarks.length > 0 ? (
+              myBookmarks.getBookmarks.map((spot, i) => (
+                <SpotCard
+                  key={i}
+                  spot={spot}
+                  bookmark
+                  navigation={navigation}
+                  unBookmarkAlertMsg={unBookmarkAlertMsg}
+                />
+              ))
+            ) : (
+              <Text style={styles.noneText}>
+                You haven't bookmarked any spots yet
+              </Text>
+            )}
+          </ScrollView>
+        </View>
       )}
     </View>
   );
@@ -312,6 +317,16 @@ const SpotBook = ({ navigation }) => {
 export default SpotBook;
 
 const styles = StyleSheet.create({
+
+  containerStyle: {
+    paddingBottom: 350,
+    height: '100%',
+    // flex: 1
+  },
+
+  scrollView:{
+  },
+
 
   btn: {
     backgroundColor: 'rgb(244, 2, 87)',
@@ -339,10 +354,6 @@ const styles = StyleSheet.create({
   },
 
 
-  containerStyle: {
-    paddingBottom: 200,
-    height: '100%',
-  },
 
   modal: {
     bottom: 100,

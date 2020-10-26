@@ -15,6 +15,7 @@ import ApprovalSpotPage from './screens/ApprovalSpotPage';
 import SpotPage from './screens/SpotPage';
 import Administration from './screens/Administration';
 import UserSpots from './screens/UserSpots';
+import test from './screens/test';
 
 import { store, SET_USER } from './store';
 

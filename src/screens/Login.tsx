@@ -1,21 +1,22 @@
-import React, { useState, useContext, useCallback } from "react";
-import { View, KeyboardAvoidingView, Text, Alert } from "react-native";
+import React, { useState, useContext, useCallback, useEffect } from "react";
+import { View, KeyboardAvoidingView, Text, Alert, Platform,  } from "react-native";
+import Constants from 'expo-constants';
+import * as Notifications from 'expo-notifications';
+import * as Permissions from 'expo-permissions';
+
 import AsyncStorage from "@react-native-community/async-storage";
 //Context
-import { store } from "../store";
+import { store, SET_PUSH_TOKEN } from "../store";
 import { Input, Button } from "react-native-elements";
 import Icon from "react-native-vector-icons/FontAwesome";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from "react-native-responsive-screen";
-
 import { useMutation } from "@apollo/react-hooks";
 import LOGIN_MUTATION from "../graphql/mutations/loginMutation";
 import styles from "../styles";
-import TestAnimation from '../components/TestAnimation'
-import Loading from "../components/Loading";
-// import { TEST_USERNAME, TEST_PASSWORD } from "react-native-dotenv";
+import { registerForPushNotificationsAsync } from '../utils/helpers';
 
 const FONT_SIZE_BIG = hp("8");
 const FONT_SIZE_SMALL = hp("6");
@@ -40,6 +41,33 @@ const Login = ({ navigation }) => {
   const [errors, setErrors] = useState("");
   const { state, dispatch } = useContext(store);
   const [login] = useMutation(LOGIN_MUTATION);
+
+  useEffect(() => {
+    registerForPushNotificationsAsync().then((token) => {
+      dispatch({ type: SET_PUSH_TOKEN, payload: { push_token: token } });
+      // dispatch({ type: SET_USER,       payload: { token, user_id } });
+    });
+
+    // // This listener is fired whenever a notification is received while the app is foregrounded
+    // notificationListener.current = Notifications.addNotificationReceivedListener(
+    //   (notification) => {
+    //     console.log('got here');
+    //     setNotification(notification);
+    //   }
+    // );
+
+    // // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
+    // responseListener.current = Notifications.addNotificationResponseReceivedListener(
+    //   (response) => {
+    //     console.log(response);
+    //   }
+    // );
+
+    // return () => {
+    //   Notifications.removeNotificationSubscription(notificationListener);
+    //   Notifications.removeNotificationSubscription(responseListener);
+    // };
+  }, []);
 
   const onSubmit = useCallback(async () => {
     let response: Iresponse;

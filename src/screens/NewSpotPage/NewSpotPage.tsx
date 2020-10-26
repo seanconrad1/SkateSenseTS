@@ -184,54 +184,75 @@ const NewSpotPage = (props) => {
   const onSubmit = async () => {
     // dispatch({ type: 'SPOT_SUBMITED', payload: true });
 
-    const location = await Location.getCurrentPositionAsync({});
+    // const location = await Location.getCurrentPositionAsync({});
+    console.log(myStore);
+    sendPushNotification();
+    // if (validate()) {
+    //   const images = state.photo.map((img) => ({ base64: img.base64 }));
 
-    if (validate()) {
-      const images = state.photo.map((img) => ({ base64: img.base64 }));
+    //   const spotInput = {
+    //     name: state.name,
+    //     location: {
+    //       latitude: state.selectedLat,
+    //       longitude: state.selectedLng,
+    //     },
+    //     images,
+    //     description: state.description,
+    //     kickout_level: state.kickout_level,
+    //     owner: myStore.user_id,
+    //     spotType: state.spotType,
+    //     contains: state.spotContains,
+    //   };
 
-      const spotInput = {
-        name: state.name,
-        location: {
-          latitude: state.selectedLat,
-          longitude: state.selectedLng,
-        },
-        images,
-        description: state.description,
-        kickout_level: state.kickout_level,
-        owner: myStore.user_id,
-        spotType: state.spotType,
-        contains: state.spotContains,
-      };
+    //   setDisableButton(true);
+    //   try {
+    //     await createSpot({
+    //       variables: { spotInput },
+    //       refetchQueries: [
+    //         { query: GET_SPOTS },
+    //         {
+    //           query: GET_MY_SPOTS,
+    //           variables: {
+    //             locationInput: {
+    //               latitude: location.coords.latitude,
+    //               longitude: location.coords.longitude,
+    //             },
+    //           },
+    //         },
+    //       ],
+    //       awaitRefetchQueries: true,
+    //     });
 
-      setDisableButton(true);
-      try {
-        await createSpot({
-          variables: { spotInput },
-          refetchQueries: [
-            { query: GET_SPOTS },
-            {
-              query: GET_MY_SPOTS,
-              variables: {
-                locationInput: {
-                  latitude: location.coords.latitude,
-                  longitude: location.coords.longitude,
-                },
-              },
-            },
-          ],
-          awaitRefetchQueries: true,
-        });
+    //     dispatch({ type: 'CLEAR_STATE' });
+    //     setDisableButton(false);
+    //     approvalAlert();
+    //   } catch (e) {
+    //     console.log(e);
+    //     console.log(e.networkError.result.errors[0].message);
+    //     alert('Unable to create spot at this time.');
+    //     setDisableButton(false);
+    //   }
+    // }
+  };
 
-        dispatch({ type: 'CLEAR_STATE' });
-        setDisableButton(false);
-        approvalAlert();
-      } catch (e) {
-        console.log(e);
-        console.log(e.networkError.result.errors[0].message);
-        alert('Unable to create spot at this time.');
-        setDisableButton(false);
-      }
-    }
+  const sendPushNotification = async () => {
+    const message = {
+      to: myStore.push_token,
+      sound: 'default',
+      title: 'Original Title',
+      body: 'And here is the body!',
+      data: { data: 'goes here' },
+    };
+
+    await fetch('https://exp.host/--/api/v2/push/send', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Accept-encoding': 'gzip, deflate',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(message),
+    });
   };
 
   const removePhoto = () => {
