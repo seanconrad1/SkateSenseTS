@@ -8,7 +8,7 @@ const result = JSON.parse(data);
 
 const buildNumber = parseInt(result.expo.ios.buildNumber);
 
-result.expo.ios.buildNumber = (buildNumber + 1).toString();
+result.expo.ios.buildNumber = (buildNumber + 0.1).toString();
 
 updateAppJSON = result;
 

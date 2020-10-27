@@ -12,3 +12,4 @@ deploy.sh
 *.ipa
 # macOS
 .DS_Store
+*.p8
