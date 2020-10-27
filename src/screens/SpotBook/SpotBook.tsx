@@ -29,7 +29,7 @@ import DELETE_SPOT_MUTATION from '../../graphql/mutations/deleteSpotMutation';
 import DELETE_BOOKMARK_MUTATION from '../../graphql/mutations/deleteBookmarkMutation';
 import SpotCard from '../../components/SpotCard';
 import SpotsButtonGroup from '../../components/SpotsButtonGroup';
-import { store } from '../../store';
+import { MainContext } from '../../store';
 import TopHeader from '../../components/Header';
 import { getCurrentLocation } from '../../utils/helpers';
 import Loading from '../../components/Loading';
@@ -38,7 +38,7 @@ import Modal from 'react-native-modalbox';
 import CustomButtonGroup from '../../components/CustomButtonGroup';
 
 const SpotBook = ({ navigation }) => {
-  const { state: myStore } = useContext(store);
+  const { state: myStore } = useContext(MainContext);
   const [tab, setTab] = useState(0);
   const [searchInput, setSearchInput] = useState('');
   const [refreshing] = useState(false);

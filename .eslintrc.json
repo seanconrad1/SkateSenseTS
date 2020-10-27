@@ -108,7 +108,8 @@
         "extensions": [
           ".js",
           ".jsx",
-          ".tsx"
+          ".tsx",
+          ".json"
         ]
       }
     ],

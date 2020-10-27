@@ -5,8 +5,9 @@ import { Input, Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import CREATE_USER from '../graphql/mutations/newUserMutation';
 import { useMutation } from '@apollo/react-hooks';
-import { store } from '../store';
+import { MainContext } from '../store';
 import styles from '../styles';
+import { registerForPushNotificationsAsync } from '../utils/helpers';
 
 const SignUp = (props) => {
   const [name, setName] = useState('');
@@ -14,7 +15,7 @@ const SignUp = (props) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
-  const globalState = useContext(store);
+  const globalState = useContext(MainContext);
   const [disableButton, setDisableButton] = useState(false);
   const { dispatch } = globalState;
   // const [errors, setErrors] = useState("");
@@ -26,6 +27,7 @@ const SignUp = (props) => {
         email: string;
         user_id: string;
         token: string;
+        push_token: string;
       };
     };
   }
@@ -36,14 +38,19 @@ const SignUp = (props) => {
   ] = useMutation(CREATE_USER);
 
   const onSubmit = async () => {
+    const push_token = await registerForPushNotificationsAsync();
+
     let data: Idata;
     const obj = {
       userInput: {
         email,
         name,
         password,
+        push_token,
       },
     };
+
+    console.log(obj);
 
     try {
       data = await createUser({ variables: obj });
@@ -53,16 +60,23 @@ const SignUp = (props) => {
       setError(e.networkError.result.errors[0].message);
     }
 
+    console.log("WAHT IS DATA", data)
+
     dispatch({
       type: "SET_USER",
       payload: {
         user_id: data!.data.createUser.user_id,
         token: data!.data.createUser.token,
+        push_token: data!.data.createUser.push_token
       },
     });
 
     try {
       await AsyncStorage.setItem("AUTH_TOKEN", data!.data.createUser.token);
+      await AsyncStorage.setItem("PUSH_TOKEN", data!.data.createUser.push_token);
+      await AsyncStorage.setItem("EMAIL", data!.data.createUser.email);
+      await AsyncStorage.setItem("USER_ID", data!.data.createUser.user_id);
+      await AsyncStorage.setItem("NAME", data!.data.createUser.name);
     } catch (e) {
       return e;
     }

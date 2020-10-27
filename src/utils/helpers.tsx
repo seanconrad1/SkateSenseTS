@@ -46,10 +46,12 @@ export const findDistance = (setDistanceFrom, spot) => {
 
 export async function registerForPushNotificationsAsync() {
   let token;
+
   if (Constants.isDevice) {
     const { status: existingStatus } = await Permissions.getAsync(
       Permissions.NOTIFICATIONS
     );
+
     let finalStatus = existingStatus;
     if (existingStatus !== 'granted') {
       const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);

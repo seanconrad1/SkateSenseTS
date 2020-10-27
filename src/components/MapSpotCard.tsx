@@ -20,7 +20,7 @@ import GestureRecognizer from 'react-native-swipe-gestures';
 import * as Haptics from 'expo-haptics';
 import { Icon } from 'react-native-elements';
 import BookmarkButton from './BookmarkButton';
-import { store } from '../store';
+import { MainContext } from '../store';
 const CARD_WIDTH = wp('95%');
 
 interface iSpot {}
@@ -28,7 +28,7 @@ interface iSpot {}
 const MapSpotCard = ({ spot, raise, lower, navigation }) => {
   const [opened, setOpened] = useState(true);
   const modalRef = useRef(null);
-  const { state, dispatch } = useContext(store);
+  const { state, dispatch } = useContext(MainContext);
   const { user_id } = state;
   // const [bookmarked, setBookmarked] = useState(false);
   const { loading, error, data: bookmarks } = useQuery(GET_BOOKMARKS, {

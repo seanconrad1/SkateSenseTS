@@ -17,7 +17,7 @@ import Administration from './screens/Administration';
 import UserSpots from './screens/UserSpots';
 import test from './screens/test';
 
-import { store, SET_USER } from './store';
+import { MainContext, SET_USER } from './store';
 
 const RootStack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator();
@@ -96,7 +96,7 @@ const NavDrawer = () => (
 );
 
 const RootStackScreen = ({ getAuthToken }) => {
-  const { state, dispatch } = useContext(store);
+  const { state, dispatch } = useContext(MainContext);
 
   let jwt;
   (async () => {

@@ -1,12 +1,11 @@
 import React, { useState, useContext, useCallback, useEffect } from "react";
 import { View, KeyboardAvoidingView, Text, Alert, Platform,  } from "react-native";
 import Constants from 'expo-constants';
-import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
-
 import AsyncStorage from "@react-native-community/async-storage";
 //Context
-import { store, SET_PUSH_TOKEN } from "../store";
+import { MainContext } from '../store';
+
 import { Input, Button } from "react-native-elements";
 import Icon from "react-native-vector-icons/FontAwesome";
 import {
@@ -16,7 +15,6 @@ import {
 import { useMutation } from "@apollo/react-hooks";
 import LOGIN_MUTATION from "../graphql/mutations/loginMutation";
 import styles from "../styles";
-import { registerForPushNotificationsAsync } from '../utils/helpers';
 
 const FONT_SIZE_BIG = hp("8");
 const FONT_SIZE_SMALL = hp("6");
@@ -39,27 +37,15 @@ const Login = ({ navigation }) => {
   const [password, setPassword] = useState(__DEV__ ? "" : "");
   const [disableButton, setDisableButton] = useState(false);
   const [errors, setErrors] = useState("");
-  const { state, dispatch } = useContext(store);
+  const { state, dispatch } = useContext(MainContext);
   const [login] = useMutation(LOGIN_MUTATION);
 
   useEffect(() => {
-    registerForPushNotificationsAsync().then((token) => {
-      dispatch({ type: SET_PUSH_TOKEN, payload: { push_token: token } });
-      // dispatch({ type: SET_USER,       payload: { token, user_id } });
-    });
-
     // // This listener is fired whenever a notification is received while the app is foregrounded
     // notificationListener.current = Notifications.addNotificationReceivedListener(
     //   (notification) => {
     //     console.log('got here');
     //     setNotification(notification);
-    //   }
-    // );
-
-    // // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
-    // responseListener.current = Notifications.addNotificationResponseReceivedListener(
-    //   (response) => {
-    //     console.log(response);
     //   }
     // );
 
@@ -81,6 +67,8 @@ const Login = ({ navigation }) => {
       setErrors(e.networkError.result.errors[0].message);
     }
 
+    console.log(response!.data.login)
+
     const { token, email, user_id, name } = response!.data.login;
 
 
@@ -90,6 +78,7 @@ const Login = ({ navigation }) => {
         await AsyncStorage.setItem("EMAIL", email);
         await AsyncStorage.setItem("USER_ID", user_id);
         await AsyncStorage.setItem("NAME", name);
+
         dispatch({
           type: "SET_USER",
           payload: { token, user_id },

@@ -3,13 +3,13 @@ import { StyleSheet, Text, View, AsyncStorage } from 'react-native';
 import { Divider, ListItem, Icon } from 'react-native-elements';
 import { DrawerContentScrollView } from '@react-navigation/drawer';
 //Context
-import { store } from '../store';
+import { MainContext } from '../store';
 import jwt_decode from 'jwt-decode';
 
-interface Iprops { }
+interface Iprops {}
 
 const SideMenu = (props: Iprops) => {
-  const { state, dispatch } = useContext(store);
+  const { state, dispatch } = useContext(MainContext);
   const decoded = jwt_decode(state.token);
   const { navigation } = props;
 

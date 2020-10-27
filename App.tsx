@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useRef } from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
 import { ApolloClient } from 'apollo-client';
 import { ApolloProvider } from '@apollo/react-hooks';
@@ -12,8 +12,18 @@ import * as TaskManager from 'expo-task-manager';
 import { useFonts } from 'expo-font';
 import { StateProvider } from './src/store';
 import RootStackScreen from './src/navigation';
+import * as Notifications from 'expo-notifications';
+import * as Haptics from 'expo-haptics';
 
 enableScreens();
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 
 const cache = new InMemoryCache();
 const httpLink = new HttpLink({
@@ -83,10 +93,24 @@ const client = new ApolloClient({
 });
 
 const App = () => {
+  const notificationListener = useRef();
   const [loaded] = useFonts({
     Lobster: require('./assets/fonts/Lobster-Regular.ttf'),
     ProximaNova: require('./assets/fonts/ProximaNova-Regular.otf'),
   });
+
+  const handleNotification = async (notification) => {
+    console.log(notification);
+  };
+
+  useEffect(() => {
+    notificationListener.current = Notifications.addNotificationReceivedListener(
+      (notification) => {
+        // setNotification(notification);
+        handleNotification(notification);
+      }
+    );
+  }, []);
 
   if (!loaded) {
     return null;

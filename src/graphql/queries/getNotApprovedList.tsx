@@ -16,6 +16,7 @@ const GET_NOT_APPROVED_LIST = gql`
       }
       kickout_level
       owner {
+        _id
         name
       }
       contains

@@ -7,7 +7,7 @@ import React, {
 } from 'react';
 import { Text, View, ScrollView, Alert } from 'react-native';
 import { Icon, Button } from 'react-native-elements';
-import { useMutation } from '@apollo/react-hooks';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 import * as ImagePicker from 'expo-image-picker';
 import { reducer, newSpotState } from './reducer';
 import NEW_SPOT_MUTATION from '../../graphql/mutations/newSpotMutation';
@@ -24,10 +24,12 @@ import {
 import TopHeader from '../../components/Header';
 import Modal from 'react-native-modalbox';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { store } from '../../store';
+import { MainContext } from '../../store';
 import * as Permissions from 'expo-permissions';
 import * as Location from 'expo-location';
 import GET_MY_SPOTS from '../../graphql/queries/getMySpots';
+import GET_ADMINS from '../../graphql/queries/getAdmins';
+
 import * as ImageManipulator from 'expo-image-manipulator';
 import OptionsMenu from 'react-native-option-menu';
 
@@ -35,7 +37,8 @@ const NewSpotPage = (props) => {
   const [disableButton, setDisableButton] = useState(false);
   const [state, dispatch] = useReducer(reducer, newSpotState);
   const [createSpot, { data }] = useMutation(NEW_SPOT_MUTATION);
-  const { state: myStore } = useContext(store);
+  const { loading, error, data: admins } = useQuery(GET_ADMINS);
+  const { state: myStore } = useContext(MainContext);
   const { navigation } = props;
   const modalRef = useRef(null);
   const [selectedPhotoIndex, setSeletctedPhotoIndex] = useState(0);
@@ -184,63 +187,65 @@ const NewSpotPage = (props) => {
   const onSubmit = async () => {
     // dispatch({ type: 'SPOT_SUBMITED', payload: true });
 
-    // const location = await Location.getCurrentPositionAsync({});
-    console.log(myStore);
-    sendPushNotification();
-    // if (validate()) {
-    //   const images = state.photo.map((img) => ({ base64: img.base64 }));
+    const location = await Location.getCurrentPositionAsync({});
+    if (validate()) {
+      const images = state.photo.map((img) => ({ base64: img.base64 }));
 
-    //   const spotInput = {
-    //     name: state.name,
-    //     location: {
-    //       latitude: state.selectedLat,
-    //       longitude: state.selectedLng,
-    //     },
-    //     images,
-    //     description: state.description,
-    //     kickout_level: state.kickout_level,
-    //     owner: myStore.user_id,
-    //     spotType: state.spotType,
-    //     contains: state.spotContains,
-    //   };
+      const spotInput = {
+        name: state.name,
+        location: {
+          latitude: state.selectedLat,
+          longitude: state.selectedLng,
+        },
+        images,
+        description: state.description,
+        kickout_level: state.kickout_level,
+        owner: myStore.user_id,
+        spotType: state.spotType,
+        contains: state.spotContains,
+      };
 
-    //   setDisableButton(true);
-    //   try {
-    //     await createSpot({
-    //       variables: { spotInput },
-    //       refetchQueries: [
-    //         { query: GET_SPOTS },
-    //         {
-    //           query: GET_MY_SPOTS,
-    //           variables: {
-    //             locationInput: {
-    //               latitude: location.coords.latitude,
-    //               longitude: location.coords.longitude,
-    //             },
-    //           },
-    //         },
-    //       ],
-    //       awaitRefetchQueries: true,
-    //     });
+      setDisableButton(true);
+      try {
+        await createSpot({
+          variables: { spotInput },
+          refetchQueries: [
+            { query: GET_SPOTS },
+            {
+              query: GET_MY_SPOTS,
+              variables: {
+                locationInput: {
+                  latitude: location.coords.latitude,
+                  longitude: location.coords.longitude,
+                },
+              },
+            },
+          ],
+          awaitRefetchQueries: true,
+        });
 
-    //     dispatch({ type: 'CLEAR_STATE' });
-    //     setDisableButton(false);
-    //     approvalAlert();
-    //   } catch (e) {
-    //     console.log(e);
-    //     console.log(e.networkError.result.errors[0].message);
-    //     alert('Unable to create spot at this time.');
-    //     setDisableButton(false);
-    //   }
-    // }
+        dispatch({ type: 'CLEAR_STATE' });
+        setDisableButton(false);
+        sendPushNotification();
+
+        approvalAlert();
+      } catch (e) {
+        console.log(e);
+        console.log(e.networkError.result.errors[0].message);
+        alert('Unable to create spot at this time.');
+        setDisableButton(false);
+      }
+    }
   };
 
   const sendPushNotification = async () => {
+    const cleanedTokenArray = admins.getAdmins.map((i) => i.push_token);
+
     const message = {
-      to: myStore.push_token,
+      to: cleanedTokenArray,
       sound: 'default',
-      title: 'Original Title',
-      body: 'And here is the body!',
+      title: 'New Spot',
+      body: 'A new spot has been posted and needs approval',
       data: { data: 'goes here' },
     };
 
@@ -261,6 +266,10 @@ const NewSpotPage = (props) => {
 
   const options = ['Camera Roll', 'Take Photo', 'Delete', 'Cancel'];
 
+  if (loading) {
+    return <Text>Loading</Text>;
+  }
+
   return (
     <View style={styles.topView}>
       <TopHeader navigation={navigation} name={'Create New Spot'} />
@@ -277,30 +286,8 @@ const NewSpotPage = (props) => {
         ]}
       />
 
-      {/* <Modal swipeToClose={false} style={[styles.modal, { height: state.photo && state.photo[selectedPhotoIndex] ? 280 : 200 }]} position={"bottom"} ref={modalRef}>
-        <TouchableOpacity onPress={getPhotoFromCameraRoll} style={styles.textContainer} >
-          <Text style={styles.modelText}>Camera Roll</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={launchCamera} style={styles.textContainer}>
-          <Text style={styles.modelText}>Take Photo</Text>
-        </TouchableOpacity>
-        {state.photo && state.photo[selectedPhotoIndex]
-          ? <TouchableOpacity onPress={removePhoto} style={styles.textContainer}>
-            <Text style={[styles.modelText, { color: 'red' }]}>Delete</Text>
-          </TouchableOpacity>
-          : null}
-
-        <TouchableOpacity onPress={onClose} style={styles.textContainer}>
-          <Text style={styles.modelText}>Cancel</Text>
-        </TouchableOpacity>
-      </Modal> */}
-
       <ScrollView style={styles.scrollview}>
         <View style={styles.insideContainer}>
-          {/* <PhotoHolders
-            state={state}
-            onOpen={onOpen}
-          /> */}
           <ButtonsRow
             navigation={navigation}
             locationSelected={state.locationSelected}

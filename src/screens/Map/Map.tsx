@@ -23,14 +23,14 @@ import { reducer, mapState } from './reducer';
 import MapSpotCard from '../../components/MapSpotCard';
 import * as Location from 'expo-location';
 import styles from './styles';
-import { store } from '../../store';
+import { MainContext } from '../../store';
 import Loading from '../../components/Loading';
 
 const LOCATION_TASK_NAME = 'background-location-task';
 const CARD_WIDTH = wp('95%');
 
 const Map = (props) => {
-  const { state: myStore, dispatch: storeDispatch } = useContext(store);
+  const { state: myStore, dispatch: storeDispatch } = useContext(MainContext);
   const { loading, error, data, refetch } = useQuery(GET_SPOTS);
   const [state, dispatch] = useReducer(reducer, mapState);
   const mapRef = useRef();
