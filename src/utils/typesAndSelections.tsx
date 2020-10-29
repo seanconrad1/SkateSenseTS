@@ -1,6 +1,7 @@
 export const streetSpotTypebuttons = ['Street Spot', 'Skatepark', 'DIY'];
 export const streetSpotContains = [
   'Flatbar',
+  'Hand rail',
   'Bank',
   'Stair',
   'Ditch',
