@@ -1,5 +1,8 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useLayoutEffect } from 'react';
+import { Image, View } from 'react-native';
+import { Icon } from 'react-native-elements';
 import { createDrawerNavigator } from '@react-navigation/drawer';
+import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer, StackRouter } from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
@@ -18,6 +21,7 @@ import UserSpots from './screens/UserSpots';
 import test from './screens/test';
 
 import { MainContext, SET_USER } from './store';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const RootStack = createNativeStackNavigator();
 const AuthStack = createNativeStackNavigator();
@@ -40,7 +44,18 @@ const MapStackComponent = () => (
     }}
   >
     <MapStack.Screen name="Map" component={Map} />
-    <MapStack.Screen name="New Spot Page" component={NewSpotPage} />
+    <MapStack.Screen
+      options={{
+        headerShown: true,
+        headerTitleStyle: {
+          color: 'black',
+          fontSize: 20,
+          // fontFamily: 'Lobster',
+        },
+      }}
+      name="New Spot Page"
+      component={NewSpotPage}
+    />
     <MapStack.Screen
       name="LocationSelectorMap"
       component={LocationSelectorMap}
@@ -63,7 +78,19 @@ const AuthStackScreen = () => (
 const AdministrationStack = () => (
   <AdminStack.Navigator
     screenOptions={{
-      headerShown: false,
+      headerShown: true,
+      // headerStyle: {},
+      headerTitleStyle: {
+        color: 'black',
+        fontSize: 25,
+        // fontFamily: 'Lobster',
+      },
+      // headerTitle: (props) => <LogoTitle {...props} />,
+      headerLeft: () => (
+        <TouchableOpacity onPress={() => console.log('test')}>
+          <Icon name="sc-telegram" type="evilicon" color="black" />
+        </TouchableOpacity>
+      ),
     }}
   >
     <AdminStack.Screen name="Administration" component={Administration} />
@@ -74,7 +101,12 @@ const AdministrationStack = () => (
 const ApprovalNavStack = () => (
   <ApprovalStack.Navigator
     screenOptions={{
-      headerShown: false,
+      headerShown: true,
+      headerTitleStyle: {
+        color: 'black',
+        fontSize: 20,
+        // fontFamily: 'Lobster',
+      },
     }}
   >
     <Drawer.Screen name="Approvals" component={Approvals} />
@@ -82,18 +114,43 @@ const ApprovalNavStack = () => (
   </ApprovalStack.Navigator>
 );
 
-const NavDrawer = () => (
-  <Drawer.Navigator
-    headerMode={null}
-    initialRouteName="Map"
-    drawerContent={(drawerProps) => CustomDrawerContent(drawerProps)}
-  >
-    <Drawer.Screen name="Map" component={MapStackComponent} />
-    <Drawer.Screen name="My Spots" component={SpotBook} />
-    <Drawer.Screen name="Approvals" component={ApprovalNavStack} />
-    <Drawer.Screen name="Administration" component={AdministrationStack} />
-  </Drawer.Navigator>
-);
+const NavDrawer = ({ navigation, route }) => {
+  console.log();
+  // console.log(route);
+  const getOptions = () => {
+    if (getFocusedRouteNameFromRoute(route) === 'My Spots') {
+      return {
+        headerShown: true,
+        headerTitle: getFocusedRouteNameFromRoute(route),
+        headerTitleStyle: {
+          color: 'black',
+          fontSize: 20,
+        },
+      };
+    } else {
+      return {
+        headerShown: false,
+      };
+    }
+  };
+
+  useLayoutEffect(() => {
+    navigation.setOptions(getOptions());
+  }, [navigation, route]);
+
+  return (
+    <Drawer.Navigator
+      headerMode={null}
+      initialRouteName="Map"
+      drawerContent={(drawerProps) => CustomDrawerContent(drawerProps)}
+    >
+      <Drawer.Screen name="Map" component={MapStackComponent} />
+      <Drawer.Screen name="My Spots" component={SpotBook} />
+      <Drawer.Screen name="Approvals" component={ApprovalNavStack} />
+      <Drawer.Screen name="Administration" component={AdministrationStack} />
+    </Drawer.Navigator>
+  );
+};
 
 const RootStackScreen = ({ getAuthToken }) => {
   const { state, dispatch } = useContext(MainContext);

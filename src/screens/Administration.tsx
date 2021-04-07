@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { StyleSheet, FlatList, RefreshControl } from 'react-native';
 import { ListItem, Divider } from 'react-native-elements';
-
 import { useLazyQuery, useApolloClient, useQuery } from '@apollo/react-hooks';
 import GET_USERS from '../graphql/queries/getUsers';
 import Loading from '../components/Loading';
@@ -50,18 +50,14 @@ const Administration = ({ navigation }) => {
   );
 
   return (
-    <>
-      <TopHeader name="Administration" navigation={navigation} />
-
-      <FlatList
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={getUsers} />
-        }
-        data={data.getUsers}
-        renderItem={renderItem}
-        keyExtractor={(item) => item.id}
-      />
-    </>
+    <FlatList
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={getUsers} />
+      }
+      data={data.getUsers}
+      renderItem={renderItem}
+      keyExtractor={(item) => item.id}
+    />
   );
 };
 

@@ -10,7 +10,6 @@ import GET_NOT_APPROVED_LIST from '../graphql/queries/getNotApprovedList';
 import { Header, ListItem, Avatar } from 'react-native-elements';
 import { useLazyQuery, useQuery } from '@apollo/react-hooks';
 import AsyncStorage from '@react-native-community/async-storage';
-import TopHeader from '../components/Header';
 import Loading from '../components/Loading';
 import moment from 'moment';
 
@@ -40,8 +39,6 @@ const Approvals = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <TopHeader navigation={navigation} name="Approvals" />
-
       {/* <FlatList
         data={data.publications.edges}
         renderItem={(item) => }
@@ -58,7 +55,7 @@ const Approvals = ({ navigation }) => {
         }
       >
         {data.getNotApprovedList.length > 0 ? (
-          data.getNotApprovedList.map((spot, i) => (
+          data.getNotApprovedList.map((spot, i: string) => (
             <ListItem
               key={i}
               bottomDivider

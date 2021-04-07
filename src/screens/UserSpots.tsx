@@ -40,11 +40,6 @@ const UserSpots = (props) => {
 
   return (
     <>
-      <TopHeader
-        name={`${props.route.params.user.name}'s spots`}
-        navigation={props.navigation}
-      />
-
       {props.route.params.user.spots.length > 0 ? (
         <FlatList
           data={props.route.params.user.spots}

@@ -12,12 +12,10 @@ import {
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import APPROVE_SPOT_MUTATION from '../graphql/mutations/approveSpotMutation';
 import DELETE_SPOT_MUTATION from '../graphql/mutations/deleteSpotMutation';
-
 import GET_SPOTS from '../graphql/queries/getSpots';
 import GET_SPOT_OWNER from '../graphql/queries/getSpotOwner';
 import GET_NOT_APPROVED_LIST from '../graphql/queries/getNotApprovedList';
 import { Divider, Icon } from 'react-native-elements';
-import TopHeader from '../components/Header';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -109,19 +107,12 @@ const ApprovalSpotPage = ({ route, navigation }) => {
 
   return (
     <View style={styles.container} behavior="padding">
-      <TopHeader name="Spot Approval" navigation={navigation} />
-
       <Icon
         raised
         size={hp('2.8')}
         name="directions"
         iconStyle={{ color: 'rgb(244, 2, 87)' }}
-        containerStyle={{
-          position: 'absolute',
-          zIndex: 1,
-          marginLeft: wp('85%'),
-          marginTop: '20%',
-        }}
+        containerStyle={styles.iconContainer}
         onPress={() =>
           Linking.openURL(
             `http://maps.apple.com/?daddr=${spot.location.latitude},${spot.location.longitude}&dirflg=d&t=h`
@@ -209,5 +200,11 @@ const styles = StyleSheet.create({
     // letterSpacing: 3,
     fontSize: 20,
     position: 'relative',
+  },
+  iconContainer: {
+    position: 'absolute',
+    zIndex: 1,
+    top: '2%',
+    right: '5%',
   },
 });

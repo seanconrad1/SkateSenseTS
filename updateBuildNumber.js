@@ -6,12 +6,14 @@ const data = fs.readFileSync('./app.json', 'utf8');
 
 const result = JSON.parse(data);
 
-const IOSbuildNumber = parseInt(result.expo.ios.buildNumber);
-const AndroidbuildNumber = result.expo.android.versionCode;
+const IOSbuildNumber = parseFloat(result.expo.ios.buildNumber);
+// const AndroidbuildNumber = result.expo.android.versionCode;
 
-result.expo.ios.buildNumber = (IOSbuildNumber + 0.1).toString();
-result.expo.android.versionCode = AndroidbuildNumber + 1;
+console.log((IOSbuildNumber + 0.1).toFixed(1).toString());
 
+result.expo.ios.buildNumber = (IOSbuildNumber + 0.1).toFixed(1).toString();
+// result.expo.android.versionCode = AndroidbuildNumber + 1;
+//
 updateAppJSON = result;
 
 try {

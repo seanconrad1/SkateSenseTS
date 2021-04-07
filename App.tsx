@@ -1,4 +1,6 @@
 import React, { useEffect, useRef } from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
+
 import AsyncStorage from '@react-native-community/async-storage';
 import { ApolloClient } from 'apollo-client';
 import { ApolloProvider } from '@apollo/react-hooks';
@@ -117,11 +119,13 @@ const App = () => {
   }
 
   return (
-    <ApolloProvider client={client}>
-      <StateProvider>
-        <RootStackScreen getAuthToken={getAuthToken} />
-      </StateProvider>
-    </ApolloProvider>
+    <SafeAreaProvider>
+      <ApolloProvider client={client}>
+        <StateProvider>
+          <RootStackScreen getAuthToken={getAuthToken} />
+        </StateProvider>
+      </ApolloProvider>
+    </SafeAreaProvider>
   );
 };
 export default App;

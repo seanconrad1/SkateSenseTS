@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useReducer } from 'react';
-import { StyleSheet, View, Image, Dimensions, Text } from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Image,
+  Dimensions,
+  Text,
+  LogBox,
+} from 'react-native';
 import MapView from 'react-native-maps';
 import { Button } from 'react-native-elements';
 import {
@@ -12,7 +19,7 @@ import markerIcon from '../../../../assets/markerIcon.png';
 import { animateToUserLocation } from '../../Map/utils';
 import { reducer, newSpotState } from '../reducer';
 
-console.disableYellowBox = true;
+// LogBox.ignoreAllLogs = true;
 
 const { height, width } = Dimensions.get('window');
 

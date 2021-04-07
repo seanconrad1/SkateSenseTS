@@ -12,7 +12,8 @@ import {
   ScrollView,
   Alert,
   RefreshControl,
-  TouchableOpacity
+  TouchableOpacity,
+  SafeAreaView
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Input, Divider, Button} from 'react-native-elements';
@@ -227,8 +228,7 @@ const SpotBook = ({ navigation }) => {
 
   return (
     <View>
-      <TopHeader name="My Spots" navigation={navigation} />
-
+      
       <Input
         style={styles.search}
         placeholder="Search"

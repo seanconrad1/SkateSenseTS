@@ -21,7 +21,6 @@ import {
   streetSpotTypebuttons,
   streetSpotContains,
 } from '../../utils/typesAndSelections';
-import TopHeader from '../../components/Header';
 import Modal from 'react-native-modalbox';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { MainContext } from '../../store';
@@ -186,6 +185,7 @@ const NewSpotPage = (props) => {
 
   const onSubmit = async () => {
     // dispatch({ type: 'SPOT_SUBMITED', payload: true });
+    setDisableButton(true);
 
     const location = await Location.getCurrentPositionAsync({});
     if (validate()) {
@@ -205,7 +205,6 @@ const NewSpotPage = (props) => {
         contains: state.spotContains,
       };
 
-      setDisableButton(true);
       try {
         await createSpot({
           variables: { spotInput },
@@ -236,6 +235,7 @@ const NewSpotPage = (props) => {
         setDisableButton(false);
       }
     }
+    setDisableButton(false);
   };
 
   const sendPushNotification = async () => {
@@ -272,8 +272,6 @@ const NewSpotPage = (props) => {
 
   return (
     <View style={styles.topView}>
-      <TopHeader navigation={navigation} name={'Create New Spot'} />
-
       <OptionsMenu
         customButton={<PhotoHolders state={state} />}
         options={options}

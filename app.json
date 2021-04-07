@@ -20,7 +20,7 @@
         "usesNonExemptEncryption": false
       },
       "supportsTablet": true,
-      "buildNumber": "9",
+      "buildNumber": "9.1",
       "bundleIdentifier": "org.reactjs.native.example.SkateSenseReactNative",
       "infoPlist": {
         "NSLocationAlwaysUsageDescription": "For a better experience, while using our Service, we may require you to provide us Location Permissions",
