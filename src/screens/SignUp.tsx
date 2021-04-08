@@ -3,16 +3,19 @@ import { View, KeyboardAvoidingView, Animated, Text } from 'react-native';
 import AsyncStorage from '@react-native-community/async-storage';
 import { Input, Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import CREATE_USER from '../graphql/mutations/newUserMutation';
 import { useMutation } from '@apollo/react-hooks';
 import { MainContext } from '../store';
 import styles from '../styles';
 import { registerForPushNotificationsAsync } from '../utils/helpers';
+import {createUser} from '../api/api'
+import jwt_decode from 'jwt-decode';
+
 
 const SignUp = (props) => {
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [loading, setLoading] = useState(false)
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const globalState = useContext(MainContext);
@@ -20,66 +23,56 @@ const SignUp = (props) => {
   const { dispatch } = globalState;
   // const [errors, setErrors] = useState("");
 
-  interface Idata {
-    data: {
-      createUser: {
-        name: string;
-        email: string;
-        user_id: string;
-        token: string;
-        push_token: string;
-      };
-    };
+  interface Decoded {
+    user_id: string;
+    email: string;
+    admin: boolean;
+    name: string;
+    iat: number;
+    exp: number;
+    push_token: string
   }
 
-  const [
-    createUser,
-    { loading: mutationLoading, error: mutationError },
-  ] = useMutation(CREATE_USER);
 
   const onSubmit = async () => {
     const push_token = await registerForPushNotificationsAsync();
 
-    let data: Idata;
-    const obj = {
-      userInput: {
-        email,
+
+      const data = await createUser(email,
         name,
         password,
-        push_token,
-      },
-    };
+        push_token);
+      if(data.error){
+        setError(data.error.message)
+      }else{
+        setDisableButton(false);
+        setError('');
+      }
 
-    console.log(obj);
+
+    const decoded: Decoded = jwt_decode(data.token);
+
+
+   
 
     try {
-      data = await createUser({ variables: obj });
-      setDisableButton(false);
-      setError('');
+      await AsyncStorage.setItem("AUTH_TOKEN", data!.token);
+      await AsyncStorage.setItem("PUSH_TOKEN", decoded.push_token);
+      await AsyncStorage.setItem("EMAIL", decoded.email);
+      await AsyncStorage.setItem("USER_ID", decoded.user_id);
+      await AsyncStorage.setItem("NAME", decoded.name);
     } catch (e) {
-      setError(e.networkError.result.errors[0].message);
+      return e;
     }
-
-    console.log("WAHT IS DATA", data)
 
     dispatch({
       type: "SET_USER",
       payload: {
-        user_id: data!.data.createUser.user_id,
-        token: data!.data.createUser.token,
-        push_token: data!.data.createUser.push_token
+        user_id: decoded.user_id,
+        token: token,
+        push_token: decoded.push_token
       },
     });
-
-    try {
-      await AsyncStorage.setItem("AUTH_TOKEN", data!.data.createUser.token);
-      await AsyncStorage.setItem("PUSH_TOKEN", data!.data.createUser.push_token);
-      await AsyncStorage.setItem("EMAIL", data!.data.createUser.email);
-      await AsyncStorage.setItem("USER_ID", data!.data.createUser.user_id);
-      await AsyncStorage.setItem("NAME", data!.data.createUser.name);
-    } catch (e) {
-      return e;
-    }
     setEmail("");
     setPassword("");
     setName("");
@@ -162,7 +155,7 @@ const SignUp = (props) => {
         title="Submit"
         buttonStyle={styles.signupSubmit}
         onPress={() => onSubmit()}
-        disabled={mutationLoading}
+        disabled={loading}
       />
     </KeyboardAvoidingView>
   );

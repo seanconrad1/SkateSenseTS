@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   FlatList,
 } from 'react-native';
-import TopHeader from '../components/Header';
 import { ListItem, Divider, Avatar } from 'react-native-elements';
 
 const UserSpots = (props) => {

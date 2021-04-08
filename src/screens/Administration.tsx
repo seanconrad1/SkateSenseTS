@@ -1,12 +1,10 @@
-import React, { useState } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React, { useState, useCallback } from 'react';
 import { StyleSheet, FlatList, RefreshControl } from 'react-native';
 import { ListItem, Divider } from 'react-native-elements';
-import { useLazyQuery, useApolloClient, useQuery } from '@apollo/react-hooks';
-import GET_USERS from '../graphql/queries/getUsers';
 import Loading from '../components/Loading';
-import TopHeader from '../components/Header';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { useFocusEffect } from '@react-navigation/core';
+import { getUsers } from '../api/api';
 
 const wait = (timeout) =>
   new Promise((resolve) => {
@@ -15,17 +13,30 @@ const wait = (timeout) =>
 
 const Administration = ({ navigation }) => {
   const [users, setUsers] = useState('');
-  const { loading, error, data, refetch } = useQuery(GET_USERS);
+  const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+
+  useFocusEffect(
+    useCallback(() => {
+      async function fetchMyAPI() {
+        setLoading(true);
+        const response = await getUsers();
+        setUsers(response);
+        setLoading(false);
+      }
+      fetchMyAPI();
+      setLoading(false);
+    }, [])
+  );
 
   if (loading) {
     return <Loading />;
   }
 
-  const getUsers = async () => {
-    await refetch();
-
-    // setRefreshing(true);
+  const refreshUsers = async () => {
+    setRefreshing(true);
+    const response = await getUsers();
+    setUsers(response);
     wait(2000).then(() => setRefreshing(false));
   };
 
@@ -52,9 +63,9 @@ const Administration = ({ navigation }) => {
   return (
     <FlatList
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={getUsers} />
+        <RefreshControl refreshing={refreshing} onRefresh={refreshUsers} />
       }
-      data={data.getUsers}
+      data={users}
       renderItem={renderItem}
       keyExtractor={(item) => item.id}
     />

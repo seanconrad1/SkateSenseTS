@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   View,
   Text,
@@ -6,12 +6,14 @@ import {
   RefreshControl,
   StyleSheet,
 } from 'react-native';
-import GET_NOT_APPROVED_LIST from '../graphql/queries/getNotApprovedList';
+import { useFocusEffect } from '@react-navigation/native';
+
 import { Header, ListItem, Avatar } from 'react-native-elements';
 import { useLazyQuery, useQuery } from '@apollo/react-hooks';
 import AsyncStorage from '@react-native-community/async-storage';
 import Loading from '../components/Loading';
 import moment from 'moment';
+import { getNotApprovedList } from '../api/api';
 
 const wait = (timeout) =>
   new Promise((resolve) => {
@@ -19,23 +21,38 @@ const wait = (timeout) =>
   });
 
 const Approvals = ({ navigation }) => {
-  const { loading, error, data, refetch } = useQuery(GET_NOT_APPROVED_LIST);
+  const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [notApprovedList, setNotApprovedList] = useState([]);
+
+  useFocusEffect(
+    useCallback(() => {
+      async function fetchMyAPI() {
+        setLoading(true);
+        const response = await getNotApprovedList();
+        setNotApprovedList(response);
+        setLoading(false);
+      }
+      fetchMyAPI();
+      setLoading(false);
+    }, [])
+  );
 
   const getSpots = async () => {
-    await refetch();
+    const response = await getNotApprovedList();
+    setNotApprovedList(response);
 
     // setRefreshing(true);
     wait(2000).then(() => setRefreshing(false));
   };
 
-  if (loading || data === undefined) {
+  if (loading || notApprovedList === undefined) {
     return <Loading />;
   }
 
-  if (error) {
-    return <View>{error}</View>;
-  }
+  // if (error) {
+  //   return <View>{error}</View>;
+  // }
 
   return (
     <View style={styles.container}>
@@ -54,8 +71,8 @@ const Approvals = ({ navigation }) => {
           <RefreshControl refreshing={refreshing} onRefresh={getSpots} />
         }
       >
-        {data.getNotApprovedList.length > 0 ? (
-          data.getNotApprovedList.map((spot, i: string) => (
+        {notApprovedList.length > 0 ? (
+          notApprovedList.map((spot, i: string) => (
             <ListItem
               key={i}
               bottomDivider

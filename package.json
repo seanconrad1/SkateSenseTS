@@ -34,7 +34,7 @@
     "expo-status-bar": "~1.0.2",
     "expo-task-manager": "~8.5.0",
     "graphql": "^15.3.0",
-    "jwt-decode": "^3.0.0",
+    "jwt-decode": "^3.1.2",
     "moment": "^2.29.1",
     "react": "16.13.1",
     "react-dom": "16.13.1",

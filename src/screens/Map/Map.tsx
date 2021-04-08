@@ -7,11 +7,10 @@ import React, {
   useContext,
 } from 'react';
 import { Text, View, Animated, Image, TouchableOpacity } from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 // import { TouchableOpacity } from 'react-native-gesture-handler';
 import MapView, { Callout } from 'react-native-maps';
 import { Icon, Button } from 'react-native-elements';
-import GET_SPOTS from '../../graphql/queries/getSpots';
-import { useQuery } from '@apollo/react-hooks';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -25,19 +24,20 @@ import * as Location from 'expo-location';
 import styles from './styles';
 import { MainContext } from '../../store';
 import Loading from '../../components/Loading';
+import { getSpots } from '../../api/api';
 
 const LOCATION_TASK_NAME = 'background-location-task';
 const CARD_WIDTH = wp('95%');
 
 const Map = (props) => {
   const { state: myStore, dispatch: storeDispatch } = useContext(MainContext);
-  const { loading, error, data, refetch } = useQuery(GET_SPOTS);
   const [state, dispatch] = useReducer(reducer, mapState);
   const mapRef = useRef();
   const flatListRef = useRef();
   const [slideUpValue, setSideUpValie] = useState(new Animated.Value(0));
   const [raiseOrLower, setRaiseOrLower] = useState(true);
   const [userLocation, setUserLocation] = useState();
+  const [loading, setLoading] = useState(false);
   const { filteredSpots } = state;
   const { navigation } = props;
 
@@ -59,45 +59,56 @@ const Map = (props) => {
     setRaiseOrLower(false);
   };
 
-  useEffect(() => {
-    async function mounting() {
-      const { status } = await Location.requestPermissionsAsync();
-      await animateToUserLocation(mapRef);
-
-      if (status === 'granted') {
-        const a = await Location.startLocationUpdatesAsync(LOCATION_TASK_NAME, {
-          accuracy: Location.Accuracy.Balanced,
-        });
+  useFocusEffect(
+    useCallback(() => {
+      let response;
+      async function getTheSpots() {
+        setLoading(true);
+        response = await getSpots();
+        dispatch({ type: 'SET_SPOTS', payload: response.spotList });
+        setLoading(false);
       }
-    }
 
-    raise();
+      async function mounting() {
+        const { status } = await Location.requestPermissionsAsync();
+        await animateToUserLocation(mapRef);
 
-    mounting();
-  }, []);
+        if (status === 'granted') {
+          const a = await Location.startLocationUpdatesAsync(
+            LOCATION_TASK_NAME,
+            {
+              accuracy: Location.Accuracy.Balanced,
+            }
+          );
+        }
+      }
+
+      raise();
+      getTheSpots();
+
+      mounting();
+    }, [])
+  );
 
   useEffect(() => {
-    if (data) {
-      // Geolocation.getCurrentPosition((position) => {
-      //   const initReg = {
-      //     initialRegion: {
-      //       latitude: position.coords.latitude - 0.02,
-      //       longitude: position.coords.longitude,
-      // latitudeDelta: 0.115,
-      // longitudeDelta: 0.1121,
-      //     },
-      //     geoLocationSwitch: true,
-      //   };
-
-      dispatch({ type: 'SET_SPOTS', payload: data.getSpots });
-      //   dispatch({ type: "SET_INIT_LOCATION", payload: initReg });
-      // });
-    }
+    // Geolocation.getCurrentPosition((position) => {
+    //   const initReg = {
+    //     initialRegion: {
+    //       latitude: position.coords.latitude - 0.02,
+    //       longitude: position.coords.longitude,
+    // latitudeDelta: 0.115,
+    // longitudeDelta: 0.1121,
+    //     },
+    //     geoLocationSwitch: true,
+    //   };
+    // dispatch({ type: 'SET_SPOTS', payload: data.spotList });
+    //   dispatch({ type: "SET_INIT_LOCATION", payload: initReg });
+    // });
 
     setAnimatorListener();
   }, [
-    data,
-    refreshMarkers,
+    // data,
+    // refreshMarkers,
     setAnimatorListener,
     state.animation,
     state.currentRegion,
@@ -150,28 +161,28 @@ const Map = (props) => {
     flatListRef.current.getNode().scrollToIndex({ index });
   };
 
-  const refreshMarkers = useCallback(() => {
-    state.animation.removeAllListeners();
-    if (data) {
-      const area = 0.05;
-      if (
-        state.currentRegion &&
-        state.currentRegion.latitude > 0.1 &&
-        data.getSpots !== undefined
-      ) {
-        const filteredSpots = data.getSpots.filter(
-          (spot) =>
-            spot.location.latitude < state.currentRegion.latitude + area &&
-            spot.location.latitude > state.currentRegion.latitude - area &&
-            spot.location.longitude < state.currentRegion.longitude + area &&
-            spot.location.longitude > state.currentRegion.longitude - area
-          // spot.approved === true,
-        );
-        // setState({filteredSpots: filteredSpots})
-        dispatch({ type: 'SET_SPOTS', payload: filteredSpots });
-      }
-    }
-  }, [data, state.animation, state.currentRegion]);
+  // const refreshMarkers = useCallback(() => {
+  //   state.animation.removeAllListeners();
+  //   if (data) {
+  //     const area = 0.05;
+  //     if (
+  //       state.currentRegion &&
+  //       state.currentRegion.latitude > 0.1 &&
+  //       data.getSpots !== undefined
+  //     ) {
+  //       const filteredSpots = data.getSpots.filter(
+  //         (spot) =>
+  //           spot.location.latitude < state.currentRegion.latitude + area &&
+  //           spot.location.latitude > state.currentRegion.latitude - area &&
+  //           spot.location.longitude < state.currentRegion.longitude + area &&
+  //           spot.location.longitude > state.currentRegion.longitude - area
+  //         // spot.approved === true,
+  //       );
+  //       // setState({filteredSpots: filteredSpots})
+  //       dispatch({ type: 'SET_SPOTS', payload: filteredSpots });
+  //     }
+  //   }
+  // }, [data, state.animation, state.currentRegion]);
 
   const setAnimatorListener = useCallback(() => {
     let regionTimeout = '';
@@ -230,11 +241,8 @@ const Map = (props) => {
       })
     : null;
 
-  if (loading) {
+  if (!filteredSpots) {
     return <Loading />;
-  }
-  if (error) {
-    return <Text style={styles.error}>Error! {error.message}</Text>;
   }
 
   // Map types
@@ -352,7 +360,7 @@ const Map = (props) => {
             containerStyle={styles.refreshContainer}
             buttonStyle={styles.refreshButtonStyle}
             titleStyle={styles.refreshButtonTitle}
-            onPress={refreshMarkers}
+            // onPress={refreshMarkers}
           />
 
           <TouchableOpacity onPress={() => animateToUserLocation(mapRef)}>
@@ -381,50 +389,52 @@ const Map = (props) => {
         </View>
       </Callout>
 
-      <Animated.View
-        style={{
-          transform: [
-            {
-              translateY: slideUpValue.interpolate({
-                inputRange: [0, 1],
-                outputRange: [200, 0],
-              }),
-            },
-          ],
-        }}
-      >
-        <Animated.FlatList
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.scrollView}
-          ref={flatListRef}
-          scrollEventThrottle={1}
-          snapToInterval={CARD_WIDTH + 20}
-          onScroll={Animated.event(
-            [
+      {filteredSpots !== undefined ? (
+        <Animated.View
+          style={{
+            transform: [
               {
-                nativeEvent: {
-                  contentOffset: {
-                    x: state.animation,
-                  },
-                },
+                translateY: slideUpValue.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [200, 0],
+                }),
               },
             ],
-            { useNativeDriver: true }
-          )}
-          data={filteredSpots}
-          renderItem={({ item }) => (
-            <MapSpotCard
-              navigation={navigation}
-              spot={item}
-              raise={raise}
-              lower={lower}
-              CARD_WIDTH={CARD_WIDTH}
-            />
-          )}
-          keyExtractor={(item, index) => index.toString()}
-        />
-      </Animated.View>
+          }}
+        >
+          <Animated.FlatList
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            style={styles.scrollView}
+            ref={flatListRef}
+            scrollEventThrottle={1}
+            snapToInterval={CARD_WIDTH + 20}
+            onScroll={Animated.event(
+              [
+                {
+                  nativeEvent: {
+                    contentOffset: {
+                      x: state.animation,
+                    },
+                  },
+                },
+              ],
+              { useNativeDriver: true }
+            )}
+            data={filteredSpots}
+            renderItem={({ item }) => (
+              <MapSpotCard
+                navigation={navigation}
+                spot={item}
+                raise={raise}
+                lower={lower}
+                CARD_WIDTH={CARD_WIDTH}
+              />
+            )}
+            keyExtractor={(item, index) => index.toString()}
+          />
+        </Animated.View>
+      ) : null}
     </View>
   );
 };

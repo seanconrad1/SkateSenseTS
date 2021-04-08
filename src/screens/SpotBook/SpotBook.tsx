@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useContext,
-  useCallback,
-  useRef
-} from 'react';
-import { useMutation, useLazyQuery } from '@apollo/react-hooks';
+import React, { useState, useContext, useCallback, useRef } from 'react';
 import {
   View,
   Text,
@@ -13,110 +7,98 @@ import {
   Alert,
   RefreshControl,
   TouchableOpacity,
-  SafeAreaView
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-import { Input, Divider, Button} from 'react-native-elements';
+import { Input, Button } from 'react-native-elements';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
 // import MySpotsButtonGroup from '../childComponents/MySpotsButtonGroup.js';
-import GET_MY_SPOTS from '../../graphql/queries/getMySpots';
-import GET_SPOTS from '../../graphql/queries/getSpots';
-import GET_BOOKMARKS from '../../graphql/queries/getBookmarks';
 // import GET_BOOKMARKS from '../../graphql/queries/getBookmarks';
-import DELETE_SPOT_MUTATION from '../../graphql/mutations/deleteSpotMutation';
-import DELETE_BOOKMARK_MUTATION from '../../graphql/mutations/deleteBookmarkMutation';
 import SpotCard from '../../components/SpotCard';
 import SpotsButtonGroup from '../../components/SpotsButtonGroup';
 import { MainContext } from '../../store';
-import TopHeader from '../../components/Header';
 import { getCurrentLocation } from '../../utils/helpers';
 import Loading from '../../components/Loading';
-import {streetSpotTypebuttons, streetSpotContains} from '../../utils/typesAndSelections'
+import {
+  streetSpotTypebuttons,
+  streetSpotContains,
+} from '../../utils/typesAndSelections';
 import Modal from 'react-native-modalbox';
 import CustomButtonGroup from '../../components/CustomButtonGroup';
+import { handleDeleteSpot } from './helpers';
+
+import {
+  getUserCreatedSpots,
+  getBookmarks,
+  deleteBookmark,
+} from '../../api/api';
 
 const SpotBook = ({ navigation }) => {
   const { state: myStore } = useContext(MainContext);
   const [tab, setTab] = useState(0);
   const [searchInput, setSearchInput] = useState('');
   const [refreshing] = useState(false);
-  const [deleteSpot] = useMutation(DELETE_SPOT_MUTATION);
-  const [deleteBookmark] = useMutation(DELETE_BOOKMARK_MUTATION);
-  const [location, setLocation] = useState();
   const [filteredBookmarks, setFilteredBookmarks] = useState([]);
   const [filteredSpots, setFilteredSpots] = useState([]);
-  const modalRef = useRef(null)
-  const[isOpen, setOpen] = useState(false)
+  const modalRef = useRef(null);
+  const [isOpen, setOpen] = useState(false);
+  const [mySpots, setMySpots] = useState();
+  const [myBookmarks, setMyBookmarks] = useState();
 
-  const [getMySpots, { loading, data: mySpots }] = useLazyQuery(GET_MY_SPOTS);
+  const [loading, setLoading] = useState(false);
 
-  const filters = [... streetSpotTypebuttons, ...streetSpotContains]
-
-  const [
-    getMyBookmarks,
-    { loading: loading2, data: myBookmarks },
-  ] = useLazyQuery(GET_BOOKMARKS, {
-    variables: { user_id: myStore.user_id },
-  });
+  const filters = [...streetSpotTypebuttons, ...streetSpotContains];
 
   useFocusEffect(
     useCallback(() => {
       async function fetchMyAPI() {
+        setLoading(true);
         const location = await getCurrentLocation();
-        getMySpots({
-          variables: {
-            locationInput: {
-              latitude: location.coords.latitude,
-              longitude: location.coords.longitude,
-            },
-          },
-        });
-        getMyBookmarks();
-
+        const response = await getUserCreatedSpots(
+          myStore.user_id,
+          location?.coords?.latitude,
+          location?.coords?.longitude
+        );
+        setMySpots(response);
+        const bookmarksResponse = await getBookmarks(myStore.user_id);
+        setMyBookmarks(bookmarksResponse);
+        setLoading(false);
       }
       fetchMyAPI();
+      setLoading(false);
     }, [])
   );
 
-  const getCoords = async () => {
-    return;
-  };
+  // const getCoords = async () => {
+  //   return;
+  // };
 
   const searchFilter = (input) => {
-    if (input === "") {
-      setSearchInput("");
-      return mySpots.getUserCreatedSpots;
+    if (input === '') {
+      setSearchInput('');
+      return mySpots;
     } else {
       setSearchInput(input.toLowerCase());
       return setFilteredSpots(
-        mySpots.getUserCreatedSpots.filter((spot) => spot.name.toLowerCase().includes(input.toLowerCase()))
+        mySpots?.filter((spot) =>
+          spot.name.toLowerCase().includes(input.toLowerCase())
+        )
       );
     }
   };
-  
-  const onChangeTab = (e) => setTab(e);
 
-  const unBookmark = async (_id) => {
+  const onChangeTab = (e: number) => setTab(e);
+
+  const unBookmark = async (_id: string) => {
     try {
-      await deleteBookmark({
-        variables: {
-          bookmarkInput: {
-            spot_id: _id,
-            user_id: myStore.user_id,
-          },
-        },
-        refetchQueries: [
-          { query: GET_BOOKMARKS, variables: { user_id: myStore.user_id } },
-          { query: GET_SPOTS },
-        ],
-      });
-
-      getMyBookmarks();
+      console.log('what are these', _id, myStore.user_id);
+      await deleteBookmark(myStore.user_id, _id);
+      const getMyBookmarks = await getBookmarks(myStore.user_id);
+      setMyBookmarks(getMyBookmarks);
     } catch (e) {
-      alert('Unable to delete spot at this time.');
+      alert('Unable to delete bookmark at this time.');
     }
   };
 
@@ -136,46 +118,25 @@ const SpotBook = ({ navigation }) => {
     );
   };
 
-  const handleDeleteSpot = async (_id) => {
+  const deleteAlertMsg = async (_id: string) => {
     const location = await getCurrentLocation();
 
-    try {
-      await deleteSpot({
-        variables: {
-          _id,
-        },
-        refetchQueries: [
-          {
-            query: GET_MY_SPOTS,
-            variables: {
-              locationInput: {
-                latitude: location.coords.latitude,
-                longitude: location.coords.longitude,
-              },
-            },
-          },
-          { query: GET_SPOTS },
-        ],
-      });
-      getMySpots({
-        variables: {
-          locationInput: {
-            latitude: location.coords.latitude,
-            longitude: location.coords.longitude,
-          },
-        },
-      });
-    } catch (e) {
-      alert('Unable to delete spot at this time.');
-    }
-  };
-
-  const deleteAlertMsg = (_id) => {
     Alert.alert(
       'Deleting spot',
       'Are you sure you want to delete this spot?',
       [
-        { text: 'Yes', onPress: () => handleDeleteSpot(_id) },
+        {
+          text: 'Yes',
+          onPress: () =>
+            handleDeleteSpot(_id, myStore.user_id, async () => {
+              const response = await getUserCreatedSpots(
+                myStore.user_id,
+                location.coords.latitude,
+                location.coords.longitude
+              );
+              setMySpots(response);
+            }),
+        },
         {
           text: 'Cancel',
           onPress: () => console.log('Cancel Pressed'),
@@ -189,99 +150,96 @@ const SpotBook = ({ navigation }) => {
   const launchRefetch = async () => {
     if (tab === 0) {
       const location = await getCurrentLocation();
-      getMySpots({
-        variables: {
-          locationInput: {
-            latitude: location.coords.latitude,
-            longitude: location.coords.longitude,
-          },
-        },
-      });
+      const response = await getUserCreatedSpots(
+        myStore.user_id,
+        location.coords.latitude,
+        location.coords.longitude
+      );
+      setMySpots(response);
     }
     if (tab === 1) {
-      getMyBookmarks();
+      getBookmarks(myStore.user_id);
     }
   };
 
   const onClose = () => {
-    modalRef!.current.close()
-  }
+    modalRef?.current?.close();
+  };
 
-  const onOpen = (index: number) => {
-    modalRef!.current.open()
-    // setSeletctedPhotoIndex(index)
-  }
-
-
-
+  // const onOpen = (index: number) => {
+  //   modalRef!.current.open()
+  //   // setSeletctedPhotoIndex(index)
+  // }
 
   if (loading || mySpots === undefined) {
     return <Loading />;
   }
-  if (loading2 || myBookmarks === undefined) {
-    return <Loading />;
-  }
 
+  const whichSpots = searchInput ? filteredSpots : mySpots;
 
-  const whichSpots = searchInput ? filteredSpots : mySpots.getUserCreatedSpots
-
+  console.log(myBookmarks);
 
   return (
     <View>
-      
       <Input
         style={styles.search}
         placeholder="Search"
         returnKeyType="search"
         onChangeText={(value) => searchFilter(value)}
         // rightIcon={
-        //   <Button title="Filter" onPress={onOpen} buttonStyle={styles.btn}/>
-        //   }
+        //   <Button title="Filter" onPress={onOpen} buttonStyle={styles.btn} />
+        // }
       />
-      
 
       <SpotsButtonGroup onChangeTab={onChangeTab} />
 
-      <Modal swipeToClose={false}  style={styles.modal} position={"center"} ref={modalRef} >
-          {/* <ScrollView showsHorizontalScrollIndicator={false} style={styles.scrollview}> */}
-          <View style={styles.container}>
-              {filters.map((filter, key) => {
-                return(
-                    <TouchableOpacity key={key} style={styles.selectedButton}>
-                      <Text style={styles.buttonText}>{filter}</Text>
-                    </TouchableOpacity>
-                )
-              })}
-            </View>
-          <Button title={"Apply"} onPress={onClose} buttonStyle={styles.applyButton}/>
-        </Modal>
-
+      <Modal
+        swipeToClose={false}
+        style={styles.modal}
+        position={'center'}
+        ref={modalRef}
+      >
+        <View style={styles.container}>
+          {filters.map((filter, key) => (
+            <TouchableOpacity key={key} style={styles.selectedButton}>
+              <Text style={styles.buttonText}>{filter}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+        <Button
+          title={'Apply'}
+          onPress={onClose}
+          buttonStyle={styles.applyButton}
+        />
+      </Modal>
 
       {tab === 0 && (
         <View style={styles.containerStyle}>
           <ScrollView
-          style={styles.scrollView}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={launchRefetch} />
-          }
-        >
-          {mySpots.getUserCreatedSpots.length > 0 ? (            
-            whichSpots.map((spot, i) => (
-              <SpotCard
-                key={i}
-                spot={spot}
-                navigation={navigation}
-                deleteAlertMsg={deleteAlertMsg}
+            style={styles.scrollView}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={launchRefetch}
               />
-            ))
-          ) : (
-            <Text style={styles.noneText}>
-              You haven't created any spots yet
-            </Text>
-          )}
-        </ScrollView>
+            }
+          >
+            {mySpots?.length > 0 ? (
+              whichSpots?.map((spot, i) => (
+                <SpotCard
+                  key={i}
+                  spot={spot}
+                  navigation={navigation}
+                  deleteAlertMsg={deleteAlertMsg}
+                />
+              ))
+            ) : (
+              <Text style={styles.noneText}>
+                You haven't created any spots yet
+              </Text>
+            )}
+          </ScrollView>
         </View>
-        
       )}
 
       {tab === 1 && (
@@ -289,11 +247,14 @@ const SpotBook = ({ navigation }) => {
           <ScrollView
             style={styles.scrollView}
             refreshControl={
-              <RefreshControl refreshing={refreshing} onRefresh={launchRefetch} />
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={launchRefetch}
+              />
             }
           >
-            {myBookmarks.getBookmarks.length > 0 ? (
-              myBookmarks.getBookmarks.map((spot, i) => (
+            {myBookmarks.length > 0 ? (
+              myBookmarks.map((spot, i) => (
                 <SpotCard
                   key={i}
                   spot={spot}
@@ -317,16 +278,13 @@ const SpotBook = ({ navigation }) => {
 export default SpotBook;
 
 const styles = StyleSheet.create({
-
   containerStyle: {
     paddingBottom: 350,
     height: '100%',
     // flex: 1
   },
 
-  scrollView:{
-  },
-
+  scrollView: {},
 
   btn: {
     backgroundColor: 'rgb(244, 2, 87)',
@@ -336,10 +294,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     alignContent: 'center',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
 
-  applyButton:{
+  applyButton: {
     backgroundColor: 'rgb(244, 2, 87)',
     color: 'black',
     borderRadius: 10,
@@ -349,25 +307,22 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     justifyContent: 'center',
     alignItems: 'center',
-    margin: 10
-
+    margin: 10,
   },
-
-
 
   modal: {
     bottom: 100,
     justifyContent: 'center',
     alignItems: 'center',
-    alignContent:'center',
+    alignContent: 'center',
     borderRadius: 50,
     height: 420,
     width: 380,
     // backgroundColor: 'transparent'
   },
 
-  container:{
-    flex: 1, 
+  container: {
+    flex: 1,
     marginHorizontal: 20,
     flexDirection: 'row',
     color: 'grey',
@@ -376,13 +331,13 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     justifyContent: 'center',
     alignContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
 
   selectedButton: {
-    borderWidth: .4,
+    borderWidth: 0.4,
     borderRadius: 10,
-    padding:0, 
+    padding: 0,
     margin: 5,
     width: wp(25),
     backgroundColor: 'transparent',
@@ -392,7 +347,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
 
   search: {
     marginLeft: wp('10%'),
@@ -409,8 +363,4 @@ const styles = StyleSheet.create({
     color: 'grey',
     height: '100%',
   },
-
-
-
 });
-

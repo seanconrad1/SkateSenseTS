@@ -1,4 +1,4 @@
-import React, { useRef, useState, useContext } from 'react';
+import React, { useRef, useState, useContext, useEffect } from 'react';
 import {
   TouchableWithoutFeedback,
   View,
@@ -12,60 +12,13 @@ import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
-import { useMutation, useQuery } from '@apollo/react-hooks';
-import NEW_BOOKMARK_MUTATION from '../graphql/mutations/newBookmarkMutation';
-import DELETE_BOOKMARK_MUTATION from '../graphql/mutations/deleteBookmarkMutation';
-import GET_BOOKMARKS from '../graphql/queries/getBookmarks';
 import GestureRecognizer from 'react-native-swipe-gestures';
-import * as Haptics from 'expo-haptics';
 import { Icon } from 'react-native-elements';
 import BookmarkButton from './BookmarkButton';
-import { MainContext } from '../store';
 const CARD_WIDTH = wp('95%');
-
-interface iSpot {}
 
 const MapSpotCard = ({ spot, raise, lower, navigation }) => {
   const [opened, setOpened] = useState(true);
-  const modalRef = useRef(null);
-  const { state, dispatch } = useContext(MainContext);
-  const { user_id } = state;
-  // const [bookmarked, setBookmarked] = useState(false);
-  const { loading, error, data: bookmarks } = useQuery(GET_BOOKMARKS, {
-    variables: { user_id },
-  });
-  const [createBookmark] = useMutation(NEW_BOOKMARK_MUTATION, {
-    variables: {
-      bookmarkInput: {
-        user_id,
-        spot_id: spot._id,
-      },
-    },
-    refetchQueries: [{ query: GET_BOOKMARKS, variables: { user_id } }],
-    // notifyOnNetworkStatusChange: true,
-    awaitRefetchQueries: true,
-  });
-  const [deleteBookmark] = useMutation(DELETE_BOOKMARK_MUTATION, {
-    variables: {
-      bookmarkInput: {
-        user_id: user_id,
-        spot_id: spot._id,
-      },
-    },
-    refetchQueries: [{ query: GET_BOOKMARKS, variables: { user_id } }],
-    awaitRefetchQueries: true,
-  });
-
-  if (loading) {
-    return <Text>Loading</Text>;
-  }
-  if (error) {
-    return <Text>Error{error}</Text>;
-  }
-
-  const bookmarked = bookmarks.getBookmarks
-    .map((i) => i._id)
-    .some((r) => r === spot._id);
 
   const _start = () => {
     raise();
@@ -77,28 +30,10 @@ const MapSpotCard = ({ spot, raise, lower, navigation }) => {
     setOpened(false);
   };
 
-  const bookmarkSpot = async () => {
-    let response;
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    try {
-      response = await createBookmark();
-    } catch (e) {
-      console.log(e);
-    }
-  };
-
-  const unBookmarkSpot = async () => {
-    await deleteBookmark();
-  };
-
   const config = {
     velocityThreshold: 0.8,
     directionalOffsetThreshold: 500,
   };
-
-  // <TouchableOpacity style={styles.btn} onPress={() => opened ? _close() : }>
-  //           <Text style={styles.textBtn}>{opened ? "Lower" : "Raise"}</Text>
-  //         </TouchableOpacity>
 
   const goToSpotPage = () => {
     navigation.navigate('Spot Page', { spot });
@@ -131,12 +66,7 @@ const MapSpotCard = ({ spot, raise, lower, navigation }) => {
             />
           </TouchableOpacity>
 
-          <BookmarkButton
-            spot={spot}
-            bookmarked={bookmarked}
-            bookmarkSpot={bookmarkSpot}
-            unBookmarkSpot={unBookmarkSpot}
-          />
+          <BookmarkButton spot={spot} />
         </View>
 
         <TouchableWithoutFeedback onPress={goToSpotPage}>

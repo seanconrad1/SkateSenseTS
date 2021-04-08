@@ -27,23 +27,28 @@ import { MainContext } from '../../store';
 import * as Permissions from 'expo-permissions';
 import * as Location from 'expo-location';
 import GET_MY_SPOTS from '../../graphql/queries/getMySpots';
-import GET_ADMINS from '../../graphql/queries/getAdmins';
 
 import * as ImageManipulator from 'expo-image-manipulator';
 import OptionsMenu from 'react-native-option-menu';
+import {
+  createSpot,
+  getSpots,
+  getUserCreatedSpots,
+  getAdmins,
+} from '../../api/api';
 
 const NewSpotPage = (props) => {
   const [disableButton, setDisableButton] = useState(false);
   const [state, dispatch] = useReducer(reducer, newSpotState);
-  const [createSpot, { data }] = useMutation(NEW_SPOT_MUTATION);
-  const { loading, error, data: admins } = useQuery(GET_ADMINS);
+  const [admins, setAdmins] = useState();
   const { state: myStore } = useContext(MainContext);
   const { navigation } = props;
   const modalRef = useRef(null);
   const [selectedPhotoIndex, setSeletctedPhotoIndex] = useState(0);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    (async () => {
+    async function getPerms() {
       if (Platform.OS !== 'web') {
         const {
           status,
@@ -52,7 +57,16 @@ const NewSpotPage = (props) => {
           alert('Sorry, we need camera roll permissions to make this work!');
         }
       }
-    })();
+    }
+
+    async function getAdminsFunc() {
+      setLoading(true);
+      const response = await getAdmins();
+      setAdmins(response);
+      setLoading(false);
+    }
+    getAdminsFunc();
+    getPerms();
   }, []);
 
   // let latitude;
@@ -191,41 +205,27 @@ const NewSpotPage = (props) => {
     if (validate()) {
       const images = state.photo.map((img) => ({ base64: img.base64 }));
 
-      const spotInput = {
-        name: state.name,
-        location: {
-          latitude: state.selectedLat,
-          longitude: state.selectedLng,
-        },
-        images,
-        description: state.description,
-        kickout_level: state.kickout_level,
-        owner: myStore.user_id,
-        spotType: state.spotType,
-        contains: state.spotContains,
+      const myLocation = {
+        latitude: state.selectedLat,
+        longitude: state.selectedLng,
       };
 
       try {
-        await createSpot({
-          variables: { spotInput },
-          refetchQueries: [
-            { query: GET_SPOTS },
-            {
-              query: GET_MY_SPOTS,
-              variables: {
-                locationInput: {
-                  latitude: location.coords.latitude,
-                  longitude: location.coords.longitude,
-                },
-              },
-            },
-          ],
-          awaitRefetchQueries: true,
-        });
+        const createdSpotReponse = await createSpot(
+          state.name,
+          myLocation,
+          images,
+          state.description,
+          state.kickout_level,
+          myStore.user_id,
+          state.spotType,
+          state.spotContains
+        );
 
         dispatch({ type: 'CLEAR_STATE' });
         setDisableButton(false);
         sendPushNotification();
+        setDisableButton(false);
 
         approvalAlert();
       } catch (e) {
@@ -239,7 +239,7 @@ const NewSpotPage = (props) => {
   };
 
   const sendPushNotification = async () => {
-    const cleanedTokenArray = admins.getAdmins.map((i) => i.push_token);
+    const cleanedTokenArray = admins?.map((i) => i.push_token);
 
     const message = {
       to: cleanedTokenArray,

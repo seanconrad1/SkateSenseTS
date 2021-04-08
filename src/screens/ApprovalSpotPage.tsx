@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -9,25 +9,31 @@ import {
   Linking,
   Alert,
 } from 'react-native';
-import { useMutation, useQuery } from '@apollo/react-hooks';
-import APPROVE_SPOT_MUTATION from '../graphql/mutations/approveSpotMutation';
-import DELETE_SPOT_MUTATION from '../graphql/mutations/deleteSpotMutation';
-import GET_SPOTS from '../graphql/queries/getSpots';
-import GET_SPOT_OWNER from '../graphql/queries/getSpotOwner';
-import GET_NOT_APPROVED_LIST from '../graphql/queries/getNotApprovedList';
+import { useFocusEffect } from '@react-navigation/native';
 import { Divider, Icon } from 'react-native-elements';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from 'react-native-responsive-screen';
+import { approveSpot, deleteSpot, getspot, getSpotOwner } from '../api/api';
 
 const ApprovalSpotPage = ({ route, navigation }) => {
+  const [spotOwner, setSpotOwner] = useState();
+  const [loading, setLoading] = useState(false);
   const spot = route.params.spot;
-  const [approveSpotMutation] = useMutation(APPROVE_SPOT_MUTATION);
-  const [deleteSpot] = useMutation(DELETE_SPOT_MUTATION);
-  const { loading, error, data: spotOwner } = useQuery(GET_SPOT_OWNER, {
-    variables: { user_id: spot.owner._id },
-  });
+
+  useFocusEffect(
+    useCallback(() => {
+      async function fetchMyAPI() {
+        setLoading(true);
+        const response = await getSpotOwner(spot.owner._id);
+        setSpotOwner(response);
+        setLoading(false);
+      }
+      fetchMyAPI();
+      setLoading(false);
+    }, [])
+  );
 
   const _renderItem = ({ item, index }) => (
     <View>
@@ -41,10 +47,7 @@ const ApprovalSpotPage = ({ route, navigation }) => {
   );
 
   const deleteSpotAndNav = async () => {
-    await deleteSpot({
-      variables: { _id: spot._id },
-      refetchQueries: [{ query: GET_SPOTS }, { query: GET_NOT_APPROVED_LIST }],
-    });
+    const reponse = await deleteSpot(spot._id);
 
     navigation.goBack();
   };
@@ -69,18 +72,15 @@ const ApprovalSpotPage = ({ route, navigation }) => {
     );
   };
 
-  const approveSpot = async () => {
-    await approveSpotMutation({
-      variables: { _id: spot._id },
-      refetchQueries: [{ query: GET_SPOTS }, { query: GET_NOT_APPROVED_LIST }],
-    });
+  const approveSpotButton = async () => {
+    const response = await approveSpot(spot._id);
 
     await sendPushNotification();
     navigation.navigate('Approvals');
   };
 
   const sendPushNotification = async () => {
-    const cleanedToken = spotOwner.getSpotOwner.push_token;
+    const cleanedToken = spotOwner?.push_token;
 
     const message = {
       to: cleanedToken,
@@ -160,7 +160,7 @@ const ApprovalSpotPage = ({ route, navigation }) => {
           />
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={approveSpot}>
+        <TouchableOpacity onPress={approveSpotButton}>
           <Icon
             raised
             size={hp('7')}
