@@ -70,17 +70,9 @@ const Map = (props) => {
       }
 
       async function mounting() {
-        const { status } = await Location.requestPermissionsAsync();
+        const { status } = await Location.requestForegroundPermissionsAsync();
+        console.log('status', status);
         await animateToUserLocation(mapRef);
-
-        if (status === 'granted') {
-          const a = await Location.startLocationUpdatesAsync(
-            LOCATION_TASK_NAME,
-            {
-              accuracy: Location.Accuracy.Balanced,
-            }
-          );
-        }
       }
 
       raise();

@@ -1,1 +1,34 @@
-{"expo":{"name":"SkateSense","slug":"SkateSense","version":"1.3","orientation":"portrait","icon":"./assets/icons/skatesense.png","splash":{"image":"./assets/icons/splashScreen.png","resizeMode":"cover"},"updates":{"fallbackToCacheTimeout":0},"assetBundlePatterns":["**/*"],"notification":{"icon":"./assets/icons/skatesense.png"},"ios":{"icon":"./assets/icons/skatesense.png","config":{"usesNonExemptEncryption":false},"supportsTablet":true,"buildNumber":"9.6","bundleIdentifier":"org.reactjs.native.example.SkateSenseReactNative","infoPlist":{"NSLocationAlwaysUsageDescription":"For a better experience, while using our Service, we may require you to provide us Location Permissions","UIBackgroundModes":["location","fetch"]}}}}
+{
+  "expo": {
+    "name": "SkateSense",
+    "slug": "SkateSense",
+    "version": "1.3",
+    "orientation": "portrait",
+    "icon": "./assets/icons/skatesense.png",
+    "splash": {
+      "image": "./assets/icons/splashScreen.png",
+      "resizeMode": "cover"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "notification": {
+      "icon": "./assets/icons/skatesense.png"
+    },
+    "ios": {
+      "icon": "./assets/icons/skatesense.png",
+      "config": {
+        "usesNonExemptEncryption": false
+      },
+      "supportsTablet": true,
+      "buildNumber": "9.6",
+      "bundleIdentifier": "org.reactjs.native.example.SkateSenseReactNative",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "For a better experience, while using our Service, we may require you to provide us Location Permissions",
+      }
+    }
+  }
+}

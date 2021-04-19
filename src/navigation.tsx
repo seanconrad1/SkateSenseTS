@@ -4,7 +4,7 @@ import { Icon } from 'react-native-elements';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { NavigationContainer, StackRouter } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import AsyncStorage from '@react-native-community/async-storage';
 import SignUp from './screens/SignUp';
 import Login from './screens/Login';
@@ -18,7 +18,6 @@ import ApprovalSpotPage from './screens/ApprovalSpotPage';
 import SpotPage from './screens/SpotPage';
 import Administration from './screens/Administration';
 import UserSpots from './screens/UserSpots';
-import test from './screens/test';
 
 import { MainContext, SET_USER } from './store';
 import { TouchableOpacity } from 'react-native-gesture-handler';

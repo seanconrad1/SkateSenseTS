@@ -5,13 +5,11 @@ import React, {
   useContext,
   useRef,
 } from 'react';
-import { Text, View, ScrollView, Alert } from 'react-native';
+import { Text, View, ScrollView, Alert, Platform } from 'react-native';
 import { Icon, Button } from 'react-native-elements';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import * as ImagePicker from 'expo-image-picker';
 import { reducer, newSpotState } from './reducer';
-import NEW_SPOT_MUTATION from '../../graphql/mutations/newSpotMutation';
-import GET_SPOTS from '../../graphql/queries/getSpots';
 import CustomButtonGroup from '../../components/CustomButtonGroup';
 import styles from './styles';
 import PhotoHolders from './components/PhotoHolders';
@@ -26,7 +24,6 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 import { MainContext } from '../../store';
 import * as Permissions from 'expo-permissions';
 import * as Location from 'expo-location';
-import GET_MY_SPOTS from '../../graphql/queries/getMySpots';
 
 import * as ImageManipulator from 'expo-image-manipulator';
 import OptionsMenu from 'react-native-option-menu';
