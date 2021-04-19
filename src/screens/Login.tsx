@@ -2,7 +2,7 @@ import React, { useState, useContext, useCallback, useEffect } from 'react';
 import { View, KeyboardAvoidingView, Text } from 'react-native';
 import Constants from 'expo-constants';
 import * as Permissions from 'expo-permissions';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 //Context
 import { MainContext } from '../store';
 import { Input, Button } from 'react-native-elements';

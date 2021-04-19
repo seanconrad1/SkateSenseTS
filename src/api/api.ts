@@ -1,7 +1,7 @@
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // const url = 'http://104.248.236.245:4000/';
-const url = 'http://localhost:4000/';
+const url = 'http://192.168.1.137:4000/';
 // const url = __DEV__ ? 'http://localhost:4000/' : 'http://104.248.236.245:4000/';
 
 // endpoints:
@@ -30,7 +30,7 @@ const callServicePost = async (endpoint: string, data: {}) => {
   const response = await fetch(url + endpoint, {
     method: 'POST',
     cache: 'no-cache',
-    body: JSON.stringify(data),
+    body: endpoint !== CREATE_SPOT ? JSON.stringify(data) : data,
     headers: {
       Accept: 'application/json',
       'Content-Type': 'application/json',
@@ -46,6 +46,7 @@ const callServicePost = async (endpoint: string, data: {}) => {
   }
 
   const result = await response.json();
+  console.log('49 api.ts', result);
   return result;
 };
 
@@ -119,7 +120,7 @@ interface NewSpot {
   ): void;
 }
 
-export const createSpot: NewSpot = (
+export const createSpot: NewSpot = async (
   name,
   location,
   images,
@@ -129,15 +130,29 @@ export const createSpot: NewSpot = (
   spotType,
   contains
 ) => {
+  const data = new FormData();
+
+  const locationBlob = new Blob([JSON.stringify(location, null, 2)], {
+    type: 'application/json',
+  });
+  const spotContainsBlob = new Blob([JSON.stringify(contains, null, 2)], {
+    type: 'application/json',
+  });
+
+  data.append('name', name);
+  data.append('location', locationBlob);
+  data.append('description', description);
+  data.append('kickout_level', kickout_level.toString());
+  data.append('owner', owner);
+  data.append('spotType', spotType);
+  data.append('contains', spotContainsBlob);
+
+  images.forEach((el, idx) => {
+    data.append('imgCollection', images[idx]);
+  });
+
   callServicePost(CREATE_SPOT, {
-    name,
-    location,
-    images,
-    description,
-    kickout_level,
-    owner,
-    spotType,
-    contains,
+    data,
   });
 };
 

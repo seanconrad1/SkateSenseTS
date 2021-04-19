@@ -49,7 +49,7 @@ const NewSpotPage = (props) => {
       if (Platform.OS !== 'web') {
         const {
           status,
-        } = await ImagePicker.requestCameraRollPermissionsAsync();
+        } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status !== 'granted') {
           alert('Sorry, we need camera roll permissions to make this work!');
         }
@@ -90,15 +90,20 @@ const NewSpotPage = (props) => {
       const result = await ImagePicker.launchCameraAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        base64: true,
+        // base64: true,
         aspect: [4, 3],
         quality: 1,
       });
 
+      console.log(result);
+
       if (!result.cancelled) {
         dispatch({
           type: 'SET_PHOTO',
-          payload: { uri: result.uri, base64: result.base64 },
+          payload: {
+            uri: result.uri,
+            type: 'image/jpeg',
+          },
         });
       }
     }
@@ -112,25 +117,25 @@ const NewSpotPage = (props) => {
       quality: 0,
     });
 
+    console.log(result);
+
     const resizedImage = await resizeImage(result.uri);
 
     if (!result.cancelled) {
       dispatch({
         type: 'SET_PHOTO',
-        payload: { uri: resizedImage.uri, base64: resizedImage.base64 },
+        payload: {
+          uri: resizedImage.uri,
+          type: 'image/jpeg',
+        },
       });
     }
   };
 
   const resizeImage = async (uri: string) => {
-    const manipResult = await ImageManipulator.manipulateAsync(
-      uri,
-      [{ resize: { width: 614, height: 614 } }],
-      {
-        // compress: 0.2,
-        base64: true,
-      }
-    );
+    const manipResult = await ImageManipulator.manipulateAsync(uri, [
+      { resize: { width: 614, height: 614 } },
+    ]);
     return manipResult;
   };
 
@@ -196,22 +201,17 @@ const NewSpotPage = (props) => {
 
   const onSubmit = async () => {
     // dispatch({ type: 'SPOT_SUBMITED', payload: true });
-    setDisableButton(true);
-
-    const location = await Location.getCurrentPositionAsync({});
+    // setDisableButton(true);
     if (validate()) {
-      const images = state.photo.map((img) => ({ base64: img.base64 }));
-
       const myLocation = {
         latitude: state.selectedLat,
         longitude: state.selectedLng,
       };
-
       try {
         const createdSpotReponse = await createSpot(
           state.name,
           myLocation,
-          images,
+          state.photo,
           state.description,
           state.kickout_level,
           myStore.user_id,
@@ -219,12 +219,13 @@ const NewSpotPage = (props) => {
           state.spotContains
         );
 
-        dispatch({ type: 'CLEAR_STATE' });
-        setDisableButton(false);
-        sendPushNotification();
-        setDisableButton(false);
+        console.log('222 newspot page', createdSpotReponse);
 
-        approvalAlert();
+        // dispatch({ type: 'CLEAR_STATE' });
+        // setDisableButton(false);
+        // sendPushNotification();
+        // setDisableButton(false);
+        // approvalAlert();
       } catch (e) {
         console.log(e);
         console.log(e.networkError.result.errors[0].message);

@@ -10,7 +10,7 @@ import { useFocusEffect } from '@react-navigation/native';
 
 import { Header, ListItem, Avatar } from 'react-native-elements';
 import { useLazyQuery, useQuery } from '@apollo/react-hooks';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Loading from '../components/Loading';
 import moment from 'moment';
 import { getNotApprovedList } from '../api/api';

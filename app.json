@@ -27,6 +27,14 @@
       "buildNumber": "9.6",
       "bundleIdentifier": "org.reactjs.native.example.SkateSenseReactNative",
       "infoPlist": {
+        "NSAppTransportSecurity": {
+          "NSAllowsLocalNetworking": true,
+          "NSExceptionDomains": {
+            "localhost:4000": {
+              "NSExceptionAllowsInsecureHTTPLoads": true
+            }
+          }
+        },
         "NSLocationWhenInUseUsageDescription": "For a better experience, while using our Service, we may require you to provide us Location Permissions",
       }
     }

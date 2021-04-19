@@ -26,7 +26,6 @@ import { MainContext } from '../../store';
 import Loading from '../../components/Loading';
 import { getSpots } from '../../api/api';
 
-const LOCATION_TASK_NAME = 'background-location-task';
 const CARD_WIDTH = wp('95%');
 
 const Map = (props) => {
@@ -71,8 +70,9 @@ const Map = (props) => {
 
       async function mounting() {
         const { status } = await Location.requestForegroundPermissionsAsync();
-        console.log('status', status);
-        await animateToUserLocation(mapRef);
+        if (status === 'granted') {
+          await animateToUserLocation(mapRef);
+        }
       }
 
       raise();

@@ -15,4 +15,6 @@ export const streetSpotContains = [
   'Quarter Pipe',
   'Euro Gap',
   'Slappy Curb',
+  'Bump',
+  'Bump Over Bar',
 ];

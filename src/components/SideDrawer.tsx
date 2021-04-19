@@ -1,6 +1,6 @@
 import React, { useContext } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Divider, ListItem, Icon } from 'react-native-elements';
 import { DrawerContentScrollView } from '@react-navigation/drawer';
 //Context
