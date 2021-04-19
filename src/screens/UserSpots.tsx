@@ -8,10 +8,10 @@ import {
 } from 'react-native';
 import { ListItem, Divider, Avatar } from 'react-native-elements';
 
-const UserSpots = (props) => {
+const UserSpots = ({ route, navigation }) => {
   const renderItem = ({ item }) => (
     <TouchableOpacity
-      onPress={() => props.navigation.navigate('Spot Page', { spot: item })}
+      onPress={() => navigation.navigate('Spot Page', { spot: item })}
     >
       <ListItem>
         <Avatar
@@ -39,9 +39,9 @@ const UserSpots = (props) => {
 
   return (
     <>
-      {props.route.params.user.spots.length > 0 ? (
+      {route.params.user.spots.length > 0 ? (
         <FlatList
-          data={props.route.params.user.spots}
+          data={route.params.user.spots}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
         />

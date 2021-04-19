@@ -60,7 +60,18 @@ const MapStackComponent = () => (
       name="LocationSelectorMap"
       component={LocationSelectorMap}
     />
-    <MapStack.Screen name="Spot Page" component={SpotPage} />
+    <MapStack.Screen
+      options={{
+        headerShown: true,
+        headerTitleStyle: {
+          color: 'black',
+          fontSize: 20,
+          // fontFamily: 'Lobster',
+        },
+      }}
+      name="Spot Page"
+      component={SpotPage}
+    />
   </MapStack.Navigator>
 );
 

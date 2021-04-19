@@ -49,6 +49,8 @@ const Login = ({ navigation }) => {
     try {
       const response = await loginUser(emailAddress, password);
 
+      console.log('what is my response to logging in ', response);
+
       if (response.error) {
         setDisableButton(false);
         console.log(response.error.message);

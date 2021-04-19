@@ -7,6 +7,7 @@ import {
   Alert,
   RefreshControl,
   TouchableOpacity,
+  FlatList,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import { Input, Button } from 'react-native-elements';
@@ -175,12 +176,27 @@ const SpotBook = ({ navigation }) => {
     return <Loading />;
   }
 
+  const spotCard = ({ item }) => (
+    <SpotCard
+      spot={item}
+      navigation={navigation}
+      deleteAlertMsg={deleteAlertMsg}
+    />
+  );
+
+  const bookmarkCard = ({ item }) => (
+    <SpotCard
+      spot={item}
+      bookmark
+      navigation={navigation}
+      unBookmarkAlertMsg={unBookmarkAlertMsg}
+    />
+  );
+
   const whichSpots = searchInput ? filteredSpots : mySpots;
 
-  console.log(myBookmarks);
-
   return (
-    <View>
+    <View style={styles.viewContainer}>
       <Input
         style={styles.search}
         placeholder="Search"
@@ -213,64 +229,41 @@ const SpotBook = ({ navigation }) => {
         />
       </Modal>
 
-      {tab === 0 && (
-        <View style={styles.containerStyle}>
-          <ScrollView
-            style={styles.scrollView}
+      {tab === 0 &&
+        (mySpots?.length > 0 ? (
+          <FlatList
+            data={whichSpots}
+            keyExtractor={(item) => item._id.toString()}
             refreshControl={
               <RefreshControl
                 refreshing={refreshing}
                 onRefresh={launchRefetch}
               />
             }
-          >
-            {mySpots?.length > 0 ? (
-              whichSpots?.map((spot, i) => (
-                <SpotCard
-                  key={i}
-                  spot={spot}
-                  navigation={navigation}
-                  deleteAlertMsg={deleteAlertMsg}
-                />
-              ))
-            ) : (
-              <Text style={styles.noneText}>
-                You haven't created any spots yet
-              </Text>
-            )}
-          </ScrollView>
-        </View>
-      )}
+            renderItem={spotCard}
+          />
+        ) : (
+          <Text style={styles.noneText}>You haven't created any spots yet</Text>
+        ))}
 
-      {tab === 1 && (
-        <View style={styles.containerStyle}>
-          <ScrollView
-            style={styles.scrollView}
+      {tab === 1 &&
+        (myBookmarks.length > 0 ? (
+          <FlatList
+            data={myBookmarks}
+            keyExtractor={(item) => item._id.toString()}
             refreshControl={
               <RefreshControl
                 refreshing={refreshing}
                 onRefresh={launchRefetch}
               />
             }
-          >
-            {myBookmarks.length > 0 ? (
-              myBookmarks.map((spot, i) => (
-                <SpotCard
-                  key={i}
-                  spot={spot}
-                  bookmark
-                  navigation={navigation}
-                  unBookmarkAlertMsg={unBookmarkAlertMsg}
-                />
-              ))
-            ) : (
-              <Text style={styles.noneText}>
-                You haven't bookmarked any spots yet
-              </Text>
-            )}
-          </ScrollView>
-        </View>
-      )}
+            renderItem={bookmarkCard}
+          />
+        ) : (
+          <Text style={styles.noneText}>
+            You haven't bookmarked any spots yet
+          </Text>
+        ))}
     </View>
   );
 };
@@ -278,13 +271,7 @@ const SpotBook = ({ navigation }) => {
 export default SpotBook;
 
 const styles = StyleSheet.create({
-  containerStyle: {
-    paddingBottom: 350,
-    height: '100%',
-    // flex: 1
-  },
-
-  scrollView: {},
+  viewContainer: { flex: 1 },
 
   btn: {
     backgroundColor: 'rgb(244, 2, 87)',

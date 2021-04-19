@@ -1,6 +1,8 @@
 import AsyncStorage from '@react-native-community/async-storage';
 
+// const url = 'http://104.248.236.245:4000/';
 const url = 'http://localhost:4000/';
+// const url = __DEV__ ? 'http://localhost:4000/' : 'http://104.248.236.245:4000/';
 
 // endpoints:
 const LOGIN = 'login';

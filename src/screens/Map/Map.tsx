@@ -32,7 +32,7 @@ const CARD_WIDTH = wp('95%');
 const Map = (props) => {
   const { state: myStore, dispatch: storeDispatch } = useContext(MainContext);
   const [state, dispatch] = useReducer(reducer, mapState);
-  const mapRef = useRef();
+  const mapRef = useRef(null);
   const flatListRef = useRef();
   const [slideUpValue, setSideUpValie] = useState(new Animated.Value(0));
   const [raiseOrLower, setRaiseOrLower] = useState(true);

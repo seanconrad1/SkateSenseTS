@@ -3,17 +3,13 @@ import {
   StyleSheet,
   Text,
   View,
-  TouchableOpacity,
   Animated,
   Image,
   Linking,
   ScrollView,
   Alert,
 } from 'react-native';
-import { useMutation } from '@apollo/react-hooks';
-import GET_SPOTS from '../graphql/queries/getSpots';
-import { Divider, Icon } from 'react-native-elements';
-import TopHeader from '../components/Header';
+import { Icon } from 'react-native-elements';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
@@ -22,7 +18,6 @@ import ramp from '../../assets/ramp.svg';
 
 const SpotPage = ({ route, navigation }) => {
   const spot = route.params.spot;
-  console.log(spot.spotType);
 
   const getIcon = () => {
     switch (spot.spotType) {
@@ -69,8 +64,6 @@ const SpotPage = ({ route, navigation }) => {
 
   return (
     <View style={styles.container} behavior="padding">
-      <TopHeader name={spot.name} navigation={navigation} />
-
       <Icon
         raised
         size={hp('2.8')}
@@ -115,10 +108,8 @@ const SpotPage = ({ route, navigation }) => {
 
           <View style={styles.containsContainer}>
             {spot.contains.map((contain, i) => (
-              <View style={styles.contains}>
-                <Text style={styles.containsText} key={i}>
-                  {contain}
-                </Text>
+              <View key={i} style={styles.contains}>
+                <Text style={styles.containsText}>{contain}</Text>
               </View>
             ))}
           </View>
@@ -198,7 +189,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     zIndex: 2,
     marginRight: wp('30%'),
-    marginTop: hp('10%'),
+    marginTop: hp('2%'),
     alignSelf: 'flex-end',
     paddingRight: wp('15%'),
   },

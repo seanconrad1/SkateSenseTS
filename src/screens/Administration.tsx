@@ -1,9 +1,9 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StyleSheet, FlatList, RefreshControl } from 'react-native';
 import { ListItem, Divider } from 'react-native-elements';
 import Loading from '../components/Loading';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { useFocusEffect } from '@react-navigation/core';
+// import { useFocusEffect } from '@react-navigation/core';
 import { getUsers } from '../api/api';
 
 const wait = (timeout) =>
@@ -16,18 +16,16 @@ const Administration = ({ navigation }) => {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
 
-  useFocusEffect(
-    useCallback(() => {
-      async function fetchMyAPI() {
-        setLoading(true);
-        const response = await getUsers();
-        setUsers(response);
-        setLoading(false);
-      }
-      fetchMyAPI();
+  useEffect(() => {
+    async function fetchMyAPI() {
+      setLoading(true);
+      const response = await getUsers();
+      setUsers(response);
       setLoading(false);
-    }, [])
-  );
+    }
+    fetchMyAPI();
+    setLoading(false);
+  }, []);
 
   if (loading) {
     return <Loading />;
@@ -41,6 +39,7 @@ const Administration = ({ navigation }) => {
   };
 
   const renderItem = ({ item }) => (
+    // console.log(item);
     <TouchableOpacity
       onPress={() => navigation.navigate('User Spots', { user: item })}
     >
@@ -67,7 +66,7 @@ const Administration = ({ navigation }) => {
       }
       data={users}
       renderItem={renderItem}
-      keyExtractor={(item) => item.id}
+      keyExtractor={(item) => item._id}
     />
   );
 };

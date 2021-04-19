@@ -29,9 +29,8 @@ Notifications.setNotificationHandler({
 
 const cache = new InMemoryCache();
 const httpLink = new HttpLink({
-  uri: __DEV__
-    ? 'http://localhost:4000/graphql'
-    : 'https://sean.software/skatesense/api/',
+  // uri: __DEV__ ? 'http://localhost:4000' : 'http://104.248.236.245:4000/',
+  uri: 'http://104.248.236.245:4000/',
   fetch: unfetch,
 });
 

@@ -6,6 +6,7 @@ import {
   Dimensions,
   Text,
   LogBox,
+  ActivityIndicator,
 } from 'react-native';
 import MapView from 'react-native-maps';
 import { Button } from 'react-native-elements';
@@ -56,7 +57,12 @@ const LocationSelectorMap = ({ navigation }) => {
   };
 
   if (userLocation.latitude === undefined) {
-    return <Text>Loading...</Text>;
+    return (
+      <View style={styles.gettingLocation}>
+        <Text>Getting your location...</Text>
+        <ActivityIndicator />
+      </View>
+    );
   }
 
   return (
@@ -117,6 +123,14 @@ const styles = StyleSheet.create({
   },
   map: {
     ...StyleSheet.absoluteFillObject,
+  },
+  gettingLocation: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    alignSelf: 'center',
+    alignContent: 'center',
+    height: height,
+    width: width / 2,
   },
 });
 
